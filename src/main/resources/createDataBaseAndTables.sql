@@ -88,13 +88,13 @@ INSERT INTO NameTransactions (id_name_trans, name_trans) VALUES
 
 CREATE TABLE IF NOT EXISTS CostsDetailsTransactions (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	number_trans INT UNSIGNED NOT NULL, 
+	trans_id_trans INT UNSIGNED NOT NULL, 
 	amount DECIMAL(6,2) NOT NULL,
 	type_trans INT UNSIGNED NOT NULL, 
 	name_trans INT UNSIGNED NOT NULL, 
 	PRIMARY KEY (id),
 	CONSTRAINT fk_number_trans_id_trans 
-		FOREIGN KEY (number_trans) 
+		FOREIGN KEY (trans_id_trans) 
 		REFERENCES Transactions(id_trans),
 	CONSTRAINT fk_type_trans_id_type_trans 
 		FOREIGN KEY (type_trans) 
@@ -117,7 +117,7 @@ INSERT INTO Transactions (id_trans, date_trans, user) VALUES
 	(4, "2023-2-05", 3);
 
 
-INSERT INTO CostsDetailsTransactions (number_trans, amount, type_trans, name_trans) VALUES 
+INSERT INTO CostsDetailsTransactions (trans_id_trans, amount, type_trans, name_trans) VALUES 
 	(1, 30, 1, 1),
 	(1, 10, 2, 3),
 	(1, 0.05, 2, 5),
