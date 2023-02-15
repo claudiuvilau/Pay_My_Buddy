@@ -30,10 +30,10 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 		Optional<Users> optProduct = usersService.getUserById(2);
 		Users userId = optProduct.get();
-		System.out.println(userId.getFirstName());
+		System.out.print(userId.getFirstName());
 
 		userId.getFriendsNetworks().forEach(
-				friend -> System.out.println(friend.getBuddy()));
+				friend -> System.out.print(" Friend : " + friend.getBuddy()));
 	}
 
 }

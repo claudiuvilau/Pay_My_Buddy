@@ -16,8 +16,8 @@ public class FriendsNetwork {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "user")
-    private int user;
+    @Column(name = "users_id_users")
+    private int usersIdUsers;
 
     @Column(name = "buddy")
     private int buddy;
@@ -25,9 +25,9 @@ public class FriendsNetwork {
     public FriendsNetwork() {
     }
 
-    public FriendsNetwork(int id, int user, int buddy) {
+    public FriendsNetwork(int id, int usersIdUsers, int buddy) {
         this.id = id;
-        this.user = user;
+        this.usersIdUsers = usersIdUsers;
         this.buddy = buddy;
     }
 
@@ -39,12 +39,12 @@ public class FriendsNetwork {
         this.id = id;
     }
 
-    public int getUser() {
-        return user;
+    public int getUsersIdUsers() {
+        return usersIdUsers;
     }
 
-    public void setUser(int user) {
-        this.user = user;
+    public void setUser(int usersIdUsers) {
+        this.usersIdUsers = usersIdUsers;
     }
 
     public int getBuddy() {

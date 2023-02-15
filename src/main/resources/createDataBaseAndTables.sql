@@ -20,16 +20,16 @@ INSERT INTO Users (id_users, id_email, name_user, first_name, birth_date) VALUES
 
 CREATE TABLE IF NOT EXISTS FriendsNetwork (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	user INT UNSIGNED NOT NULL,
+	users_id_users INT UNSIGNED NOT NULL,
 	buddy INT UNSIGNED NOT NULL,
 	PRIMARY KEY (id),
 	CONSTRAINT fk_user_id_users_FriendsNetwork 
-		FOREIGN KEY (user) 
+		FOREIGN KEY (users_id_users) 
 		REFERENCES Users(id_users)
 )
 ENGINE=INNODB;
 
-INSERT INTO FriendsNetwork (user, buddy) VALUES 
+INSERT INTO FriendsNetwork (users_id_users, buddy) VALUES 
 	(1, 2),
 	(1, 3),
 	(3, 2);

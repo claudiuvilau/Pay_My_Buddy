@@ -37,7 +37,7 @@ public class Users {
     private Date birthDate;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "users_id_users")
     List<FriendsNetwork> friendsNetworks = new ArrayList<>();
 
     public Users() {
