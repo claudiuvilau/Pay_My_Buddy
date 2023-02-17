@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -40,17 +41,30 @@ public class Users {
     @JoinColumn(name = "users_id_users")
     List<FriendsNetwork> friendsNetworks = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "buddy")
+    List<FriendsNetwork> friendsBuddy = new ArrayList<>();
+
     public Users() {
     }
 
     public Users(int idUsers, String idEmail, String nameUser, String firstName, Date birthDate,
-            List<FriendsNetwork> friendsNetworks) {
+            List<FriendsNetwork> friendsNetworks, List<FriendsNetwork> friendsBuddy) {
         this.idUsers = idUsers;
         this.idEmail = idEmail;
         this.nameUser = nameUser;
         this.firstName = firstName;
         this.birthDate = birthDate;
         this.friendsNetworks = friendsNetworks;
+        this.friendsBuddy = friendsBuddy;
+    }
+
+    public List<FriendsNetwork> getFriendsBuddy() {
+        return this.friendsBuddy;
+    }
+
+    public void setFriendsBuddy(List<FriendsNetwork> friendsBuddy) {
+        this.friendsBuddy = friendsBuddy;
     }
 
     public int getIdUsers() {

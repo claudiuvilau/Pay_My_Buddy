@@ -32,7 +32,7 @@ public class FriendsNetwork {
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(int id) {
@@ -40,15 +40,15 @@ public class FriendsNetwork {
     }
 
     public int getUsersIdUsers() {
-        return usersIdUsers;
+        return this.usersIdUsers;
     }
 
-    public void setUser(int usersIdUsers) {
+    public void setUsersIdUsers(int usersIdUsers) {
         this.usersIdUsers = usersIdUsers;
     }
 
     public int getBuddy() {
-        return buddy;
+        return this.buddy;
     }
 
     public void setBuddy(int buddy) {
