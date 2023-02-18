@@ -44,17 +44,17 @@ public class Users {
     // @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch =
     // FetchType.EAGER)
     // @JoinColumn(name = "buddy")
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "buddy", cascade = CascadeType.ALL, orphanRemoval = true)
     List<FriendsNetwork> friendsBuddy = new ArrayList<>();
 
     public void addFriendsNetwork(FriendsNetwork frdNet) {
         friendsBuddy.add(frdNet);
-        frdNet.setUsers(this);
+        // frdNet.setUsers(this);
     }
 
     public void removeFriendsNetwork(FriendsNetwork frdNet) {
         friendsBuddy.remove(frdNet);
-        frdNet.setUsers(null);
+        // frdNet.setUsers(null);
     }
 
     public Users() {

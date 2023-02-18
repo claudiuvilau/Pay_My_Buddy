@@ -59,16 +59,16 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 		newFriendsNetwork = friendsNetworkService.addFriendsNetwork(newFriendsNetwork);
 
-		seeBuddyList(userId);
-
 	}
 
 	private void seeBuddyList(Users userId) {
 		userId.getFriendsNetworks()
 				.forEach(friend -> System.out
-						.println(friend.getBuddy() + " Name buddy : " + friend.getUsers().getNameUser()));
-		userId.getFriendsBuddy()
-				.forEach(buddy -> System.out.println(" List buddy : " + buddy.getUsers().getNameUser()));
+						.println("ID buddy is : " + friend.getBuddy() + " Name buddy : "
+								+ usersService.getUserById(friend.getBuddy()).get().getNameUser()));
+		// userId.getFriendsBuddy()
+		// .forEach(buddy -> System.out.println(" List buddy : " +
+		// buddy.getUsers().getNameUser()));
 
 	}
 

@@ -28,9 +28,12 @@ CREATE TABLE IF NOT EXISTS FriendsNetwork (
 		REFERENCES Users(id_users),
 	CONSTRAINT fk_buddy_FriendsNetwork  
 		FOREIGN KEY (buddy) 
-		REFERENCES Users(id_users)
+		REFERENCES Users(id_users),
+	UNIQUE INDEX UQ_ind_users_id_users_buddy (users_id_users, buddy)
 )
 ENGINE=INNODB;
+
+/*ALTER TABLE friendsnetwork ADD CONSTRAINT UQ_users_id_users_buddy UNIQUE(users_id_users, buddy);*/
 
 INSERT INTO FriendsNetwork (users_id_users, buddy) VALUES 
 	(1, 2),
