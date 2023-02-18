@@ -1,10 +1,13 @@
 package com.openclassrooms.pay_my_buddy.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,20 +22,33 @@ public class FriendsNetwork {
     @Column(name = "users_id_users")
     private int usersIdUsers;
 
-    @Column(name = "buddy")
+    @Column(name = "buddy", insertable = false, updatable = false)
     private int buddy;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "buddy")
+    private Users users;
 
     public FriendsNetwork() {
     }
 
-    public FriendsNetwork(int id, int usersIdUsers, int buddy) {
+    public FriendsNetwork(int id, int usersIdUsers, int buddy, Users users) {
         this.id = id;
         this.usersIdUsers = usersIdUsers;
         this.buddy = buddy;
+        this.users = users;
+    }
+
+    public Users getUsers() {
+        return this.users;
+    }
+
+    public void setUsers(Users users) {
+        this.users = users;
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(int id) {
@@ -40,15 +56,15 @@ public class FriendsNetwork {
     }
 
     public int getUsersIdUsers() {
-        return usersIdUsers;
+        return this.usersIdUsers;
     }
 
-    public void setUser(int usersIdUsers) {
+    public void setUsersIdUsers(int usersIdUsers) {
         this.usersIdUsers = usersIdUsers;
     }
 
     public int getBuddy() {
-        return buddy;
+        return this.buddy;
     }
 
     public void setBuddy(int buddy) {

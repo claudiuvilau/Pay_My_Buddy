@@ -25,6 +25,9 @@ CREATE TABLE IF NOT EXISTS FriendsNetwork (
 	PRIMARY KEY (id),
 	CONSTRAINT fk_user_id_users_FriendsNetwork 
 		FOREIGN KEY (users_id_users) 
+		REFERENCES Users(id_users),
+	CONSTRAINT fk_buddy_FriendsNetwork  
+		FOREIGN KEY (buddy) 
 		REFERENCES Users(id_users)
 )
 ENGINE=INNODB;
