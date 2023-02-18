@@ -41,20 +41,20 @@ public class Users {
     @JoinColumn(name = "users_id_users")
     List<FriendsNetwork> friendsNetworks = new ArrayList<>();
 
-    // @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch =
-    // FetchType.EAGER)
-    // @JoinColumn(name = "buddy")
     @OneToMany(mappedBy = "buddy", cascade = CascadeType.ALL, orphanRemoval = true)
     List<FriendsNetwork> friendsBuddy = new ArrayList<>();
 
-    public void addFriendsNetwork(FriendsNetwork frdNet) {
-        friendsBuddy.add(frdNet);
-        // frdNet.setUsers(this);
+    @ManyToMany(mappedBy = "usersList", cascade = CascadeType.ALL)
+    private List<FriendsNetwork> friendsNetworksManyToMany = new ArrayList<>();
+
+    public void addFriend(FriendsNetwork comment) {
+        friendsBuddy.add(comment);
+        comment.setUsersList((List<Users>) this);
     }
 
-    public void removeFriendsNetwork(FriendsNetwork frdNet) {
-        friendsBuddy.remove(frdNet);
-        // frdNet.setUsers(null);
+    public void removeFriend(FriendsNetwork comment) {
+        friendsBuddy.remove(comment);
+        comment.setUsersList(null);
     }
 
     public Users() {
@@ -69,6 +69,14 @@ public class Users {
         this.birthDate = birthDate;
         this.friendsNetworks = friendsNetworks;
         this.friendsBuddy = friendsBuddy;
+    }
+
+    public List<FriendsNetwork> getFriendsNetworksManyToMany() {
+        return this.friendsNetworksManyToMany;
+    }
+
+    public void setFriendsNetworksManyToMany(List<FriendsNetwork> friendsNetworksManyToMany) {
+        this.friendsNetworksManyToMany = friendsNetworksManyToMany;
     }
 
     public List<FriendsNetwork> getFriendsBuddy() {
