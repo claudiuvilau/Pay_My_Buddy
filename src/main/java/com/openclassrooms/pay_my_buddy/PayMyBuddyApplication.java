@@ -52,6 +52,15 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 		seeBuddyList(userId);
 
+		// it will add the friends 1 for the users 2
+		FriendsNetwork newFriendsNetwork = new FriendsNetwork();
+		newFriendsNetwork.setUsersIdUsers(2);
+		newFriendsNetwork.setBuddy(1);
+
+		newFriendsNetwork = friendsNetworkService.addFriendsNetwork(newFriendsNetwork);
+
+		seeBuddyList(userId);
+
 	}
 
 	private void seeBuddyList(Users userId) {
