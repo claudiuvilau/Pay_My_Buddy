@@ -21,4 +21,8 @@ public class FriendsNetworkService {
     public Optional<FriendsNetwork> getFriendById(Integer id) {
         return friendsNetworkRepository.findById(id);
     }
+
+    public FriendsNetwork addFriendsNetwork(FriendsNetwork friendsNetwork) {
+        return friendsNetworkRepository.save(friendsNetwork);
+    }
 }
