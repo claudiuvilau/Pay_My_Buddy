@@ -50,6 +50,12 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 		}
 
+		userId.getFriendsNetworks()
+				.forEach(friend -> System.out
+						.println(friend.getBuddy() + " Name buddy : " + friend.getUsers().getNameUser()));
+		userId.getFriendsBuddy()
+				.forEach(buddy -> System.out.println(" List buddy : " + buddy.getUsers().getNameUser()));
+
 	}
 
 }
