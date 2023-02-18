@@ -33,8 +33,6 @@ CREATE TABLE IF NOT EXISTS FriendsNetwork (
 )
 ENGINE=INNODB;
 
-/*ALTER TABLE friendsnetwork ADD CONSTRAINT UQ_users_id_users_buddy UNIQUE(users_id_users, buddy);*/
-
 INSERT INTO FriendsNetwork (users_id_users, buddy) VALUES 
 	(1, 2),
 	(1, 3),
