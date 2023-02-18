@@ -36,7 +36,7 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 		Iterable<Users> users = usersService.getUsers();
 		users.forEach(user -> System.out.println(user.getNameUser()));
 
-		int intID = 2;
+		int intID = 1;
 		Optional<Users> optProduct = usersService.getUserById(intID);
 		Users userId = optProduct.get();
 		System.out.println("The first name with id  " + intID + " is " + userId.getFirstName() + " and he has : ");
@@ -52,13 +52,6 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 		seeBuddyList(userId);
 
-		// it will add the friends 1 for the users 2
-		FriendsNetwork newFriendsNetwork = new FriendsNetwork();
-		newFriendsNetwork.setUsersIdUsers(2);
-		newFriendsNetwork.setBuddy(1);
-
-		newFriendsNetwork = friendsNetworkService.addFriendsNetwork(newFriendsNetwork);
-
 	}
 
 	private void seeBuddyList(Users userId) {
@@ -66,9 +59,6 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 				.forEach(friend -> System.out
 						.println("ID buddy is : " + friend.getBuddy() + " Name buddy : "
 								+ usersService.getUserById(friend.getBuddy()).get().getNameUser()));
-		// userId.getFriendsBuddy()
-		// .forEach(buddy -> System.out.println(" List buddy : " +
-		// buddy.getUsers().getNameUser()));
 
 	}
 

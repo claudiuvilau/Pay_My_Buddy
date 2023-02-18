@@ -32,39 +32,13 @@ public class FriendsNetwork {
     @Column(name = "buddy")
     private int buddy;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
-    @JoinTable(name = "users", joinColumns = @JoinColumn(name = "users_id_users"), inverseJoinColumns = @JoinColumn(name = "id_users"))
-    private List<Users> usersList = new ArrayList<>();
-
-    public void addUser(Users users) {
-        usersList.add(users);
-        users.getFriendsNetworksManyToMany().add(this);
-    }
-
-    public void removeUser(Users users) {
-        usersList.remove(users);
-        users.getFriendsNetworksManyToMany().remove(this);
-    }
-
     public FriendsNetwork() {
     }
 
-    public FriendsNetwork(int id, int usersIdUsers, int buddy, List<Users> usersList) {
+    public FriendsNetwork(int id, int usersIdUsers, int buddy) {
         this.id = id;
         this.usersIdUsers = usersIdUsers;
         this.buddy = buddy;
-        this.usersList = usersList;
-    }
-
-    public List<Users> getUsersList() {
-        return this.usersList;
-    }
-
-    public void setUsersList(List<Users> usersList) {
-        this.usersList = usersList;
     }
 
     public int getId() {

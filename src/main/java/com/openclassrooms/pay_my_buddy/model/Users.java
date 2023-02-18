@@ -12,7 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -41,50 +40,17 @@ public class Users {
     @JoinColumn(name = "users_id_users")
     List<FriendsNetwork> friendsNetworks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "buddy", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<FriendsNetwork> friendsBuddy = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "usersList", cascade = CascadeType.ALL)
-    private List<FriendsNetwork> friendsNetworksManyToMany = new ArrayList<>();
-
-    public void addFriend(FriendsNetwork comment) {
-        friendsBuddy.add(comment);
-        comment.setUsersList((List<Users>) this);
-    }
-
-    public void removeFriend(FriendsNetwork comment) {
-        friendsBuddy.remove(comment);
-        comment.setUsersList(null);
-    }
-
     public Users() {
     }
 
     public Users(int idUsers, String idEmail, String nameUser, String firstName, Date birthDate,
-            List<FriendsNetwork> friendsNetworks, List<FriendsNetwork> friendsBuddy) {
+            List<FriendsNetwork> friendsNetworks) {
         this.idUsers = idUsers;
         this.idEmail = idEmail;
         this.nameUser = nameUser;
         this.firstName = firstName;
         this.birthDate = birthDate;
         this.friendsNetworks = friendsNetworks;
-        this.friendsBuddy = friendsBuddy;
-    }
-
-    public List<FriendsNetwork> getFriendsNetworksManyToMany() {
-        return this.friendsNetworksManyToMany;
-    }
-
-    public void setFriendsNetworksManyToMany(List<FriendsNetwork> friendsNetworksManyToMany) {
-        this.friendsNetworksManyToMany = friendsNetworksManyToMany;
-    }
-
-    public List<FriendsNetwork> getFriendsBuddy() {
-        return this.friendsBuddy;
-    }
-
-    public void setFriendsBuddy(List<FriendsNetwork> friendsBuddy) {
-        this.friendsBuddy = friendsBuddy;
     }
 
     public int getIdUsers() {
