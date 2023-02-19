@@ -7,12 +7,10 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -39,21 +37,21 @@ public class Users {
 
     // @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch =
     // FetchType.EAGER)
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL) // pour pouvoir supprimer des données de la table Friends
     @JoinColumn(name = "users_id_users")
-    List<FriendsNetwork> friendsNetworks = new ArrayList<>();
+    List<Friends> friends = new ArrayList<>();
 
     public Users() {
     }
 
     public Users(int idUsers, String idEmail, String nameUser, String firstName, Date birthDate,
-            List<FriendsNetwork> friendsNetworks) {
+            List<Friends> friends) {
         this.idUsers = idUsers;
         this.idEmail = idEmail;
         this.nameUser = nameUser;
         this.firstName = firstName;
         this.birthDate = birthDate;
-        this.friendsNetworks = friendsNetworks;
+        this.friends = friends;
     }
 
     public int getIdUsers() {
@@ -96,12 +94,12 @@ public class Users {
         this.birthDate = birthDate;
     }
 
-    public List<FriendsNetwork> getFriendsNetworks() {
-        return friendsNetworks;
+    public List<Friends> getFriends() {
+        return friends;
     }
 
-    public void setFriendsNetworks(List<FriendsNetwork> friendsNetworks) {
-        this.friendsNetworks = friendsNetworks;
+    public void setFriends(List<Friends> friends) {
+        this.friends = friends;
     }
 
 }

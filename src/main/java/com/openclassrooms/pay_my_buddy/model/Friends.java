@@ -9,8 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "friendsnetwork")
-public class FriendsNetwork {
+@Table(name = "friends")
+public class Friends {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +23,10 @@ public class FriendsNetwork {
     @Column(name = "buddy")
     private int buddy;
 
-    public FriendsNetwork() {
+    public Friends() {
     }
 
-    public FriendsNetwork(int id, int usersIdUsers, int buddy) {
+    public Friends(int id, int usersIdUsers, int buddy) {
         this.id = id;
         this.usersIdUsers = usersIdUsers;
         this.buddy = buddy;

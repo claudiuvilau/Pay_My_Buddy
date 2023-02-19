@@ -10,9 +10,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.openclassrooms.pay_my_buddy.model.FriendsNetwork;
+import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.model.Users;
-import com.openclassrooms.pay_my_buddy.service.FriendsNetworkService;
+import com.openclassrooms.pay_my_buddy.service.FriendsService;
 import com.openclassrooms.pay_my_buddy.service.UsersService;
 
 import jakarta.transaction.Transactional;
@@ -24,7 +24,7 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 	private UsersService usersService; // instance of object
 
 	@Autowired
-	private FriendsNetworkService friendsNetworkService; // instance of object
+	private FriendsService friendsService; // instance of object
 
 	public static void main(String[] args) {
 		SpringApplication.run(PayMyBuddyApplication.class, args);
@@ -44,8 +44,8 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 		Users userId = optProduct.get();
 		System.out.println("The first name with id  " + intID + " is " + userId.getFirstName() + " and he has : ");
 
-		for (int i = 0; i < userId.getFriendsNetworks().size(); i++) {
-			int userBuddy = userId.getFriendsNetworks().get(i).getBuddy();
+		for (int i = 0; i < userId.getFriends().size(); i++) {
+			int userBuddy = userId.getFriends().get(i).getBuddy();
 			System.out.print(" Friend : " + userBuddy);
 			Optional<Users> optUserBuddy = usersService.getUserById(userBuddy);
 			Users userBuddyUser = optUserBuddy.get();
@@ -56,18 +56,18 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 		seeBuddyList(userId);
 
 		// it will add the friends 1 for the users 2
-		FriendsNetwork newFriendsNetwork = new FriendsNetwork();
+		Friends newFriends = new Friends();
 		int usersIdUsers = 2;
 		int buddy = 1;
 
 		// delete Friend :
-		newFriendsNetwork = friendsNetworkService.getFriend(usersIdUsers, buddy);
+		newFriends = friendsService.getFriend(usersIdUsers, buddy);
 
-		// friendsNetworkService.deleteFriendById(newFriendsNetwork.getId());
-		friendsNetworkService.deleteFriend(newFriendsNetwork);
-		newFriendsNetwork = new FriendsNetwork();
-		newFriendsNetwork.setUsersIdUsers(usersIdUsers);
-		newFriendsNetwork.setBuddy(buddy);
+		// friendsService.deleteFriendById(newFriends.getId());
+		friendsService.deleteFriend(newFriends);
+		newFriends = new Friends();
+		newFriends.setUsersIdUsers(usersIdUsers);
+		newFriends.setBuddy(buddy);
 
 		// it will add a new user
 		Users newUser = new Users();
@@ -76,7 +76,7 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 		newUser = usersService.getUser(idMail);
 
 		// delete User :
-		usersService.deleteUser(newUser);
+		// usersService.deleteUser(newUser);
 		// usersService.deleteUserById(newUser.getIdUsers());
 
 		newUser = new Users();
@@ -93,18 +93,18 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 		// newUser = usersService.addUser(newUser);
 
-		List<FriendsNetwork> fList = (List<FriendsNetwork>) friendsNetworkService.getFriends();
+		List<Friends> fList = (List<Friends>) friendsService.getFriends();
 		if (fList != null) {
 			boolean exist = false;
 			for (int i = 0; i < fList.size(); i++) {
-				if (fList.get(i).getUsersIdUsers() == newFriendsNetwork.getUsersIdUsers()
-						&& fList.get(i).getBuddy() == newFriendsNetwork.getBuddy()) {
+				if (fList.get(i).getUsersIdUsers() == newFriends.getUsersIdUsers()
+						&& fList.get(i).getBuddy() == newFriends.getBuddy()) {
 					exist = true;
 					i = fList.size();
 				}
 			}
 			if (!exist) {
-				newFriendsNetwork = friendsNetworkService.addFriendsNetwork(newFriendsNetwork);
+				newFriends = friendsService.addFriends(newFriends);
 			}
 		}
 
@@ -113,7 +113,7 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 	}
 
 	private void seeBuddyList(Users userId) {
-		userId.getFriendsNetworks()
+		userId.getFriends()
 				.forEach(friend -> System.out
 						.println("ID buddy is : " + friend.getBuddy() + " Name buddy : "
 								+ usersService.getUserById(friend.getBuddy()).get().getNameUser()));
