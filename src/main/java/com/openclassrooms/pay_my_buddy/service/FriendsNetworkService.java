@@ -18,7 +18,30 @@ public class FriendsNetworkService {
         return friendsNetworkRepository.findAll();
     }
 
+    public FriendsNetwork getFriend(Integer usersIdUsers, Integer buddy) {
+        Iterable<FriendsNetwork> friendsList = getFriends();
+        for (FriendsNetwork friends : friendsList) {
+            if (friends.getUsersIdUsers() == usersIdUsers && friends.getBuddy() == buddy) {
+                return friends;
+            }
+        }
+        return null;
+    }
+
     public Optional<FriendsNetwork> getFriendById(Integer id) {
         return friendsNetworkRepository.findById(id);
     }
+
+    public FriendsNetwork addFriendsNetwork(FriendsNetwork friendsNetwork) {
+        return friendsNetworkRepository.save(friendsNetwork);
+    }
+
+    public void deleteFriend(FriendsNetwork friendsNetwork) {
+        friendsNetworkRepository.delete(friendsNetwork);
+    }
+
+    public void deleteFriendById(Integer id) {
+        friendsNetworkRepository.deleteById(id);
+    }
+
 }

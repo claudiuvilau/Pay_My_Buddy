@@ -1,13 +1,11 @@
 package com.openclassrooms.pay_my_buddy.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,29 +20,16 @@ public class FriendsNetwork {
     @Column(name = "users_id_users")
     private int usersIdUsers;
 
-    @Column(name = "buddy", insertable = false, updatable = false)
+    @Column(name = "buddy")
     private int buddy;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "buddy")
-    private Users users;
 
     public FriendsNetwork() {
     }
 
-    public FriendsNetwork(int id, int usersIdUsers, int buddy, Users users) {
+    public FriendsNetwork(int id, int usersIdUsers, int buddy) {
         this.id = id;
         this.usersIdUsers = usersIdUsers;
         this.buddy = buddy;
-        this.users = users;
-    }
-
-    public Users getUsers() {
-        return this.users;
-    }
-
-    public void setUsers(Users users) {
-        this.users = users;
     }
 
     public int getId() {

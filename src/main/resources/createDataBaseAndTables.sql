@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS payMyBuddy CHARACTER SET UTF8MB4;
+CREATE DATABASE IF NOT EXISTS payMyBuddy CHARACTER SET UTF8MB4 COLLATE=utf8mb4_0900_ai_ci;
 
 USE payMyBuddy;
 
@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS FriendsNetwork (
 		REFERENCES Users(id_users),
 	CONSTRAINT fk_buddy_FriendsNetwork  
 		FOREIGN KEY (buddy) 
-		REFERENCES Users(id_users)
+		REFERENCES Users(id_users),
+	UNIQUE INDEX UQ_ind_users_id_users_buddy (users_id_users, buddy)
 )
 ENGINE=INNODB;
 
