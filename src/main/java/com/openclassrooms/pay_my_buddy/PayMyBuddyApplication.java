@@ -1,5 +1,8 @@
 package com.openclassrooms.pay_my_buddy;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +37,7 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		Iterable<Users> users = usersService.getUsers();
-		users.forEach(user -> System.out.println(user.getNameUser()));
+		users.forEach(user -> System.out.println("Name user : " + user.getNameUser() + " and your buddy ...???"));
 
 		int intID = 1;
 		Optional<Users> optProduct = usersService.getUserById(intID);
@@ -54,10 +57,56 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 		// it will add the friends 1 for the users 2
 		FriendsNetwork newFriendsNetwork = new FriendsNetwork();
-		newFriendsNetwork.setUsersIdUsers(2);
-		newFriendsNetwork.setBuddy(1);
+		int usersIdUsers = 2;
+		int buddy = 1;
 
-		newFriendsNetwork = friendsNetworkService.addFriendsNetwork(newFriendsNetwork);
+		// delete Friend :
+		newFriendsNetwork = friendsNetworkService.getFriend(usersIdUsers, buddy);
+
+		// friendsNetworkService.deleteFriendById(newFriendsNetwork.getId());
+		friendsNetworkService.deleteFriend(newFriendsNetwork);
+		newFriendsNetwork = new FriendsNetwork();
+		newFriendsNetwork.setUsersIdUsers(usersIdUsers);
+		newFriendsNetwork.setBuddy(buddy);
+
+		// it will add a new user
+		Users newUser = new Users();
+		String idMail = "popa.pop@yahoo.com";
+
+		newUser = usersService.getUser(idMail);
+
+		// delete User :
+		usersService.deleteUser(newUser);
+		// usersService.deleteUserById(newUser.getIdUsers());
+
+		newUser = new Users();
+		Date dateB = null;
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		String dateString = "01/09/1977";
+
+		dateB = simpleDateFormat.parse(dateString);
+
+		newUser.setBirthDate(dateB);
+		newUser.setFirstName("POP");
+		newUser.setIdEmail(idMail);
+		newUser.setNameUser("POPA");
+
+		// newUser = usersService.addUser(newUser);
+
+		List<FriendsNetwork> fList = (List<FriendsNetwork>) friendsNetworkService.getFriends();
+		if (fList != null) {
+			boolean exist = false;
+			for (int i = 0; i < fList.size(); i++) {
+				if (fList.get(i).getUsersIdUsers() == newFriendsNetwork.getUsersIdUsers()
+						&& fList.get(i).getBuddy() == newFriendsNetwork.getBuddy()) {
+					exist = true;
+					i = fList.size();
+				}
+			}
+			if (!exist) {
+				newFriendsNetwork = friendsNetworkService.addFriendsNetwork(newFriendsNetwork);
+			}
+		}
 
 		seeBuddyList(userId);
 
