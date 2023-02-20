@@ -21,8 +21,9 @@ public class SpringSecurityConfig {
                 // all other requests need to be authenticated
                 .anyRequest().authenticated().and()
                 .formLogin()
-                .and()
-                .oauth2Login();
+        // .and()
+        // .oauth2Login()
+        ;
         return http.build();
     }
 
