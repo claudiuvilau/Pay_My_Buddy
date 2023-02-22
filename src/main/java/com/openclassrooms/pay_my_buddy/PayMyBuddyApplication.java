@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan("com.openclassrooms.pay_my_buddy.controller")
 public class PayMyBuddyApplication {
 
 	public static void main(String[] args) {
