@@ -55,7 +55,7 @@ public class LoginController {
         OAuth2AuthenticationToken authToken = ((OAuth2AuthenticationToken) user);
 
         OAuth2User principal = ((OAuth2AuthenticationToken) user).getPrincipal();
-²
+
         OAuth2AuthorizedClient authClient = this.authorizedClientService
                 .loadAuthorizedClient(authToken.getAuthorizedClientRegistrationId(), authToken.getName());
         if (authToken.isAuthenticated()) {
