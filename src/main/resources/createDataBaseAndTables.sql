@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS payMyBuddy CHARACTER SET UTF8MB4;
+CREATE DATABASE IF NOT EXISTS payMyBuddy CHARACTER SET UTF8MB4 COLLATE=utf8mb4_0900_ai_ci;
 
 USE payMyBuddy;
 
@@ -18,18 +18,22 @@ INSERT INTO Users (id_users, id_email, name_user, first_name, birth_date) VALUES
 	(2, "mireille.benoit@hotmail.com", "BENOIT", "Mireille", "1970-12-31"),
 	(3, "sebastien.martin@hotmail.fr", "MARTIN", "Sébastien", "1977-09-19");
 
-CREATE TABLE IF NOT EXISTS FriendsNetwork (
+CREATE TABLE IF NOT EXISTS Friends (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	users_id_users INT UNSIGNED NOT NULL,
 	buddy INT UNSIGNED NOT NULL,
 	PRIMARY KEY (id),
-	CONSTRAINT fk_user_id_users_FriendsNetwork 
+	CONSTRAINT fk_user_id_users_Friends 
 		FOREIGN KEY (users_id_users) 
-		REFERENCES Users(id_users)
+		REFERENCES Users(id_users),
+	CONSTRAINT fk_buddy_Friends  
+		FOREIGN KEY (buddy) 
+		REFERENCES Users(id_users),
+	UNIQUE INDEX UQ_ind_users_id_users_buddy (users_id_users, buddy)
 )
 ENGINE=INNODB;
 
-INSERT INTO FriendsNetwork (users_id_users, buddy) VALUES 
+INSERT INTO Friends (users_id_users, buddy) VALUES 
 	(1, 2),
 	(1, 3),
 	(3, 2);
