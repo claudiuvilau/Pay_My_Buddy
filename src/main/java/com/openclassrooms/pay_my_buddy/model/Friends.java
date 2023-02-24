@@ -25,26 +25,13 @@ public class Friends {
     @Column(name = "buddy")
     private int buddy;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_users")
-    private Users users;
-
     public Friends() {
     }
 
-    public Friends(int id, int usersIdUsers, int buddy, Users users) {
+    public Friends(int id, int usersIdUsers, int buddy) {
         this.id = id;
         this.usersIdUsers = usersIdUsers;
         this.buddy = buddy;
-        this.users = users;
-    }
-
-    public Users getUsers() {
-        return this.users;
-    }
-
-    public void setUsers(Users users) {
-        this.users = users;
     }
 
     public int getId() {
