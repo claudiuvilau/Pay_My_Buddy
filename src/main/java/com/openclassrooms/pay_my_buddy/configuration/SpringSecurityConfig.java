@@ -34,7 +34,7 @@ public class SpringSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // We don't need CSRF for this example
+
         http.csrf().disable()
                 // don't authenticate this particular request
                 .authorizeHttpRequests()
@@ -44,8 +44,9 @@ public class SpringSecurityConfig {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .and()
-                .oauth2Login();
+        // .and()
+        // .oauth2Login()
+        ;
         return http.build();
     }
 
