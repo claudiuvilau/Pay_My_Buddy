@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.openclassrooms.pay_my_buddy.model.Transactions;
 import com.openclassrooms.pay_my_buddy.model.Users;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
+import com.openclassrooms.pay_my_buddy.service.HashPasswordService;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
 import com.openclassrooms.pay_my_buddy.service.UsersService;
 
@@ -86,6 +87,16 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 		// newFriends = friendsService.addFriends(newFriends);
 
 		// seeBuddyList(userId);
+
+		HashPasswordService hashPasswordService = new HashPasswordService();
+
+		for (int i = 0; i < 10; i++) {
+			String pwToHash = hashPasswordService.hashPassword("admin" + i);
+
+			hashPasswordService.setMdp(pwToHash);
+
+			System.out.println(hashPasswordService.getMdp());
+		}
 
 	}
 

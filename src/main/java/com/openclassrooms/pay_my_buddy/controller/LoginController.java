@@ -14,6 +14,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.openclassrooms.pay_my_buddy.configuration.SpringSecurityConfig;
+
 import jakarta.annotation.security.RolesAllowed;
 
 @RestController
@@ -26,8 +28,11 @@ public class LoginController {
     }
 
     @RolesAllowed("USER")
-    @RequestMapping("/**")
+    @RequestMapping("/*")
     public String getUser() {
+        // SpringSecurityConfig springSecurityConfig = new SpringSecurityConfig();
+        // springSecurityConfig.userDetailsService();
+
         return "Welcome User";
     }
 
@@ -37,9 +42,9 @@ public class LoginController {
         return "Welcome Admin";
     }
 
-    @RequestMapping("/*")
+    // @RequestMapping("/*")
     public String getUserInfo(Principal user) {
-        StringBuffer userInfo = new StringBuffer();
+        StringBuilder userInfo = new StringBuilder();
         if (user instanceof UsernamePasswordAuthenticationToken) {
             userInfo.append(getUsernamePasswordLoginInfo(user));
         } else if (user instanceof OAuth2AuthenticationToken) {

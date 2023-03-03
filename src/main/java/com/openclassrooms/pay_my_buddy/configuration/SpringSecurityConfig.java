@@ -44,9 +44,8 @@ public class SpringSecurityConfig {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-        // .and()
-        // .oauth2Login()
-        ;
+                .and()
+                .oauth2Login();
         return http.build();
     }
 
