@@ -1,18 +1,14 @@
 package com.openclassrooms.pay_my_buddy;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.model.Transactions;
 import com.openclassrooms.pay_my_buddy.model.Users;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
+import com.openclassrooms.pay_my_buddy.service.HashPasswordService;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
 import com.openclassrooms.pay_my_buddy.service.UsersService;
 
@@ -53,7 +49,7 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 		int idTransaction = 3;
 		Iterable<Transactions> transactions = transactionsService.getTransactions();
-		List<Transactions> transactionsList = new ArrayList<>();
+		// List<Transactions> transactionsList = new ArrayList<>();
 		for (Transactions transactions2 : transactions) {
 			if (transactions2.getUser() == idTransaction) {
 				System.out.println(
@@ -92,10 +88,20 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 		// seeBuddyList(userId);
 
+		HashPasswordService hashPasswordService = new HashPasswordService();
+
+		for (int i = 0; i < 10; i++) {
+			String pwToHash = hashPasswordService.hashPassword("admin" + i);
+
+			hashPasswordService.setMdp(pwToHash);
+
+			System.out.println(hashPasswordService.getMdp());
+		}
+
 	}
 
 	private void seeBuddyList(Users userId) {
-		Friends friends = new Friends();
+		// Friends friends = new Friends();
 		// System.out.println(friends.getUsers());
 
 		// userId.getFriends()

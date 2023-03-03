@@ -2,21 +2,43 @@ CREATE DATABASE IF NOT EXISTS payMyBuddy CHARACTER SET UTF8MB4 COLLATE=utf8mb4_0
 
 USE payMyBuddy;
 
+CREATE TABLE IF NOT EXISTS Roles (
+    id_roles INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	role INT UNSIGNED NOT NULL,
+    name_role VARCHAR(20) NOT NULL,
+    PRIMARY KEY (id_roles),
+    UNIQUE INDEX ind_role (role),
+	UNIQUE INDEX ind_name_roles (name_role)
+)
+ENGINE=INNODB;
+
+INSERT INTO Roles (id_roles, role, name_role) VALUES 
+	(1, 1, "admin"),
+	(2, 2, "user");
+
+
 CREATE TABLE IF NOT EXISTS Users (
 	id_users INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	id_email VARCHAR(50) NOT NULL,
 	name_user VARCHAR(20) NOT NULL,
 	first_name VARCHAR(40) NOT NULL,
 	birth_date DATE NOT NULL,
+	password CHAR(60) NOT NULL, 
+	role_id INT UNSIGNED NOT NULL,
 	PRIMARY KEY (id_users),
-	UNIQUE INDEX ind_id_email (id_email)
+	CONSTRAINT fk_role_id 
+		FOREIGN KEY (role_id) 
+		REFERENCES Roles(role),
+	UNIQUE INDEX ind_id_email (id_email), 
+	UNIQUE INDEX ind_password (password)
 )
 ENGINE=INNODB;
 
-INSERT INTO Users (id_users, id_email, name_user, first_name, birth_date) VALUES 
-	(1, "jack.dupont@yahoo.fr", "DUPONT", "Jack", "1982-01-22"),
-	(2, "mireille.benoit@hotmail.com", "BENOIT", "Mireille", "1970-12-31"),
-	(3, "sebastien.martin@hotmail.fr", "MARTIN", "Sébastien", "1977-09-19");
+INSERT INTO Users (id_users, id_email, name_user, first_name, birth_date, password, role_id) VALUES 
+	(1, "jack.dupont@yahoo.fr", "DUPONT", "Jack", "1982-01-22", "1", 2),
+	(2, "mireille.benoit@hotmail.com", "BENOIT", "Mireille", "1970-12-31", "2", 1),
+	(3, "sebastien.martin@hotmail.fr", "MARTIN", "Sébastien", "1977-09-19", "3", 2);
+
 
 CREATE TABLE IF NOT EXISTS Friends (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
