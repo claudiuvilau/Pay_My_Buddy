@@ -91,7 +91,7 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 		HashPasswordService hashPasswordService = new HashPasswordService();
 
 		for (int i = 0; i < 10; i++) {
-			String pwToHash = hashPasswordService.hashPassword("admin" + i);
+			String pwToHash = hashPasswordService.hashPassword("3");
 
 			hashPasswordService.setMdp(pwToHash);
 

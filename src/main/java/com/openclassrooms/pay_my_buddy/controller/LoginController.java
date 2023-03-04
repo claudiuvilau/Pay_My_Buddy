@@ -3,6 +3,8 @@ package com.openclassrooms.pay_my_buddy.controller;
 import java.security.Principal;
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.WelcomePageConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;

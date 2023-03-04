@@ -4,17 +4,15 @@ USE payMyBuddy;
 
 CREATE TABLE IF NOT EXISTS Roles (
     id_roles INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	role INT UNSIGNED NOT NULL,
     name_role VARCHAR(20) NOT NULL,
     PRIMARY KEY (id_roles),
-    UNIQUE INDEX ind_role (role),
 	UNIQUE INDEX ind_name_roles (name_role)
 )
 ENGINE=INNODB;
 
-INSERT INTO Roles (id_roles, role, name_role) VALUES 
-	(1, 1, "admin"),
-	(2, 2, "user");
+INSERT INTO Roles (id_roles, name_role) VALUES 
+	(1, "admin"),
+	(2, "user");
 
 
 CREATE TABLE IF NOT EXISTS Users (
@@ -28,7 +26,7 @@ CREATE TABLE IF NOT EXISTS Users (
 	PRIMARY KEY (id_users),
 	CONSTRAINT fk_role_id 
 		FOREIGN KEY (role_id) 
-		REFERENCES Roles(role),
+		REFERENCES Roles(id_roles),
 	UNIQUE INDEX ind_id_email (id_email), 
 	UNIQUE INDEX ind_password (password)
 )

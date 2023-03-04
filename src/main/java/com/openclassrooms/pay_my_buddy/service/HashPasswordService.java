@@ -23,7 +23,7 @@ public class HashPasswordService {
 
     public String hashPassword(String pwHash) {
 
-        String pwHashCrypt = BCrypt.hashpw(pwHash, BCrypt.gensalt(10));
+        String pwHashCrypt = BCrypt.hashpw(pwHash, BCrypt.gensalt());
 
         if (BCrypt.checkpw(pwHash, pwHashCrypt)) {
             System.out.println("Valide");
