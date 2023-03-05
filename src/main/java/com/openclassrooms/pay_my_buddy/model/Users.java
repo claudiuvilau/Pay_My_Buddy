@@ -42,10 +42,6 @@ public class Users {
     private String password;
 
     @OneToMany
-    @JoinColumn(name = "buddy")
-    List<Friends> buddy = new ArrayList<>();
-
-    @OneToMany
     @JoinColumn(name = "users_id_users")
     List<Friends> friends = new ArrayList<>();
 
@@ -59,14 +55,6 @@ public class Users {
 
     public void setRole(Roles role) {
         this.role = role;
-    }
-
-    public List<Friends> getBuddy() {
-        return this.buddy;
-    }
-
-    public void setBuddy(List<Friends> buddy) {
-        this.buddy = buddy;
     }
 
     public List<Friends> getFriends() {

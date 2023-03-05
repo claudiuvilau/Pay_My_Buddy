@@ -3,8 +3,6 @@ package com.openclassrooms.pay_my_buddy.controller;
 import java.security.Principal;
 import java.util.Map;
 
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.WelcomePageConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -13,8 +11,10 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.annotation.security.RolesAllowed;
 
@@ -23,14 +23,25 @@ public class LoginController {
 
     private final OAuth2AuthorizedClientService authorizedClientService;
 
+    ModelAndView modelAndView = new ModelAndView();
+
     public LoginController(OAuth2AuthorizedClientService authorizedClientService) {
         this.authorizedClientService = authorizedClientService;
     }
 
     @RolesAllowed("USER")
     @RequestMapping("/*")
-    public String getUser() {
-        return "Welcome User";
+    public ModelAndView afterLogin(Model model, Principal user) {
+        modelAndView.setViewName("accueil.html");
+        model.addAttribute("getUser", getUserInfo(user));
+        return modelAndView;
+    }
+
+    @RolesAllowed("USER")
+    @RequestMapping("/connexion")
+    public ModelAndView home() {
+        modelAndView.setViewName("connexion.html");
+        return modelAndView;
     }
 
     @RolesAllowed({ "USER", "ADMIN" })
