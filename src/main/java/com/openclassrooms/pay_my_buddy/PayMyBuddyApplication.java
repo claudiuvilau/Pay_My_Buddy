@@ -59,15 +59,17 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 		int idTransaction = 3;
 		Iterable<Transactions> transactions = transactionsService.getTransactions();
 		// List<Transactions> transactionsList = new ArrayList<>();
-		for (Transactions transactions2 : transactions) {
-			if (transactions2.getUser() == idTransaction) {
-				System.out.println(
-						"Les transactions de : " + idTransaction + " c'est la transaction numéro "
-								+ transactions2.getIdTrans() + " du "
-								+ transactions2.getDateTrans());
-
-			}
-		}
+		/*
+		 * for (Transactions transactions2 : transactions) {
+		 * if (transactions2.getUser() == idTransaction) {
+		 * System.out.println(
+		 * "Les transactions de : " + idTransaction + " c'est la transaction numéro "
+		 * + transactions2.getIdTrans() + " du "
+		 * + transactions2.getDateTrans());
+		 * 
+		 * }
+		 * }
+		 */
 
 		/*
 		 * for (int i = 0; i < userId.getFriends().size(); i++) {
@@ -91,7 +93,7 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 		// seeBuddyList(userId);
 
-		String pwHash = "3";
+		String pwHash = "1";
 		HashPasswordService hashPasswordService = new HashPasswordService();
 		String pwToHash = hashPasswordService.hashPassword(pwHash);
 		hashPasswordService.setMdp(pwToHash);

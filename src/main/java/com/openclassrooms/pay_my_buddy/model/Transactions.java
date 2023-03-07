@@ -1,12 +1,18 @@
 package com.openclassrooms.pay_my_buddy.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -27,14 +33,20 @@ public class Transactions {
     @Column(name = "invoiced")
     private Boolean invoiced;
 
-    public Transactions() {
+    @OneToMany
+    @JoinColumn(name = "trans_id_trans")
+    List<CostsDetailsTransactions> costsDetailsTransactionsList = new ArrayList<>();
+
+    public Boolean isInvoiced() {
+        return this.invoiced;
     }
 
-    public Transactions(int idTrans, Date dateTrans, int user, Boolean invoiced) {
-        this.idTrans = idTrans;
-        this.dateTrans = dateTrans;
-        this.user = user;
-        this.invoiced = invoiced;
+    public List<CostsDetailsTransactions> getCostsDetailsTransactionsList() {
+        return this.costsDetailsTransactionsList;
+    }
+
+    public void setCostsDetailsTransactionsList(List<CostsDetailsTransactions> costsDetailsTransactionsList) {
+        this.costsDetailsTransactionsList = costsDetailsTransactionsList;
     }
 
     public int getIdTrans() {
@@ -51,14 +63,6 @@ public class Transactions {
 
     public void setDateTrans(Date dateTrans) {
         this.dateTrans = dateTrans;
-    }
-
-    public int getUser() {
-        return user;
-    }
-
-    public void setUser(int user) {
-        this.user = user;
     }
 
     public Boolean getInvoiced() {

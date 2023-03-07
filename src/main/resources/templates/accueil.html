@@ -2,13 +2,59 @@
 <html lang="fr" xmlns :th= http://www.thymeleaf.org>
 <head>
     <meta charset="UTF-8" />
-    <title>title</title>
+    <title>Accueil</title>
+    <style type="text/css">
+        .aHref {color: black; text-decoration: none;}
+        .divFelx{display: flex;}
+        .divFlexSpaceBetween{justify-content: space-between;}
+        .marginDiv{margin: 5px;}
+    </style>
 </head>
 <body>
-    <p>Page d'ACCUEIL :</p>
-    <p>
-        
+    <div class="divFelx divFlexSpaceBetween"> 
+        <div style="display: flex;">
+            <p style="background-color: forestgreen; font-size: larger; color: white;">Pay My Buddy</p>
+        </div>
+        <div class="divFelx">
+            <div class="divFelx marginDiv">
+                <a href="accueil" class="aHref">Home</a>
+            </div>
+            <div class="divFelx marginDiv">
+                <a href="transfer" class="aHref">Transfer</a>
+            </div>
+            <div class="divFelx marginDiv">
+                <a href="profile" class="aHref">Profile</a>
+            </div>
+            <div class="divFelx marginDiv">
+                <a href="contact" class="aHref">Contact</a>
+            </div>
+            <div class="divFelx marginDiv">
+                <a href="logoff" class="aHref">Log off</a>
+            </div>
+        </div>    
+    </div>
+    <p>  
         <span th:text="${getUser}"> </span>
     </p>
+    <table>
+        <caption>TRANSACTIONS</caption>
+        <thead>
+            <tr>
+                <th>Date transaction</th>
+                <th>Buddy</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="${getTrans.empty}">
+                <td colspan="3">Aucune transaction en base de données</td>
+            </tr>
+            <tr th:each="costsTrans: ${getCostsTrans}">
+                <td><span th:text="${#dates.format(costsTrans.transactions.dateTrans, 'dd.MM.yyyy')}"> Date transaction </span></td>
+                <td><span th:text="${costsTrans.users.firstName}"> Buddy </span></td>
+                <td><span th:text="${costsTrans.amount}"> Amount </span></td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>

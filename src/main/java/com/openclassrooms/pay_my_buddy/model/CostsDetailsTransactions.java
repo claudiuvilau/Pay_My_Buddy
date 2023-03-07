@@ -1,10 +1,17 @@
 package com.openclassrooms.pay_my_buddy.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,8 +23,11 @@ public class CostsDetailsTransactions {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "trans_id_trans")
-    private int transIdTrans;
+    // @Column(name = "trans_id_trans")
+    // private int transIdTrans;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "trans_id_trans")
+    private Transactions transactions;
 
     @Column(name = "amount")
     private double amount;
@@ -28,15 +38,38 @@ public class CostsDetailsTransactions {
     @Column(name = "name_trans")
     private int nameTrans;
 
-    public CostsDetailsTransactions() {
+    // @Column(name = "to_user")
+    // private int toUser;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "to_user")
+    private Users users;
+
+    @OneToMany
+    @JoinColumn(name = "id_trans")
+    List<Transactions> transactionsList = new ArrayList<>();
+
+    public Users getUsers() {
+        return this.users;
     }
 
-    public CostsDetailsTransactions(int id, int transIdTrans, double amount, int typeTrans, int nameTrans) {
-        this.id = id;
-        this.transIdTrans = transIdTrans;
-        this.amount = amount;
-        this.typeTrans = typeTrans;
-        this.nameTrans = nameTrans;
+    public void setUsers(Users users) {
+        this.users = users;
+    }
+
+    public Transactions getTransactions() {
+        return this.transactions;
+    }
+
+    public void setTransactions(Transactions transactions) {
+        this.transactions = transactions;
+    }
+
+    public List<Transactions> getTransactionsList() {
+        return this.transactionsList;
+    }
+
+    public void setTransactionsList(List<Transactions> transactionsList) {
+        this.transactionsList = transactionsList;
     }
 
     public int getId() {
@@ -45,14 +78,6 @@ public class CostsDetailsTransactions {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getTransIdTrans() {
-        return this.transIdTrans;
-    }
-
-    public void setTransIdTrans(int transIdTrans) {
-        this.transIdTrans = transIdTrans;
     }
 
     public double getAmount() {
@@ -77,17 +102,6 @@ public class CostsDetailsTransactions {
 
     public void setNameTrans(int nameTrans) {
         this.nameTrans = nameTrans;
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-                " id='" + getId() + "'" +
-                ", transIdTrans='" + getTransIdTrans() + "'" +
-                ", amount='" + getAmount() + "'" +
-                ", typeTrans='" + getTypeTrans() + "'" +
-                ", nameTrans='" + getNameTrans() + "'" +
-                "}";
     }
 
 }

@@ -49,6 +49,22 @@ public class Users {
     @JoinColumn(name = "role_id")
     private Roles role;
 
+    @OneToMany
+    @JoinColumn(name = "user")
+    List<Transactions> transactionsList = new ArrayList<>();
+
+    @OneToMany
+    @JoinColumn(name = "to_user")
+    List<CostsDetailsTransactions> costsDetailsTransactions = new ArrayList<>();
+
+    public List<Transactions> getTransactionsList() {
+        return this.transactionsList;
+    }
+
+    public void setTransactionsList(List<Transactions> transactionsList) {
+        this.transactionsList = transactionsList;
+    }
+
     public Roles getRole() {
         return this.role;
     }
