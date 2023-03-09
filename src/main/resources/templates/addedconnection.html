@@ -36,7 +36,6 @@
     </div>
     <p>  
         <span th:text="${getUser}"> </span>
-        <span th:text="${debitCredit}" class="backgroundVert"> </span>
     </p>
 
     <div class="divFelx">
@@ -54,23 +53,28 @@
     </div>
 
     <table>
-        <caption>My Transactions</caption>
+        <caption>My Buddys</caption>
         <thead>
             <tr class="backgroundVert">
-                <th>Connections</th>
-                <th>Description</th>
-                <th>Amount</th>
+                <th>Buddy</th>
             </tr>
         </thead>
         <tbody>
+            <!--
             <tr th:if="${getCostsTrans.empty}">
                 <td colspan="3">Aucune transaction en base de données</td>
             </tr>
+           
             <tr th:each="costsTrans: ${getCostsTrans}">
                 <td><span th:text="${costsTrans.users.firstName}"> Connections </span></td>
                 <td><span > </span></td>
                 <td><span th:text="${costsTrans.amount}"> Amount </span></td>
             </tr>
+            -->
+            <tr>
+                <td colspan="3" th:text="${addedConnection}"></td>
+            </tr>
+
         </tbody>
     </table>
 </body>

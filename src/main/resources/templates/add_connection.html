@@ -5,31 +5,19 @@
     <title>Add Connection</title>
 </head>
 <body>
-    <form method="get" action="accueil">
+    <form method="get" action="addedconnection">
         <fieldset>
-           <legend>Vos coordonnées</legend> 
-           <label for="nom">Quel est votre nom ?</label>
+           <legend>Les coordonnées de votre amis</legend> 
+           <label for="nom">Nom</label>
            <input type="text" name="nom" id="nom">
-           <label for="prenom">Quel est votre prénom ?</label>
+           <label for="prenom">Prénom</label>
            <input type="text" name="prenom" id="prenom">
-           <label for="email">Quel est votre e-mail ?</label>
+           <label for="dateDeNaissance">Date de naissance</label>
+           <input type="date" name="dateDeNaissance" id="dateDeNaissance">
+           <label for="email">E-mail</label>
            <input type="email" name="email" id="email">
         </fieldset>
-        <fieldset>
-           <legend>Votre souhait</legend> 
-           <p>
-              Faites un souhait que vous voudriez voir exaucé :
-              <input type="radio" name="souhait" value="riche" id="riche"> <label for="riche">Être riche</label>
-              <input type="radio" name="souhait" value="celebre" id="celebre"> <label for="celebre">Être célèbre</label>
-              <input type="radio" name="souhait" value="intelligent" id="intelligent"> <label for="intelligent">Être <strong>encore</strong> plus intelligent</label>
-              <input type="radio" name="souhait" value="autre" id="autre"> <label for="autre">Autre...</label>
-           </p>
-           <p>
-              <label for="precisions">Si "Autre", veuillez préciser :</label>
-              <textarea name="precisions" id="precisions" cols="40" rows="4"></textarea>
-           </p>
-        </fieldset>
-        <input type="submit" value="Envoyer">
+        <input type="submit" value="Envoyer" id="sendAddCoonection">
       </form>
 </body>
 </html>
