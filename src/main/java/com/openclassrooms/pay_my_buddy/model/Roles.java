@@ -21,11 +21,8 @@ public class Roles {
     @Column(name = "id_roles")
     private int idRoles;
 
-    @Column(name = "role")
-    private int role;
-
     @Column(name = "name_role")
-    private int nameRole;
+    private String nameRole;
 
     @OneToMany
     @JoinColumn(name = "role_id")
@@ -39,20 +36,20 @@ public class Roles {
         this.idRoles = idRoles;
     }
 
-    public int getRole() {
-        return this.role;
-    }
-
-    public void setRole(int role) {
-        this.role = role;
-    }
-
-    public int getNameRole() {
+    public String getNameRole() {
         return this.nameRole;
     }
 
-    public void setNameRole(int nameRole) {
+    public void setNameRole(String nameRole) {
         this.nameRole = nameRole;
+    }
+
+    public List<Users> getUsersList() {
+        return this.usersList;
+    }
+
+    public void setUsersList(List<Users> usersList) {
+        this.usersList = usersList;
     }
 
 }

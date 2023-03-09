@@ -4,17 +4,15 @@ USE payMyBuddy;
 
 CREATE TABLE IF NOT EXISTS Roles (
     id_roles INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	role INT UNSIGNED NOT NULL,
     name_role VARCHAR(20) NOT NULL,
     PRIMARY KEY (id_roles),
-    UNIQUE INDEX ind_role (role),
 	UNIQUE INDEX ind_name_roles (name_role)
 )
 ENGINE=INNODB;
 
-INSERT INTO Roles (id_roles, role, name_role) VALUES 
-	(1, 1, "admin"),
-	(2, 2, "user");
+INSERT INTO Roles (id_roles, name_role) VALUES 
+	(1, "ADMIN"),
+	(2, "USER");
 
 
 CREATE TABLE IF NOT EXISTS Users (
@@ -28,7 +26,7 @@ CREATE TABLE IF NOT EXISTS Users (
 	PRIMARY KEY (id_users),
 	CONSTRAINT fk_role_id 
 		FOREIGN KEY (role_id) 
-		REFERENCES Roles(role),
+		REFERENCES Roles(id_roles),
 	UNIQUE INDEX ind_id_email (id_email), 
 	UNIQUE INDEX ind_password (password)
 )
@@ -117,7 +115,8 @@ CREATE TABLE IF NOT EXISTS CostsDetailsTransactions (
 	trans_id_trans INT UNSIGNED NOT NULL, 
 	amount DECIMAL(6,2) NOT NULL,
 	type_trans INT UNSIGNED NOT NULL, 
-	name_trans INT UNSIGNED NOT NULL, 
+	name_trans INT UNSIGNED NOT NULL,
+	to_user INT UNSIGNED NOT NULL, 
 	PRIMARY KEY (id),
 	CONSTRAINT fk_number_trans_id_trans 
 		FOREIGN KEY (trans_id_trans) 
@@ -127,7 +126,10 @@ CREATE TABLE IF NOT EXISTS CostsDetailsTransactions (
 		REFERENCES TypeTransactions(id_type_trans),	
 	CONSTRAINT fk_name_trans_id_trans 
 		FOREIGN KEY (name_trans) 
-		REFERENCES NameTransactions(id_name_trans)
+		REFERENCES NameTransactions(id_name_trans),
+	CONSTRAINT fk_to_user 
+		FOREIGN KEY (to_user) 
+		REFERENCES Users(id_users)
 )
 ENGINE=INNODB;
 
@@ -143,12 +145,13 @@ INSERT INTO Transactions (id_trans, date_trans, user) VALUES
 	(4, "2023-2-05", 3);
 
 
-INSERT INTO CostsDetailsTransactions (trans_id_trans, amount, type_trans, name_trans) VALUES 
-	(1, 30, 1, 1),
-	(1, 10, 2, 3),
-	(1, 0.05, 2, 5),
-	(2, 10, 1, 4),
-	(3, 10, 2, 2);
+INSERT INTO CostsDetailsTransactions (trans_id_trans, amount, type_trans, name_trans, to_user) VALUES 
+	(1, 30, 1, 1, 1),
+	(1, 10, 2, 3, 3),
+	(1, 0.05, 2, 5, 1),
+	(2, 10, 1, 4, 3),
+	(3, 10, 2, 2, 2),
+	(4, 50, 1, 1, 3);
 
 CREATE TABLE IF NOT EXISTS Invoices (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,

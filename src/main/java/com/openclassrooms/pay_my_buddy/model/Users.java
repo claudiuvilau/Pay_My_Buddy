@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.annotations.ManyToAny;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -37,23 +41,36 @@ public class Users {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "role_id")
-    private int roleId;
-
-    @OneToMany
-    @JoinColumn(name = "buddy")
-    List<Friends> buddy = new ArrayList<>();
-
     @OneToMany
     @JoinColumn(name = "users_id_users")
     List<Friends> friends = new ArrayList<>();
 
-    public List<Friends> getBuddy() {
-        return this.buddy;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private Roles role;
+
+    @OneToMany
+    @JoinColumn(name = "user")
+    List<Transactions> transactionsList = new ArrayList<>();
+
+    @OneToMany
+    @JoinColumn(name = "to_user")
+    List<CostsDetailsTransactions> costsDetailsTransactions = new ArrayList<>();
+
+    public List<Transactions> getTransactionsList() {
+        return this.transactionsList;
     }
 
-    public void setBuddy(List<Friends> buddy) {
-        this.buddy = buddy;
+    public void setTransactionsList(List<Transactions> transactionsList) {
+        this.transactionsList = transactionsList;
+    }
+
+    public Roles getRole() {
+        return this.role;
+    }
+
+    public void setRole(Roles role) {
+        this.role = role;
     }
 
     public List<Friends> getFriends() {
@@ -110,14 +127,6 @@ public class Users {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public int getRoleId() {
-        return this.roleId;
-    }
-
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
     }
 
 }

@@ -1,10 +1,13 @@
 package com.openclassrooms.pay_my_buddy;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.model.Transactions;
 import com.openclassrooms.pay_my_buddy.model.Users;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
@@ -37,10 +40,16 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		// Iterable<Friends> friends = friendsService.getFriends();
-		// friends.forEach(friend ->
-		// System.out.println(friend.getUsers().getNameUser()));
+		// friends.forEach(friend -> System.out.println(friend.getUsersIdUsers()));
 
-		friendsService.getFriends();
+		int intID = 1;
+		Optional<Users> optProduct = usersService.getUserById(intID);
+		Users userId = optProduct.get();
+		System.out.println("The first name with id " + intID + " is " + userId.getFirstName() + " and he has : "
+				+ userId.getFriends().size() + " friend(s)");
+		for (Friends friend : userId.getFriends()) {
+			System.out.println(friend.getUsers().getIdUsers() + " " + friend.getUsers().getNameUser());
+		}
 
 		Iterable<Users> users = usersService.getUsers();
 		users.forEach(user -> System.out.println(user.getNameUser()));
@@ -50,21 +59,17 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 		int idTransaction = 3;
 		Iterable<Transactions> transactions = transactionsService.getTransactions();
 		// List<Transactions> transactionsList = new ArrayList<>();
-		for (Transactions transactions2 : transactions) {
-			if (transactions2.getUser() == idTransaction) {
-				System.out.println(
-						"Les transactions de : " + idTransaction + " c'est la transaction numéro "
-								+ transactions2.getIdTrans() + " du "
-								+ transactions2.getDateTrans());
-
-			}
-		}
-
-		// int intID = 2;
-		// Optional<Users> optProduct = usersService.getUserById(intID);
-		// Users userId = optProduct.get();
-		// System.out.println("The first name with id " + intID + " is " +
-		// userId.getFirstName() + " and he has : ");
+		/*
+		 * for (Transactions transactions2 : transactions) {
+		 * if (transactions2.getUser() == idTransaction) {
+		 * System.out.println(
+		 * "Les transactions de : " + idTransaction + " c'est la transaction numéro "
+		 * + transactions2.getIdTrans() + " du "
+		 * + transactions2.getDateTrans());
+		 * 
+		 * }
+		 * }
+		 */
 
 		/*
 		 * for (int i = 0; i < userId.getFriends().size(); i++) {
@@ -88,15 +93,11 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 		// seeBuddyList(userId);
 
+		String pwHash = "1";
 		HashPasswordService hashPasswordService = new HashPasswordService();
-
-		for (int i = 0; i < 10; i++) {
-			String pwToHash = hashPasswordService.hashPassword("admin" + i);
-
-			hashPasswordService.setMdp(pwToHash);
-
-			System.out.println(hashPasswordService.getMdp());
-		}
+		String pwToHash = hashPasswordService.hashPassword(pwHash);
+		hashPasswordService.setMdp(pwToHash);
+		System.out.println("Le mot de passe hashé pour " + pwHash + " est : " + hashPasswordService.getMdp());
 
 	}
 
