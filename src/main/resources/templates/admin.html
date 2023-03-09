@@ -2,7 +2,7 @@
 <html lang="fr" xmlns :th= http://www.thymeleaf.org>
 <head>
     <meta charset="UTF-8" />
-    <title>Accueil</title>
+    <title>Admin</title>
     <style type="text/css">
         .backgroundVert{background-color: forestgreen; font-size: larger; color: white;}
         .aHref {color: black; text-decoration: none;}
@@ -13,7 +13,7 @@
 </head>
 <body>
     <div class="divFelx divFlexSpaceBetween"> 
-        <div class="divFelx">
+        <div style="display: flex;">
             <p class="backgroundVert">Pay My Buddy</p>
         </div>
         <div class="divFelx">
@@ -36,28 +36,14 @@
     </div>
     <p>  
         <span th:text="${getUser}"> </span>
-        <span th:text="${debitCredit}" class="backgroundVert"> </span>
+        <span th:text="${debit}" class="backgroundVert"> </span>
     </p>
-
-    <div class="divFelx">
-        <div class="divFelx">
-            <form action="send_money">
-                <input type="submit" value="Send Money" />
-            </form>    
-        </div>
-        <div class="divFelx">
-            <form action="add_connection">
-                <input type="submit" value="Add Connection" />
-            </form>        
-        </div>
-    </div>
-
     <table>
-        <caption>My Transactions</caption>
+        <caption>TRANSACTIONS</caption>
         <thead>
-            <tr class="backgroundVert">
-                <th>Connections</th>
-                <th>Description</th>
+            <tr>
+                <th>Date transaction</th>
+                <th>Buddy</th>
                 <th>Amount</th>
             </tr>
         </thead>
@@ -66,8 +52,8 @@
                 <td colspan="3">Aucune transaction en base de données</td>
             </tr>
             <tr th:each="costsTrans: ${getCostsTrans}">
-                <td><span th:text="${costsTrans.users.firstName}"> Connections </span></td>
-                <td><span > </span></td>
+                <td><span th:text="${#dates.format(costsTrans.transactions.dateTrans, 'dd.MM.yyyy')}"> Date transaction </span></td>
+                <td><span th:text="${costsTrans.users.firstName}"> Buddy </span></td>
                 <td><span th:text="${costsTrans.amount}"> Amount </span></td>
             </tr>
         </tbody>

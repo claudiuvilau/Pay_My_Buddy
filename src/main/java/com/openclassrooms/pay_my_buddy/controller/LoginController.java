@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.openclassrooms.pay_my_buddy.model.CostsDetailsTransactions;
 import com.openclassrooms.pay_my_buddy.model.Users;
+import com.openclassrooms.pay_my_buddy.service.TransactionsService;
 import com.openclassrooms.pay_my_buddy.service.UsersService;
 
 import jakarta.annotation.security.RolesAllowed;
@@ -25,23 +26,31 @@ public class LoginController {
     @Autowired
     private UsersService usersService; // instance of object
 
+    @Autowired
+    private TransactionsService transactionsService; // instance of object
+
     @RolesAllowed("USER")
     @RequestMapping("/*")
     public ModelAndView afterLogin(Model model, Principal user) {
+
         modelAndView.setViewName("accueil.html");
+
+        // récupérer ID email de la personne connectée et la personne connectée
         String idEmail = getUserInfo(user);
         Users nameUser = usersService.getUser(idEmail);
         model.addAttribute("getUser", nameUser.getFirstName() + " " + nameUser.getNameUser());
 
-        // dates transactions
-        // model.addAttribute("getTrans", nameUser.getTransactionsList());
+        List<CostsDetailsTransactions> listCostsUserToBuddy;
+        // true = for all transactions without paied to buddy
+        listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, false);
 
-        // list costs : Amount
-        List<CostsDetailsTransactions> listCosts = new ArrayList<>();
-        for (int i = 0; i < nameUser.getTransactionsList().size(); i++) {
-            listCosts.addAll(nameUser.getTransactionsList().get(i).getCostsDetailsTransactionsList());
-        }
-        model.addAttribute("getCostsTrans", listCosts);
+        double debit;
+        debit = transactionsService.debit(nameUser);
+        double credit;
+        credit = transactionsService.credit(nameUser);
+
+        model.addAttribute("debitCredit", credit - debit);
+        model.addAttribute("getCostsTrans", listCostsUserToBuddy);
 
         return modelAndView;
     }
@@ -53,10 +62,31 @@ public class LoginController {
         return modelAndView;
     }
 
+    @RolesAllowed("USER")
+    @RequestMapping("/add_connection")
+    public ModelAndView addConnection() {
+        modelAndView.setViewName("add_connection.html");
+        return modelAndView;
+    }
+
     @RolesAllowed({ "USER", "ADMIN" })
     @RequestMapping("/admin")
-    public String getAdmin() {
-        return "Welcome Admin";
+    public ModelAndView getAdmin(Model model, Principal user) {
+
+        modelAndView.setViewName("admin.html");
+
+        // récupérer ID email de la personne connectée et la personne connectée
+        String idEmail = getUserInfo(user);
+        Users nameUser = usersService.getUser(idEmail);
+        model.addAttribute("getUser", "Welcome Admin : " + nameUser.getFirstName() + " " + nameUser.getNameUser());
+
+        // listes transactions
+        List<CostsDetailsTransactions> listCostsUser;
+        // true = for all transactions without paied to buddy
+        listCostsUser = transactionsService.detailTransForUser(nameUser, true);
+        model.addAttribute("getCostsTrans", listCostsUser);
+
+        return modelAndView;
     }
 
     public String getUserInfo(Principal user) {

@@ -32,11 +32,17 @@ public class CostsDetailsTransactions {
     @Column(name = "amount")
     private double amount;
 
-    @Column(name = "type_trans")
-    private int typeTrans;
+    // @Column(name = "type_trans")
+    // private int typeTrans;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "type_trans")
+    private TypeTransactions typeTransactions;
 
-    @Column(name = "name_trans")
-    private int nameTrans;
+    // @Column(name = "name_trans")
+    // private int nameTrans;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "name_trans")
+    private NameTransactions nameTransactions;
 
     // @Column(name = "to_user")
     // private int toUser;
@@ -47,6 +53,22 @@ public class CostsDetailsTransactions {
     @OneToMany
     @JoinColumn(name = "id_trans")
     List<Transactions> transactionsList = new ArrayList<>();
+
+    public TypeTransactions getTypeTransactions() {
+        return this.typeTransactions;
+    }
+
+    public void setTypeTransactions(TypeTransactions typeTransactions) {
+        this.typeTransactions = typeTransactions;
+    }
+
+    public NameTransactions getNameTransactions() {
+        return this.nameTransactions;
+    }
+
+    public void setNameTransactions(NameTransactions nameTransactions) {
+        this.nameTransactions = nameTransactions;
+    }
 
     public Users getUsers() {
         return this.users;
@@ -86,22 +108,6 @@ public class CostsDetailsTransactions {
 
     public void setAmount(double amount) {
         this.amount = amount;
-    }
-
-    public int getTypeTrans() {
-        return this.typeTrans;
-    }
-
-    public void setTypeTrans(int typeTrans) {
-        this.typeTrans = typeTrans;
-    }
-
-    public int getNameTrans() {
-        return this.nameTrans;
-    }
-
-    public void setNameTrans(int nameTrans) {
-        this.nameTrans = nameTrans;
     }
 
 }

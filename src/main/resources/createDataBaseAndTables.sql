@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS Roles (
 ENGINE=INNODB;
 
 INSERT INTO Roles (id_roles, name_role) VALUES 
-	(1, "admin"),
-	(2, "user");
+	(1, "ADMIN"),
+	(2, "USER");
 
 
 CREATE TABLE IF NOT EXISTS Users (
