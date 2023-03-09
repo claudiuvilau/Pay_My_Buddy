@@ -2,21 +2,41 @@ CREATE DATABASE IF NOT EXISTS payMyBuddy CHARACTER SET UTF8MB4 COLLATE=utf8mb4_0
 
 USE payMyBuddy;
 
+CREATE TABLE IF NOT EXISTS Roles (
+    id_roles INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name_role VARCHAR(20) NOT NULL,
+    PRIMARY KEY (id_roles),
+	UNIQUE INDEX ind_name_roles (name_role)
+)
+ENGINE=INNODB;
+
+INSERT INTO Roles (id_roles, name_role) VALUES 
+	(1, "ADMIN"),
+	(2, "USER");
+
+
 CREATE TABLE IF NOT EXISTS Users (
 	id_users INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	id_email VARCHAR(50) NOT NULL,
 	name_user VARCHAR(20) NOT NULL,
 	first_name VARCHAR(40) NOT NULL,
 	birth_date DATE NOT NULL,
+	password CHAR(60) NOT NULL, 
+	role_id INT UNSIGNED NOT NULL,
 	PRIMARY KEY (id_users),
-	UNIQUE INDEX ind_id_email (id_email)
+	CONSTRAINT fk_role_id 
+		FOREIGN KEY (role_id) 
+		REFERENCES Roles(id_roles),
+	UNIQUE INDEX ind_id_email (id_email), 
+	UNIQUE INDEX ind_password (password)
 )
 ENGINE=INNODB;
 
-INSERT INTO Users (id_users, id_email, name_user, first_name, birth_date) VALUES 
-	(1, "jack.dupont@yahoo.fr", "DUPONT", "Jack", "1982-01-22"),
-	(2, "mireille.benoit@hotmail.com", "BENOIT", "Mireille", "1970-12-31"),
-	(3, "sebastien.martin@hotmail.fr", "MARTIN", "Sébastien", "1977-09-19");
+INSERT INTO Users (id_users, id_email, name_user, first_name, birth_date, password, role_id) VALUES 
+	(1, "jack.dupont@yahoo.fr", "DUPONT", "Jack", "1982-01-22", "1", 2),
+	(2, "mireille.benoit@hotmail.com", "BENOIT", "Mireille", "1970-12-31", "2", 1),
+	(3, "sebastien.martin@hotmail.fr", "MARTIN", "Sébastien", "1977-09-19", "3", 2);
+
 
 CREATE TABLE IF NOT EXISTS Friends (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -95,7 +115,8 @@ CREATE TABLE IF NOT EXISTS CostsDetailsTransactions (
 	trans_id_trans INT UNSIGNED NOT NULL, 
 	amount DECIMAL(6,2) NOT NULL,
 	type_trans INT UNSIGNED NOT NULL, 
-	name_trans INT UNSIGNED NOT NULL, 
+	name_trans INT UNSIGNED NOT NULL,
+	to_user INT UNSIGNED NOT NULL, 
 	PRIMARY KEY (id),
 	CONSTRAINT fk_number_trans_id_trans 
 		FOREIGN KEY (trans_id_trans) 
@@ -105,7 +126,10 @@ CREATE TABLE IF NOT EXISTS CostsDetailsTransactions (
 		REFERENCES TypeTransactions(id_type_trans),	
 	CONSTRAINT fk_name_trans_id_trans 
 		FOREIGN KEY (name_trans) 
-		REFERENCES NameTransactions(id_name_trans)
+		REFERENCES NameTransactions(id_name_trans),
+	CONSTRAINT fk_to_user 
+		FOREIGN KEY (to_user) 
+		REFERENCES Users(id_users)
 )
 ENGINE=INNODB;
 
@@ -121,12 +145,13 @@ INSERT INTO Transactions (id_trans, date_trans, user) VALUES
 	(4, "2023-2-05", 3);
 
 
-INSERT INTO CostsDetailsTransactions (trans_id_trans, amount, type_trans, name_trans) VALUES 
-	(1, 30, 1, 1),
-	(1, 10, 2, 3),
-	(1, 0.05, 2, 5),
-	(2, 10, 1, 4),
-	(3, 10, 2, 2);
+INSERT INTO CostsDetailsTransactions (trans_id_trans, amount, type_trans, name_trans, to_user) VALUES 
+	(1, 30, 1, 1, 1),
+	(1, 10, 2, 3, 3),
+	(1, 0.05, 2, 5, 1),
+	(2, 10, 1, 4, 3),
+	(3, 10, 2, 2, 2),
+	(4, 50, 1, 1, 3);
 
 CREATE TABLE IF NOT EXISTS Invoices (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,

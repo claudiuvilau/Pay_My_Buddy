@@ -18,16 +18,6 @@ public class FriendsService {
         return friendsRepository.findAll();
     }
 
-    public Friends getFriend(Integer usersIdUsers, Integer buddy) {
-        Iterable<Friends> friendsList = getFriends();
-        for (Friends friends : friendsList) {
-            if (friends.getUsersIdUsers() == usersIdUsers && friends.getBuddy() == buddy) {
-                return friends;
-            }
-        }
-        return null;
-    }
-
     public Optional<Friends> getFriendById(Integer id) {
         return friendsRepository.findById(id);
     }

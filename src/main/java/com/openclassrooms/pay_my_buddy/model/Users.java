@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
+import org.hibernate.annotations.ManyToAny;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -35,22 +38,46 @@ public class Users {
     @Column(name = "birth_date")
     private Date birthDate;
 
-    // @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch =
-    // FetchType.EAGER)
-    @OneToMany(cascade = CascadeType.ALL) // pour pouvoir supprimer des données de la table Friends
+    @Column(name = "password")
+    private String password;
+
+    @OneToMany
     @JoinColumn(name = "users_id_users")
     List<Friends> friends = new ArrayList<>();
 
-    public Users() {
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private Roles role;
+
+    @OneToMany
+    @JoinColumn(name = "user")
+    List<Transactions> transactionsList = new ArrayList<>();
+
+    @OneToMany
+    @JoinColumn(name = "to_user")
+    List<CostsDetailsTransactions> costsDetailsTransactions = new ArrayList<>();
+
+    public List<Transactions> getTransactionsList() {
+        return this.transactionsList;
     }
 
-    public Users(int idUsers, String idEmail, String nameUser, String firstName, Date birthDate,
-            List<Friends> friends) {
-        this.idUsers = idUsers;
-        this.idEmail = idEmail;
-        this.nameUser = nameUser;
-        this.firstName = firstName;
-        this.birthDate = birthDate;
+    public void setTransactionsList(List<Transactions> transactionsList) {
+        this.transactionsList = transactionsList;
+    }
+
+    public Roles getRole() {
+        return this.role;
+    }
+
+    public void setRole(Roles role) {
+        this.role = role;
+    }
+
+    public List<Friends> getFriends() {
+        return this.friends;
+    }
+
+    public void setFriends(List<Friends> friends) {
         this.friends = friends;
     }
 
@@ -94,12 +121,12 @@ public class Users {
         this.birthDate = birthDate;
     }
 
-    public List<Friends> getFriends() {
-        return friends;
+    public String getPassword() {
+        return this.password;
     }
 
-    public void setFriends(List<Friends> friends) {
-        this.friends = friends;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 }
