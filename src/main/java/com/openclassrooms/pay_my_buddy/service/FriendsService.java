@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.repository.FriendsRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class FriendsService {
 
     @Autowired

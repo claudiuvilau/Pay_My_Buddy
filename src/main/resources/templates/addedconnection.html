@@ -60,21 +60,13 @@
             </tr>
         </thead>
         <tbody>
-            <!--
-            <tr th:if="${getCostsTrans.empty}">
-                <td colspan="3">Aucune transaction en base de données</td>
+            <tr th:if="${listBuddy.empty}">
+                <td colspan="3">Aucun amis en base de données</td>
             </tr>
            
-            <tr th:each="costsTrans: ${getCostsTrans}">
-                <td><span th:text="${costsTrans.users.firstName}"> Connections </span></td>
-                <td><span > </span></td>
-                <td><span th:text="${costsTrans.amount}"> Amount </span></td>
+            <tr th:each="listB: ${listBuddy}">
+                <td><span th:text="${listB.users.firstName}"> Buddy </span></td>
             </tr>
-            -->
-            <tr>
-                <td colspan="3" th:text="${addedConnection}"></td>
-            </tr>
-
         </tbody>
     </table>
 </body>
