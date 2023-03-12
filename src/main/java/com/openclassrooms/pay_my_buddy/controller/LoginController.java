@@ -2,15 +2,12 @@ package com.openclassrooms.pay_my_buddy.controller;
 
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,10 +18,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import com.openclassrooms.pay_my_buddy.model.CostsDetailsTransactions;
 import com.openclassrooms.pay_my_buddy.model.Friends;
+import com.openclassrooms.pay_my_buddy.model.NameTransactions;
 import com.openclassrooms.pay_my_buddy.model.Users;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
+import com.openclassrooms.pay_my_buddy.service.NameTransactionsService;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
 import com.openclassrooms.pay_my_buddy.service.UsersService;
 
@@ -46,15 +48,24 @@ public class LoginController {
     @Autowired
     private TransactionsService transactionsService; // instance of object
 
+    @Autowired
+    private NameTransactionsService nameTransactionsService; // instance of object
+
     @RolesAllowed("USER")
     @RequestMapping("/*")
-    public ModelAndView afterLogin(Model model, Principal user) {
+    public ModelAndView afterLogin(Model model, Principal user, HttpServletRequest request,
+            HttpServletResponse response) {
 
         modelAndView.setViewName("accueil.html");
+        modelAndView = modelHome(model, user);
+
+        return modelAndView;
+    }
+
+    private ModelAndView modelHome(Model model, Principal user) {
 
         // récupérer ID email de la personne connectée et la personne connectée
-        String idEmail = getUserInfo(user);
-        Users nameUser = usersService.getUser(idEmail);
+        Users nameUser = recupererNameUser(user);
         model.addAttribute("getUser", nameUser.getFirstName() + " " + nameUser.getNameUser());
 
         List<CostsDetailsTransactions> listCostsUserToBuddy;
@@ -80,9 +91,12 @@ public class LoginController {
     }
 
     @RolesAllowed("USER")
-    @RequestMapping("/add_connection")
-    public ModelAndView addConnection() {
-        modelAndView.setViewName("add_connection.html");
+    @RequestMapping("/addconnection")
+    public ModelAndView addConnection(Model model, Principal user) {
+        modelAndView.setViewName("accueil.html");
+        modelAndView = modelHome(model, user);
+
+        model.addAttribute("addConn", true);
 
         return modelAndView;
     }
@@ -93,27 +107,53 @@ public class LoginController {
             HttpServletResponse response) {
 
         // récupérer ID email de la personne connectée et la personne connectée
-        String idEmail = getUserInfo(user);
-        Users nameUser = usersService.getUser(idEmail);
+        Users nameUser = recupererNameUser(user);
+
+        modelAndView.setViewName("accueil.html");
+
+        String msgResultat = "";
+
         // récupérer ID de l'ami saisi saisi
         Users idUserBuddy = usersService.getUser(request.getParameter("email"));
         if (idUserBuddy != null) {
-            boolean idFriend = false;
-            idFriend = verifierIdEmail(idUserBuddy, request);
-            if (idFriend) {
-                Friends friend = new Friends();
-                friend.setUsersIdUsers(nameUser.getIdUsers());
-                friend.setUsers(idUserBuddy);
-                friendsService.addFriends(friend);
-                response.setStatus(201);
+            if (nameUser.getIdEmail().equalsIgnoreCase(idUserBuddy.getIdEmail())) {
+                msgResultat = "Vous avez siasi votre adresse email. Pour chercher l'un de vos amis il faut saisir son adresse email et ses données.";
             } else {
-                response.setStatus(204);
+
+                Friends friendOfNameUser = friendsService.getFriend(nameUser.getIdUsers(), idUserBuddy.getIdUsers());
+                if (friendOfNameUser != null) {
+                    msgResultat = "Vous êtes déjà connecté avec " + idUserBuddy.getFirstName() + " "
+                            + idUserBuddy.getNameUser();
+                } else {
+                    boolean idFriend = false;
+                    idFriend = verifierIdEmail(idUserBuddy, request);
+                    if (idFriend) {
+                        Friends friend = new Friends();
+                        friend.setUsersIdUsers(nameUser.getIdUsers());
+                        friend.setUsers(idUserBuddy);
+                        friendsService.addFriends(friend);
+                        response.setStatus(201);
+                        msgResultat = "Vous venez d'ajouter : " + request.getParameter("prenom") + " (résultat : "
+                                + HttpStatus.valueOf(response.getStatus()) + ")";
+                    } else {
+                        msgResultat = "Les données saiseis sont erronées. Nous ne pouvons pas vous connecter avec la personne saisie.";
+                    }
+                }
             }
         } else {
-            response.setStatus(404);
+            msgResultat = "Il n'y a aucun utilisateur avec l'adresse email saisie.";
         }
 
-        return addedConnectionGet(model, request, response, nameUser);
+        model.addAttribute("addedConnection", msgResultat);
+        List<Friends> friends = new ArrayList<>();
+
+        friends.addAll(nameUser.getFriends());
+
+        model.addAttribute("listBuddy", friends);
+
+        model.addAttribute("addedConn", friends);
+
+        return modelAndView;
     }
 
     private boolean verifierIdEmail(Users idUserBuddy, HttpServletRequest request) {
@@ -135,20 +175,51 @@ public class LoginController {
     }
 
     @RolesAllowed("USER")
-    @GetMapping("/addedconnection")
-    public ModelAndView addedConnectionGet(Model model, HttpServletRequest request, HttpServletResponse response,
-            Users nameUser) {
+    @GetMapping("/selectconnection")
+    public ModelAndView selectConnection(Model model, Principal user, HttpServletRequest request,
+            HttpServletResponse response) {
 
-        modelAndView.setViewName("addedconnection.html");
-        model.addAttribute("addedConnection",
-                "Vous venez d'ajouter : " + request.getParameter("prenom") + " (résultat : "
+        // récupérer ID email de la personne connectée et la personne connectée
+        Users nameUser = recupererNameUser(user);
+        modelAndView.setViewName("accueil.html");
+        modelAndView = modelHome(model, user);
+
+        model.addAttribute("selectConn", true);
+
+        List<Friends> listFriends = new ArrayList<>();
+        listFriends.addAll(nameUser.getFriends());
+        model.addAttribute("listBuddy", listFriends);
+
+        List<NameTransactions> listNameTransactions = new ArrayList<>();
+
+        // récupérer seuelemnt les ID 1 et 2 name transaction : Verser (sur son compte
+        // api) et Transférer (sur le compte bancaire)
+
+        for (int i = 1; i < 3; i++) {
+            Optional<NameTransactions> nameTransactionsOpt = nameTransactionsService.getNameTransactionById(i);
+            if (nameTransactionsOpt.isPresent()) {
+                NameTransactions nameTrans = nameTransactionsOpt.get();
+                listNameTransactions.add(nameTrans);
+            }
+        }
+        model.addAttribute("listNameTransactions", listNameTransactions);
+
+        return modelAndView;
+    }
+
+    @RolesAllowed("USER")
+    @PostMapping("/paid")
+    public ModelAndView selectedConnection(Model model, Principal user, HttpServletRequest request,
+            HttpServletResponse response) {
+
+        modelAndView.setViewName("accueil.html");
+        modelAndView = modelHome(model, user);
+
+        model.addAttribute("selectConnection",
+                "Vous venez de choisir : " + request.getParameter("connections") + " pour le montant de "
+                        + request.getParameter("amount")
+                        + " (résultat : "
                         + HttpStatus.valueOf(response.getStatus()) + ")");
-
-        List<Friends> friends = new ArrayList<>();
-
-        friends.addAll(nameUser.getFriends());
-
-        model.addAttribute("listBuddy", friends);
 
         return modelAndView;
     }
@@ -171,6 +242,11 @@ public class LoginController {
         model.addAttribute("getCostsTrans", listCostsUser);
 
         return modelAndView;
+    }
+
+    private Users recupererNameUser(Principal user) {
+        String idEmail = getUserInfo(user);
+        return usersService.getUser(idEmail);
     }
 
     public String getUserInfo(Principal user) {
