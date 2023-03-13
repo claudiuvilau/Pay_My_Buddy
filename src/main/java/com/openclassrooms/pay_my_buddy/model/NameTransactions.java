@@ -1,10 +1,15 @@
 package com.openclassrooms.pay_my_buddy.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,13 +24,9 @@ public class NameTransactions {
     @Column(name = "name_trans")
     private String nameTrans;
 
-    public NameTransactions() {
-    }
-
-    public NameTransactions(int idNameTrans, String nameTrans) {
-        this.idNameTrans = idNameTrans;
-        this.nameTrans = nameTrans;
-    }
+    @OneToMany
+    @JoinColumn(name = "name_trans")
+    List<CostsDetailsTransactions> costsDetailsTransactions = new ArrayList<>();
 
     public int getIdNameTrans() {
         return this.idNameTrans;
@@ -35,20 +36,20 @@ public class NameTransactions {
         this.idNameTrans = idNameTrans;
     }
 
+    public List<CostsDetailsTransactions> getCostsDetailsTransactions() {
+        return this.costsDetailsTransactions;
+    }
+
+    public void setCostsDetailsTransactions(List<CostsDetailsTransactions> costsDetailsTransactions) {
+        this.costsDetailsTransactions = costsDetailsTransactions;
+    }
+
     public String getNameTrans() {
         return this.nameTrans;
     }
 
     public void setNameTrans(String nameTrans) {
         this.nameTrans = nameTrans;
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-                " idNameTrans='" + getIdNameTrans() + "'" +
-                ", nameTrans='" + getNameTrans() + "'" +
-                "}";
     }
 
 }

@@ -84,7 +84,7 @@ public class TransactionsService {
         for (int i = 0; i < listT.size(); i++) {
             List<CostsDetailsTransactions> listC = listT.get(i).getCostsDetailsTransactionsList();
             for (int j = 0; j < listC.size(); j++) {
-                if (listC.get(j).getTypeTransactions().getTypeTrans().equals(debitCreditString)) {
+                if (listC.get(j).getTypeTransactions().getNomTypeTrans().equals(debitCreditString)) {
                     debitCreditDouble += listC.get(j).getAmount();
                 }
             }

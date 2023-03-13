@@ -84,12 +84,12 @@ ENGINE=INNODB;
 
 CREATE TABLE IF NOT EXISTS TypeTransactions (
 	id_type_trans INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	type_trans VARCHAR(15) NOT NULL,
+	nom_type_trans VARCHAR(15) NOT NULL,
 	PRIMARY KEY (id_type_trans)
 )
 ENGINE=INNODB;
 
-INSERT INTO TypeTransactions (id_type_trans, type_trans) VALUES 
+INSERT INTO TypeTransactions (id_type_trans, nom_type_trans) VALUES 
 	(1, "CREDIT"),
 	(2, "DEBIT");
 
@@ -102,12 +102,12 @@ CREATE TABLE IF NOT EXISTS NameTransactions (
 ENGINE=INNODB;
 
 INSERT INTO NameTransactions (id_name_trans, name_trans) VALUES 
-	(1, "Verser"),
-	(2, "Transférer"),
-	(3, "Envoyer"),
-	(4, "Recevoir"),
+	(1, "versement"),
+	(2, "transfert"),
+	(3, "envoi"),
+	(4, "encaissement"),
 	(5, "Frais"),
-	(6, "Intérêts");
+	(6, "Interets");
 
 
 CREATE TABLE IF NOT EXISTS CostsDetailsTransactions (

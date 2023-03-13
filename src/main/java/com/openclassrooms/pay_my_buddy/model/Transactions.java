@@ -12,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -36,6 +35,14 @@ public class Transactions {
     @OneToMany
     @JoinColumn(name = "trans_id_trans")
     List<CostsDetailsTransactions> costsDetailsTransactionsList = new ArrayList<>();
+
+    public int getUser() {
+        return this.user;
+    }
+
+    public void setUser(int user) {
+        this.user = user;
+    }
 
     public Boolean isInvoiced() {
         return this.invoiced;

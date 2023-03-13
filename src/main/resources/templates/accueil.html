@@ -36,8 +36,45 @@
         </div>    
     </div>
     <p>  
-        <span th:text="${getUser}"> </span>
-        <span th:text="${debitCredit}" class="backgroundVert"> </span>
+        <div class="divFelx">
+            <span th:text="${getUser}" class="marginDiv"> </span>
+            <span th:text="${debitCredit}" class="backgroundVert marginDiv"> </span>
+            <div class="divFelx marginDiv">
+                <form action="detailTotalAmount">
+                    <input type="submit" value="Account details" />
+                </form>    
+            </div>    
+        </div>
+  
+        <div th:if="${allTrans != null}" class="divFelx topDiv">
+            <table>
+                <caption>My Details of Account</caption>
+                <thead>
+                    <tr class="backgroundVert">
+                        <th>Date transaction</th>
+                        <th>Connections</th>
+                        <th>Description</th>
+                        <th>Type Transaction</th>
+                        <th>Nom Transaction</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${allTrans.empty}">
+                        <td colspan="3">Aucune transaction en base de données</td>
+                    </tr>
+                    <tr th:each="costsTrans: ${allTrans}">
+                        <td><span th:text="${#dates.format(costsTrans.transactions.dateTrans, 'dd.MM.yyyy')}"> Date transaction </span></td>
+                        <td><span th:text="${costsTrans.users.firstName}"> Connections </span></td>
+                        <td><span > </span></td>
+                        <td><span th:text="${costsTrans.typeTransactions.nomTypeTrans}"> Connections </span></td>
+                        <td><span th:text="${costsTrans.nameTransactions.nameTrans}"> Connections </span></td>
+                        <td><span th:text="${costsTrans.amount}"> Amount </span></td>
+                    </tr>
+                </tbody>
+            </table>    
+        </div>
+    
     </p>
 
     <div class="divFelx">
@@ -72,7 +109,7 @@
 
     <div th:if="${selectConn != null}" class="divFelx topDiv">
         <form action="#" method="post" th:action="@{/paid}">
-            <label for="trans">Voulez-vous : </label>
+            <label for="trans">Voulez-vous faire un : </label>
     
             <select name="connections" id="connections">
     

@@ -1,6 +1,8 @@
 package com.openclassrooms.pay_my_buddy.controller;
 
 import java.security.Principal;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +27,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.openclassrooms.pay_my_buddy.model.CostsDetailsTransactions;
 import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.model.NameTransactions;
+import com.openclassrooms.pay_my_buddy.model.Transactions;
+import com.openclassrooms.pay_my_buddy.model.TypeTransactions;
 import com.openclassrooms.pay_my_buddy.model.Users;
+import com.openclassrooms.pay_my_buddy.service.CostsDetailsTransactionsService;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
 import com.openclassrooms.pay_my_buddy.service.NameTransactionsService;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
@@ -50,6 +56,9 @@ public class LoginController {
 
     @Autowired
     private NameTransactionsService nameTransactionsService; // instance of object
+
+    @Autowired
+    private CostsDetailsTransactionsService costsDetailsTransactionsService; // instance of object
 
     @RolesAllowed("USER")
     @RequestMapping("/*")
@@ -156,6 +165,29 @@ public class LoginController {
         return modelAndView;
     }
 
+    @RolesAllowed("USER")
+    @RequestMapping("/detailTotalAmount")
+    public ModelAndView detailTotalAmount(Model model, Principal user, HttpServletRequest request,
+            HttpServletResponse response) {
+
+        // récupérer ID email de la personne connectée et la personne connectée
+        Users nameUser = recupererNameUser(user);
+
+        modelAndView.setViewName("accueil.html");
+        modelAndView = modelHome(model, user);
+
+        model.addAttribute("addDetailSolde", true);
+
+        List<CostsDetailsTransactions> listCostsUserToBuddy;
+        // true = for all transactions without paied to buddy
+        listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, true);
+        listCostsUserToBuddy.addAll(transactionsService.detailTransForUser(nameUser, false));
+
+        model.addAttribute("allTrans", listCostsUserToBuddy);
+
+        return modelAndView;
+    }
+
     private boolean verifierIdEmail(Users idUserBuddy, HttpServletRequest request) {
 
         boolean ifFriendExist = false;
@@ -209,19 +241,54 @@ public class LoginController {
 
     @RolesAllowed("USER")
     @PostMapping("/paid")
+    @Transactional
     public ModelAndView selectedConnection(Model model, Principal user, HttpServletRequest request,
             HttpServletResponse response) {
+
+        // récupérer ID email de la personne connectée et la personne connectée
+        Users nameUser = recupererNameUser(user);
 
         modelAndView.setViewName("accueil.html");
         modelAndView = modelHome(model, user);
 
-        model.addAttribute("selectConnection",
-                "Vous venez de choisir : " + request.getParameter("connections") + " pour le montant de "
-                        + request.getParameter("amount")
-                        + " (résultat : "
-                        + HttpStatus.valueOf(response.getStatus()) + ")");
+        // date du jour de la transaction
+        Date dateTransNow = new Date();
 
-        return modelAndView;
+        // si nom transaction choisi est Verser => c'est 1
+        if (request.getParameter("connections").equalsIgnoreCase("1")) {
+
+            Transactions transaction = new Transactions();
+            transaction.setDateTrans(dateTransNow);
+            transaction.setInvoiced(false);
+            transaction.setUser(nameUser.getIdUsers());
+
+            CostsDetailsTransactions costsDetailsTransaction = new CostsDetailsTransactions();
+            costsDetailsTransaction.setAmount(Double.parseDouble(request.getParameter("amount")));
+            // to user => nameUser courent pour VERSER
+            costsDetailsTransaction.setUsers(nameUser);
+            costsDetailsTransaction.setTransactions(transaction);
+
+            // type transaction
+            TypeTransactions typeTransaction = new TypeTransactions();
+            typeTransaction.setIdTypeTrans(1);
+
+            costsDetailsTransaction.setTypeTransactions(typeTransaction);
+
+            // nom transaction
+            NameTransactions nameTransaction = new NameTransactions();
+            nameTransaction.setIdNameTrans(Integer.parseInt(request.getParameter("connections")));
+
+            costsDetailsTransaction.setNameTransactions(nameTransaction);
+
+            transactionsService.addTransaction(transaction);
+            costsDetailsTransactionsService.addCostDetailTrans(costsDetailsTransaction);
+
+        }
+
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl("/detailTotalAmount");
+
+        return new ModelAndView(redirectView);
     }
 
     @RolesAllowed({ "USER", "ADMIN" })
