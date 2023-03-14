@@ -2,7 +2,6 @@ package com.openclassrooms.pay_my_buddy.controller;
 
 import java.security.Principal;
 import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.openclassrooms.pay_my_buddy.model.CostsDetailsTransactions;
 import com.openclassrooms.pay_my_buddy.model.Friends;
@@ -30,9 +27,9 @@ import com.openclassrooms.pay_my_buddy.model.NameTransactions;
 import com.openclassrooms.pay_my_buddy.model.Transactions;
 import com.openclassrooms.pay_my_buddy.model.TypeTransactions;
 import com.openclassrooms.pay_my_buddy.model.Users;
-import com.openclassrooms.pay_my_buddy.service.CostsDetailsTransactionsService;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
 import com.openclassrooms.pay_my_buddy.service.NameTransactionsService;
+import com.openclassrooms.pay_my_buddy.service.ServiceTransactionl;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
 import com.openclassrooms.pay_my_buddy.service.UsersService;
 
@@ -58,7 +55,7 @@ public class LoginController {
     private NameTransactionsService nameTransactionsService; // instance of object
 
     @Autowired
-    private CostsDetailsTransactionsService costsDetailsTransactionsService; // instance of object
+    private ServiceTransactionl serviceTransactionl; // instance of object
 
     @RolesAllowed("USER")
     @RequestMapping("/*")
@@ -176,13 +173,13 @@ public class LoginController {
         modelAndView.setViewName("accueil.html");
         modelAndView = modelHome(model, user);
 
-        model.addAttribute("addDetailSolde", true);
-
+        // details account
         List<CostsDetailsTransactions> listCostsUserToBuddy;
         // true = for all transactions without paied to buddy
         listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, true);
-        listCostsUserToBuddy.addAll(transactionsService.detailTransForUser(nameUser, false));
-
+        // listCostsUserToBuddy.addAll(transactionsService.detailTransForUser(nameUser,
+        // false));
+        model.addAttribute("addDetailSolde", true);
         model.addAttribute("allTrans", listCostsUserToBuddy);
 
         return modelAndView;
@@ -241,12 +238,12 @@ public class LoginController {
 
     @RolesAllowed("USER")
     @PostMapping("/paid")
-    @Transactional
     public ModelAndView selectedConnection(Model model, Principal user, HttpServletRequest request,
             HttpServletResponse response) {
 
         // récupérer ID email de la personne connectée et la personne connectée
         Users nameUser = recupererNameUser(user);
+        modelAndView = modelHome(model, user);
 
         modelAndView.setViewName("accueil.html");
         modelAndView = modelHome(model, user);
@@ -280,11 +277,9 @@ public class LoginController {
 
             costsDetailsTransaction.setNameTransactions(nameTransaction);
 
-            transactionsService.addTransaction(transaction);
-            costsDetailsTransactionsService.addCostDetailTrans(costsDetailsTransaction);
-
+            serviceTransactionl.updateTableTransactionsAndCostsDetailsTransactions(transaction,
+                    costsDetailsTransaction);
         }
-
         RedirectView redirectView = new RedirectView();
         redirectView.setUrl("/detailTotalAmount");
 

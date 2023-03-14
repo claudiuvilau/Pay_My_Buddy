@@ -49,12 +49,10 @@ public class TransactionsService {
             List<CostsDetailsTransactions> listC = listT.get(i).getCostsDetailsTransactionsList();
             for (int j = 0; j < listC.size(); j++) {
                 if (b) {
-                    if (listC.get(j).getUsers().getIdEmail().equals(nameUser.getIdEmail())) {
-                        listCosts.add(listC.get(j));
-                    }
+                    listCosts.add(listC.get(j));
                 } else {
-                    // if b = false => not equal to user, so to buddy
-                    if (!listC.get(j).getUsers().getIdEmail().equals(nameUser.getIdEmail())) {
+                    // if b = false => and name trans = 3 (envoi), so to buddy
+                    if (listC.get(j).getNameTransactions().getIdNameTrans() == 3) {
                         listCosts.add(listC.get(j));
                     }
                 }

@@ -44,10 +44,10 @@ public class CostsDetailsTransactions {
     @JoinColumn(name = "name_trans")
     private NameTransactions nameTransactions;
 
-    // @Column(name = "to_user")
+    // @Column(name = "to_from_user")
     // private int toUser;
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "to_user")
+    @JoinColumn(name = "to_from_user")
     private Users users;
 
     @OneToMany

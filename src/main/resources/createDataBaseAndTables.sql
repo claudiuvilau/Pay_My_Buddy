@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS CostsDetailsTransactions (
 	amount DECIMAL(6,2) NOT NULL,
 	type_trans INT UNSIGNED NOT NULL, 
 	name_trans INT UNSIGNED NOT NULL,
-	to_user INT UNSIGNED NOT NULL, 
+	to_from_user INT UNSIGNED NOT NULL, 
 	PRIMARY KEY (id),
 	CONSTRAINT fk_number_trans_id_trans 
 		FOREIGN KEY (trans_id_trans) 
@@ -127,8 +127,8 @@ CREATE TABLE IF NOT EXISTS CostsDetailsTransactions (
 	CONSTRAINT fk_name_trans_id_trans 
 		FOREIGN KEY (name_trans) 
 		REFERENCES NameTransactions(id_name_trans),
-	CONSTRAINT fk_to_user 
-		FOREIGN KEY (to_user) 
+	CONSTRAINT fk_to_from_user 
+		FOREIGN KEY (to_from_user) 
 		REFERENCES Users(id_users)
 )
 ENGINE=INNODB;
@@ -145,11 +145,11 @@ INSERT INTO Transactions (id_trans, date_trans, user) VALUES
 	(4, "2023-2-05", 3);
 
 
-INSERT INTO CostsDetailsTransactions (trans_id_trans, amount, type_trans, name_trans, to_user) VALUES 
+INSERT INTO CostsDetailsTransactions (trans_id_trans, amount, type_trans, name_trans, to_from_user) VALUES 
 	(1, 30, 1, 1, 1),
 	(1, 10, 2, 3, 3),
 	(1, 0.05, 2, 5, 1),
-	(2, 10, 1, 4, 3),
+	(2, 10, 1, 4, 1),
 	(3, 10, 2, 2, 2),
 	(4, 50, 1, 1, 3);
 
