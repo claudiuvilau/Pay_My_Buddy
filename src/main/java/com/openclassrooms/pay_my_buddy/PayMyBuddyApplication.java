@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.model.Transactions;
 import com.openclassrooms.pay_my_buddy.model.Users;
-import com.openclassrooms.pay_my_buddy.service.FriendsService;
 import com.openclassrooms.pay_my_buddy.service.HashPasswordService;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
 import com.openclassrooms.pay_my_buddy.service.UsersService;
@@ -22,9 +21,6 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 	@Autowired
 	private UsersService usersService; // instance of object
-
-	@Autowired
-	private FriendsService friendsService; // instance of object
 
 	@Autowired
 	private TransactionsService transactionsService; // instance of object
@@ -93,7 +89,7 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 
 		// seeBuddyList(userId);
 
-		String pwHash = "1";
+		String pwHash = "3";
 		HashPasswordService hashPasswordService = new HashPasswordService();
 		String pwToHash = hashPasswordService.hashPassword(pwHash);
 		hashPasswordService.setMdp(pwToHash);

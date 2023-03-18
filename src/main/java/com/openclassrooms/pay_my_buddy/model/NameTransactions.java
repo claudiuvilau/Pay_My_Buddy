@@ -1,12 +1,22 @@
 package com.openclassrooms.pay_my_buddy.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+@Component
 @Entity
 @Table(name = "nametransactions")
 public class NameTransactions {
@@ -19,13 +29,13 @@ public class NameTransactions {
     @Column(name = "name_trans")
     private String nameTrans;
 
-    public NameTransactions() {
-    }
+    @OneToMany
+    @JoinColumn(name = "name_trans")
+    List<CostsDetailsTransactions> costsDetailsTransactions = new ArrayList<>();
 
-    public NameTransactions(int idNameTrans, String nameTrans) {
-        this.idNameTrans = idNameTrans;
-        this.nameTrans = nameTrans;
-    }
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "type_name_trans")
+    private TypeTransactions typeTransactions;
 
     public int getIdNameTrans() {
         return this.idNameTrans;
@@ -33,6 +43,14 @@ public class NameTransactions {
 
     public void setIdNameTrans(int idNameTrans) {
         this.idNameTrans = idNameTrans;
+    }
+
+    public List<CostsDetailsTransactions> getCostsDetailsTransactions() {
+        return this.costsDetailsTransactions;
+    }
+
+    public void setCostsDetailsTransactions(List<CostsDetailsTransactions> costsDetailsTransactions) {
+        this.costsDetailsTransactions = costsDetailsTransactions;
     }
 
     public String getNameTrans() {
@@ -43,12 +61,12 @@ public class NameTransactions {
         this.nameTrans = nameTrans;
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-                " idNameTrans='" + getIdNameTrans() + "'" +
-                ", nameTrans='" + getNameTrans() + "'" +
-                "}";
+    public TypeTransactions getTypeTransactions() {
+        return this.typeTransactions;
+    }
+
+    public void setTypeTransactions(TypeTransactions typeTransactions) {
+        this.typeTransactions = typeTransactions;
     }
 
 }
