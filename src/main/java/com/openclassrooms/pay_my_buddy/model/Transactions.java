@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+@Component
 @Entity
 @Table(name = "transactions")
 public class Transactions {
@@ -31,7 +35,7 @@ public class Transactions {
     @Column(name = "invoiced")
     private Boolean invoiced;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "trans_id_trans")
     List<CostsDetailsTransactions> costsDetailsTransactionsList = new ArrayList<>();
 

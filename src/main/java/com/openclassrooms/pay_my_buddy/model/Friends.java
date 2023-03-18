@@ -1,5 +1,7 @@
 package com.openclassrooms.pay_my_buddy.model;
 
+import org.springframework.stereotype.Component;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+@Component
 @Entity
 @Table(name = "friends")
 public class Friends {

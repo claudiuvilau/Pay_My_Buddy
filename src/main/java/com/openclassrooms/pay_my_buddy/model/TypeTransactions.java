@@ -3,6 +3,8 @@ package com.openclassrooms.pay_my_buddy.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+@Component
 @Entity
 @Table(name = "typetransactions")
 public class TypeTransactions {
@@ -27,6 +30,10 @@ public class TypeTransactions {
     @OneToMany
     @JoinColumn(name = "type_trans")
     List<CostsDetailsTransactions> costsDetailsTransactions = new ArrayList<>();
+
+    @OneToMany
+    @JoinColumn(name = "type_name_trans")
+    List<NameTransactions> nameTransactionsList = new ArrayList<>();
 
     public int getIdTypeTrans() {
         return idTypeTrans;
@@ -50,6 +57,14 @@ public class TypeTransactions {
 
     public void setNomTypeTrans(String nomTypeTrans) {
         this.nomTypeTrans = nomTypeTrans;
+    }
+
+    public List<NameTransactions> getNameTransactionsList() {
+        return this.nameTransactionsList;
+    }
+
+    public void setNameTransactionsList(List<NameTransactions> nameTransactionsList) {
+        this.nameTransactionsList = nameTransactionsList;
     }
 
 }

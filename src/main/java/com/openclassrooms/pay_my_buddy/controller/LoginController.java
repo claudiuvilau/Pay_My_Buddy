@@ -1,7 +1,6 @@
 package com.openclassrooms.pay_my_buddy.controller;
 
 import java.security.Principal;
-import java.util.Date;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -25,8 +24,8 @@ import com.openclassrooms.pay_my_buddy.model.CostsDetailsTransactions;
 import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.model.NameTransactions;
 import com.openclassrooms.pay_my_buddy.model.Transactions;
-import com.openclassrooms.pay_my_buddy.model.TypeTransactions;
 import com.openclassrooms.pay_my_buddy.model.Users;
+import com.openclassrooms.pay_my_buddy.service.CreationTransactionService;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
 import com.openclassrooms.pay_my_buddy.service.NameTransactionsService;
 import com.openclassrooms.pay_my_buddy.service.ServiceTransactionl;
@@ -55,14 +54,16 @@ public class LoginController {
     private NameTransactionsService nameTransactionsService; // instance of object
 
     @Autowired
-    private ServiceTransactionl serviceTransactionl; // instance of object
+    private CreationTransactionService creationTransactionService;
+
+    private static final String PAGE_ACCUEIL = "accueil.html";
 
     @RolesAllowed("USER")
     @RequestMapping("/*")
     public ModelAndView afterLogin(Model model, Principal user, HttpServletRequest request,
             HttpServletResponse response) {
 
-        modelAndView.setViewName("accueil.html");
+        modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
 
         return modelAndView;
@@ -99,7 +100,7 @@ public class LoginController {
     @RolesAllowed("USER")
     @RequestMapping("/addconnection")
     public ModelAndView addConnection(Model model, Principal user) {
-        modelAndView.setViewName("accueil.html");
+        modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
 
         model.addAttribute("addConn", true);
@@ -115,7 +116,7 @@ public class LoginController {
         // récupérer ID email de la personne connectée et la personne connectée
         Users nameUser = recupererNameUser(user);
 
-        modelAndView.setViewName("accueil.html");
+        modelAndView.setViewName(PAGE_ACCUEIL);
 
         String msgResultat = "";
 
@@ -170,15 +171,13 @@ public class LoginController {
         // récupérer ID email de la personne connectée et la personne connectée
         Users nameUser = recupererNameUser(user);
 
-        modelAndView.setViewName("accueil.html");
+        modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
 
         // details account
         List<CostsDetailsTransactions> listCostsUserToBuddy;
         // true = for all transactions without paied to buddy
         listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, true);
-        // listCostsUserToBuddy.addAll(transactionsService.detailTransForUser(nameUser,
-        // false));
         model.addAttribute("addDetailSolde", true);
         model.addAttribute("allTrans", listCostsUserToBuddy);
 
@@ -210,7 +209,7 @@ public class LoginController {
 
         // récupérer ID email de la personne connectée et la personne connectée
         Users nameUser = recupererNameUser(user);
-        modelAndView.setViewName("accueil.html");
+        modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
 
         model.addAttribute("selectConn", true);
@@ -243,43 +242,14 @@ public class LoginController {
 
         // récupérer ID email de la personne connectée et la personne connectée
         Users nameUser = recupererNameUser(user);
+        modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
 
-        modelAndView.setViewName("accueil.html");
-        modelAndView = modelHome(model, user);
+        String typeTransConnection = request.getParameter("connections");
+        String amount = request.getParameter("amount");
 
-        // date du jour de la transaction
-        Date dateTransNow = new Date();
+        creationTransactionService.createTransaction(nameUser, typeTransConnection, amount);
 
-        // si nom transaction choisi est Verser => c'est 1
-        if (request.getParameter("connections").equalsIgnoreCase("1")) {
-
-            Transactions transaction = new Transactions();
-            transaction.setDateTrans(dateTransNow);
-            transaction.setInvoiced(false);
-            transaction.setUser(nameUser.getIdUsers());
-
-            CostsDetailsTransactions costsDetailsTransaction = new CostsDetailsTransactions();
-            costsDetailsTransaction.setAmount(Double.parseDouble(request.getParameter("amount")));
-            // to user => nameUser courent pour VERSER
-            costsDetailsTransaction.setUsers(nameUser);
-            costsDetailsTransaction.setTransactions(transaction);
-
-            // type transaction
-            TypeTransactions typeTransaction = new TypeTransactions();
-            typeTransaction.setIdTypeTrans(1);
-
-            costsDetailsTransaction.setTypeTransactions(typeTransaction);
-
-            // nom transaction
-            NameTransactions nameTransaction = new NameTransactions();
-            nameTransaction.setIdNameTrans(Integer.parseInt(request.getParameter("connections")));
-
-            costsDetailsTransaction.setNameTransactions(nameTransaction);
-
-            serviceTransactionl.updateTableTransactionsAndCostsDetailsTransactions(transaction,
-                    costsDetailsTransaction);
-        }
         RedirectView redirectView = new RedirectView();
         redirectView.setUrl("/detailTotalAmount");
 

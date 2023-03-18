@@ -33,9 +33,9 @@ CREATE TABLE IF NOT EXISTS Users (
 ENGINE=INNODB;
 
 INSERT INTO Users (id_users, id_email, name_user, first_name, birth_date, password, role_id) VALUES 
-	(1, "jack.dupont@yahoo.fr", "DUPONT", "Jack", "1982-01-22", "1", 2),
-	(2, "mireille.benoit@hotmail.com", "BENOIT", "Mireille", "1970-12-31", "2", 1),
-	(3, "sebastien.martin@hotmail.fr", "MARTIN", "Sébastien", "1977-09-19", "3", 2);
+	(1, "jack.dupont@yahoo.fr", "DUPONT", "Jack", "1982-01-22", "$2a$10$L17796jDsldbIAteOItmZONsqtcHYBBOO8YMiIZ8zQ8TpqkkI6YBm", 2),
+	(2, "mireille.benoit@hotmail.com", "BENOIT", "Mireille", "1970-12-31", "$2a$10$f0kDO5HMomT0zjdC7YwSF.gBnof2mNe94E6TGfCERPByrFHxiluUy", 1),
+	(3, "sebastien.martin@hotmail.fr", "MARTIN", "Sébastien", "1977-09-19", "$2a$10$IAzJLgE0gtud70R3L4cjiuTT8OmKZg7l.QKQxz3phUZWUu9BXfi1S", 2);
 
 
 CREATE TABLE IF NOT EXISTS Friends (
@@ -97,17 +97,21 @@ INSERT INTO TypeTransactions (id_type_trans, nom_type_trans) VALUES
 CREATE TABLE IF NOT EXISTS NameTransactions (
 	id_name_trans INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	name_trans VARCHAR(15) NOT NULL,
-	PRIMARY KEY (id_name_trans)
+	type_name_trans INT UNSIGNED NOT NULL,
+	PRIMARY KEY (id_name_trans),
+	CONSTRAINT fk_type_name_trans 
+		FOREIGN KEY (type_name_trans) 
+		REFERENCES TypeTransactions(id_type_trans)
 )
 ENGINE=INNODB;
 
-INSERT INTO NameTransactions (id_name_trans, name_trans) VALUES 
-	(1, "versement"),
-	(2, "transfert"),
-	(3, "envoi"),
-	(4, "encaissement"),
-	(5, "Frais"),
-	(6, "Interets");
+INSERT INTO NameTransactions (id_name_trans, name_trans, type_name_trans) VALUES 
+	(1, "versement", 1),
+	(2, "transfert", 2),
+	(3, "envoi", 2),
+	(4, "encaissement", 1),
+	(5, "Frais", 2),
+	(6, "Intérêts", 2);
 
 
 CREATE TABLE IF NOT EXISTS CostsDetailsTransactions (

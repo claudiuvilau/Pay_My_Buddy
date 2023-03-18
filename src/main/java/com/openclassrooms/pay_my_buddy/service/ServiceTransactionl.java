@@ -18,10 +18,18 @@ public class ServiceTransactionl {
     private CostsDetailsTransactionsService costsDetailsTransactionsService; // instance of object
 
     public void updateTableTransactionsAndCostsDetailsTransactions(Transactions transaction,
-            CostsDetailsTransactions costsDetailsTransaction) {
+            CostsDetailsTransactions costsDetailsTransaction,
+            CostsDetailsTransactions costsDetailsTransactionFrais, Transactions transactionEncaissement,
+            CostsDetailsTransactions costsDetailsTransactionEncaissement) {
 
         transactionsService.addTransaction(transaction);
         costsDetailsTransactionsService.addCostDetailTrans(costsDetailsTransaction);
+
+        if (costsDetailsTransactionEncaissement.getTransactions() != null) {
+            costsDetailsTransactionsService.addCostDetailTrans(costsDetailsTransactionFrais);
+            transactionsService.addTransaction(transactionEncaissement);
+            costsDetailsTransactionsService.addCostDetailTrans(costsDetailsTransactionEncaissement);
+        }
 
     }
 
