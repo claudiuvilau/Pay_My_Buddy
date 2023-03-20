@@ -1,11 +1,15 @@
 package com.openclassrooms.pay_my_buddy.controller;
 
 import java.security.Principal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +24,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.openclassrooms.pay_my_buddy.configuration.SpringSecurityConfig;
 import com.openclassrooms.pay_my_buddy.model.CostsDetailsTransactions;
 import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.model.NameTransactions;
-import com.openclassrooms.pay_my_buddy.model.Transactions;
+import com.openclassrooms.pay_my_buddy.model.Roles;
 import com.openclassrooms.pay_my_buddy.model.Users;
 import com.openclassrooms.pay_my_buddy.service.CreationTransactionService;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
 import com.openclassrooms.pay_my_buddy.service.NameTransactionsService;
-import com.openclassrooms.pay_my_buddy.service.ServiceTransactionl;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
 import com.openclassrooms.pay_my_buddy.service.UsersService;
 
@@ -55,6 +59,15 @@ public class LoginController {
 
     @Autowired
     private CreationTransactionService creationTransactionService;
+
+    @Autowired
+    Users userNew;
+
+    @Autowired
+    Roles roles;
+
+    @Autowired
+    SpringSecurityConfig springSecurityConfig;
 
     private static final String PAGE_ACCUEIL = "accueil.html";
 
@@ -87,13 +100,6 @@ public class LoginController {
         model.addAttribute("debitCredit", credit - debit);
         model.addAttribute("getCostsTrans", listCostsUserToBuddy);
 
-        return modelAndView;
-    }
-
-    @RolesAllowed("USER")
-    @RequestMapping("/transfer")
-    public ModelAndView home() {
-        modelAndView.setViewName("connexion.html");
         return modelAndView;
     }
 
@@ -254,6 +260,76 @@ public class LoginController {
         redirectView.setUrl("/detailTotalAmount");
 
         return new ModelAndView(redirectView);
+    }
+
+    @RolesAllowed("USER")
+    @GetMapping("/login")
+    public ModelAndView login(Model model, Principal user, HttpServletRequest request,
+            HttpServletResponse response) {
+
+        modelAndView.setViewName("login.html");
+
+        return modelAndView;
+    }
+
+    @RolesAllowed("USER")
+    @PostMapping("/login")
+    public ModelAndView loginPost(Model model, Principal user, HttpServletRequest request,
+            HttpServletResponse response) {
+
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl("/*");
+
+        return new ModelAndView(redirectView);
+    }
+
+    @RolesAllowed("USER")
+    @PostMapping("/register")
+    public ModelAndView registerNewUser(Model model, Principal user, HttpServletRequest request,
+            HttpServletResponse response) throws ParseException {
+
+        // récupérer ID email
+        String newUserMail = request.getParameter("username").toLowerCase().trim();
+        String newUserPassword = springSecurityConfig.bCryptPasswordEncoder()
+                .encode(request.getParameter("password").trim());
+        String newUserFirstName = request.getParameter("prenom").toLowerCase().trim();
+        newUserFirstName = makeUpperCaseFirstLetter(newUserFirstName);
+        String newUserLastName = request.getParameter("nom").toUpperCase().trim();
+
+        String newUserBirthDay = request.getParameter("dateDeNaissance");
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        Date newUserDateBirthDay = formatter.parse(newUserBirthDay);
+
+        int roleId = 1; // 1 = user
+        roles = new Roles();
+        roles.setIdRoles(roleId);
+        userNew = new Users();
+        userNew.setIdEmail(newUserMail);
+        userNew.setPassword(newUserPassword);
+        userNew.setFirstName(newUserFirstName);
+        userNew.setNameUser(newUserLastName);
+        userNew.setBirthDate(newUserDateBirthDay);
+        userNew.setRole(roles);
+
+        usersService.addUser(userNew);
+
+        // verify if register is ok
+        String msg = "err !";
+        if (usersService.getUser(newUserMail) != null) {
+            msg = userNew.getFirstName() + ", vous vous êtes bien enregistré avec l'adresse email (username) : "
+                    + userNew.getIdEmail() + " (" + HttpStatus.valueOf(response.getStatus()) + ")";
+        }
+
+        modelAndView.setViewName("login.html");
+        model.addAttribute("newUser", msg);
+
+        return modelAndView;
+    }
+
+    private String makeUpperCaseFirstLetter(String newUserFirstName) {
+        newUserFirstName = newUserFirstName.substring(0, 1).toUpperCase() + newUserFirstName.substring(1);
+        return newUserFirstName;
     }
 
     @RolesAllowed({ "USER", "ADMIN" })

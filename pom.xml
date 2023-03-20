@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.2</version>
+		<version>3.0.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.openclassrooms</groupId>
@@ -15,7 +15,7 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
-		<dep.junit.version>5.9.0</dep.junit.version>
+		<dep.junit.version>5.9.2</dep.junit.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -78,7 +78,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>4.7.0</version>
+			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
   
