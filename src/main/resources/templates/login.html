@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns :th= http://www.thymeleaf.org>
+<head>
+    <meta charset="UTF-8" />
+    <title>Login screen</title>
+    <style type="text/css">
+        .backgroundVert{background-color: forestgreen; font-size: larger; color: white;}
+        .aHref {color: black; text-decoration: none;}
+        .divFelx{display: flex;}
+        .divFelxCenter{justify-content: center;}
+        .divFlexSpaceBetween{justify-content: space-between;}
+        .marginDiv{margin: 5px;}
+        .topDiv{margin-top:  10px;}
+    </style>
+</head>
+<body>
+    <div class="divFelx divFelxCenter topDiv">
+        <form action="#" method="post" th:action="@{/login}">
+            <fieldset>
+               <legend>Please Login</legend> 
+               <div class="divFelx topDiv">
+                <label for="username">Username : </label>
+                <input type="text" name="username" id="username"> 
+               </div>
+               <div class="divFelx topDiv">
+                <label for="password">Password : </label>
+                <input type="text" name="password" id="password"> 
+               </div>
+            </fieldset>
+            <input type="submit" value="Log in" id="sendLogin">
+          </form>    
+    </div>
+
+    <div class="divFelx divFelxCenter topDiv">
+        <form action="#" method="post" th:action="@{/register}">
+            <fieldset>
+               <legend>Register New User</legend> 
+               <div class="divFelx topDiv">
+                <label for="nom">Nom :</label>
+                <input type="text" name="nom" id="nom">
+               </div>
+               <div class="divFelx topDiv">
+                <label for="prenom">Prénom :</label>
+                <input type="text" name="prenom" id="prenom"> 
+               </div>
+               <div class="divFelx topDiv">
+                <label for="dateDeNaissance">Date de naissance :</label>
+                <input type="date" name="dateDeNaissance" id="dateDeNaissance">                  
+               </div>
+               <div class="divFelx topDiv">
+                <label for="username">Username :</label>
+                <input type="text" name="username" id="username"> 
+               </div>
+               <div class="divFelx topDiv">
+                <label for="password">Password :</label>
+                <input type="text" name="password" id="password"> 
+               </div>
+            </fieldset>
+            <input type="submit" value="Register" id="sendRegister">
+          </form>    
+    </div>
+
+    <div class="divFelx divFelxCenter topDiv">
+        <span th:text="${newUser}"> </span>
+    </div>
+
+</body>
+</html>

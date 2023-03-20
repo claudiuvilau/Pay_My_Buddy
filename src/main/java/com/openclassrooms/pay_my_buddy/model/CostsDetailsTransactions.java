@@ -3,6 +3,9 @@ package com.openclassrooms.pay_my_buddy.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,6 +17,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+@Component
 @Entity
 @Table(name = "costsdetailstransactions")
 public class CostsDetailsTransactions {
@@ -25,7 +29,7 @@ public class CostsDetailsTransactions {
 
     // @Column(name = "trans_id_trans")
     // private int transIdTrans;
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "trans_id_trans")
     private Transactions transactions;
 
@@ -34,23 +38,23 @@ public class CostsDetailsTransactions {
 
     // @Column(name = "type_trans")
     // private int typeTrans;
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "type_trans")
     private TypeTransactions typeTransactions;
 
     // @Column(name = "name_trans")
     // private int nameTrans;
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "name_trans")
     private NameTransactions nameTransactions;
 
-    // @Column(name = "to_user")
+    // @Column(name = "to_from_user")
     // private int toUser;
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "to_user")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "to_from_user")
     private Users users;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_trans")
     List<Transactions> transactionsList = new ArrayList<>();
 
