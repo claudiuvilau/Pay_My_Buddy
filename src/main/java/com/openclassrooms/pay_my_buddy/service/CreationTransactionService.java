@@ -35,10 +35,13 @@ public class CreationTransactionService {
     private CostsDetailsTransactions costsDetailsTransactionFrais;
 
     @Autowired
-    private NameTransactionsService nameTransactionsService; // instance of object
+    private NameTransactionsService nameTransactionsService;
 
     @Autowired
     private UsersService usersService;
+
+    @Autowired
+    private CollectionMoneyService collectionMoneyService;
 
     public void createTransaction(Users nameUser, String typeTransConnection, String amount) {
 
@@ -73,7 +76,7 @@ public class CreationTransactionService {
             // add frais
             defineNameTrans = 5; // interest in table is 5
             costsDetailsTransactionFrais = defineNewCostsDetailsFraisTransaction(transaction, nameUser,
-                    defineNameTrans);
+                    defineNameTrans, dateTransNow, amount);
         }
 
         serviceTransactionl.updateTableTransactionsAndCostsDetailsTransactions(transaction, costsDetailsTransaction,
@@ -131,10 +134,10 @@ public class CreationTransactionService {
 
     private CostsDetailsTransactions defineNewCostsDetailsFraisTransaction(Transactions transactionCreated,
             Users nameUser,
-            int defineNameTrans) {
+            int defineNameTrans, Date dateTransNow, String amount) {
 
         costsDetailsTransactionFrais = new CostsDetailsTransactions();
-        costsDetailsTransactionFrais.setAmount(Double.parseDouble("10"));
+        costsDetailsTransactionFrais.setAmount(findInterestCollectionMoney(dateTransNow) * Double.parseDouble(amount));
         costsDetailsTransactionFrais.setUsers(nameUser);
 
         // add costs in transaction
@@ -152,6 +155,10 @@ public class CreationTransactionService {
 
         return costsDetailsTransactionFrais;
 
+    }
+
+    private double findInterestCollectionMoney(Date dateTransNow) {
+        return collectionMoneyService.getCollectionMoneyToDate(dateTransNow);
     }
 
     private CostsDetailsTransactions defineNewDetailsCostsTransactionEncaissement(Transactions transactionEncaissement,

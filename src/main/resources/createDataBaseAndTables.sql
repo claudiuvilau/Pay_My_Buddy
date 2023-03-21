@@ -62,13 +62,13 @@ CREATE TABLE IF NOT EXISTS CollectionMoney (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	start_date DATE UNIQUE NOT NULL,
 	end_date DATE UNIQUE NOT NULL,
-	amount_percentage DECIMAL(4,2) NOT NULL,
+	amount_percentage DECIMAL(5,3) NOT NULL,
 	PRIMARY KEY (id)
 )
 ENGINE=INNODB;
 
 INSERT INTO CollectionMoney (start_date, end_date, amount_percentage) VALUES 
-	("2022-12-01", "2099-12-31", 0.5);
+	("2022-12-01", "2099-12-31", 0.005);
 
 CREATE TABLE IF NOT EXISTS Transactions (
 	id_trans INT UNSIGNED NOT NULL AUTO_INCREMENT,
