@@ -1,9 +1,12 @@
 package com.openclassrooms.pay_my_buddy.controller;
 
 import java.security.Principal;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -92,12 +95,21 @@ public class LoginController {
         // true = for all transactions without paied to buddy
         listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, false);
 
+        // sort DESC
+        Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> {
+            return Integer.compare(c2.getId(), c1.getId());
+        };
+        Collections.sort(listCostsUserToBuddy, comparator);
+
         double debit;
         debit = transactionsService.debit(nameUser);
         double credit;
         credit = transactionsService.credit(nameUser);
 
-        model.addAttribute("debitCredit", credit - debit);
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(2);
+
+        model.addAttribute("debitCredit", nf.format(credit - debit));
         model.addAttribute("getCostsTrans", listCostsUserToBuddy);
 
         return modelAndView;
@@ -184,6 +196,13 @@ public class LoginController {
         List<CostsDetailsTransactions> listCostsUserToBuddy;
         // true = for all transactions without paied to buddy
         listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, true);
+
+        // sort DESC
+        Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> {
+            return Integer.compare(c2.getId(), c1.getId());
+        };
+        Collections.sort(listCostsUserToBuddy, comparator);
+
         model.addAttribute("addDetailSolde", true);
         model.addAttribute("allTrans", listCostsUserToBuddy);
 
@@ -238,6 +257,18 @@ public class LoginController {
         }
         model.addAttribute("listNameTransactions", listNameTransactions);
 
+        double valueAmount = 0;
+        String selectedOption = "--";
+        String valueSelectedOption = "";
+        if (request.getParameter("amount") != null) {
+            valueAmount = Double.parseDouble(request.getParameter("amount"));
+            selectedOption = usersService.getUser(request.getParameter("connections")).getFirstName();
+            valueSelectedOption = request.getParameter("connections");
+        }
+        model.addAttribute("selectedOption", selectedOption);
+        model.addAttribute("valueSelectedOption", valueSelectedOption);
+        model.addAttribute("valueOfAmount", valueAmount);
+
         return modelAndView;
     }
 
@@ -253,10 +284,17 @@ public class LoginController {
 
         String typeTransConnection = request.getParameter("connections");
         String amount = request.getParameter("amount");
-
-        creationTransactionService.createTransaction(nameUser, typeTransConnection, amount);
+        String description = request.getParameter("description");
 
         RedirectView redirectView = new RedirectView();
+
+        if (typeTransConnection.contains("@") && description == null) {
+            selectConnection(model, user, request, response);
+            return modelAndView;
+        }
+
+        creationTransactionService.createTransaction(nameUser, typeTransConnection, amount, description);
+
         redirectView.setUrl("/detailTotalAmount");
 
         return new ModelAndView(redirectView);
@@ -347,6 +385,13 @@ public class LoginController {
         List<CostsDetailsTransactions> listCostsUser;
         // true = for all transactions without paied to buddy
         listCostsUser = transactionsService.detailTransForUser(nameUser, true);
+
+        // sort DESC
+        Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> {
+            return Integer.compare(c2.getId(), c1.getId());
+        };
+        Collections.sort(listCostsUser, comparator);
+
         model.addAttribute("getCostsTrans", listCostsUser);
 
         return modelAndView;

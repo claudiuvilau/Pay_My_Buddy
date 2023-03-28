@@ -6,47 +6,47 @@
     <style type="text/css">
         .backgroundVert{background-color: forestgreen; font-size: larger; color: white;}
         .aHref {color: black; text-decoration: none;}
-        .divFelx{display: flex;}
+        .divFlex{display: flex;}
         .divFlexSpaceBetween{justify-content: space-between;}
         .marginDiv{margin: 5px;}
         .topDiv{margin-top:  10px;}
     </style>
 </head>
 <body>
-    <div class="divFelx divFlexSpaceBetween"> 
-        <div class="divFelx">
+    <div class="divFlex divFlexSpaceBetween"> 
+        <div class="divFlex">
             <p class="backgroundVert">Pay My Buddy</p>
         </div>
-        <div class="divFelx">
-            <div class="divFelx marginDiv">
+        <div class="divFlex">
+            <div class="divFlex marginDiv">
                 <a href="accueil" class="aHref">Home</a>
             </div>
-            <div class="divFelx marginDiv">
+            <div class="divFlex marginDiv">
                 <a href="transfer" class="aHref">Transfer</a>
             </div>
-            <div class="divFelx marginDiv">
+            <div class="divFlex marginDiv">
                 <a href="profile" class="aHref">Profile</a>
             </div>
-            <div class="divFelx marginDiv">
+            <div class="divFlex marginDiv">
                 <a href="contact" class="aHref">Contact</a>
             </div>
-            <div class="divFelx marginDiv">
+            <div class="divFlex marginDiv">
                 <a href="/logout" class="aHref">Log off</a>
             </div>
         </div>    
     </div>
     <p>  
-        <div class="divFelx">
+        <div class="divFlex">
             <span th:text="${getUser}" class="marginDiv"> </span>
             <span th:text="${debitCredit}" class="backgroundVert marginDiv"> </span>
-            <div class="divFelx marginDiv">
+            <div class="divFlex marginDiv">
                 <form action="detailTotalAmount">
                     <input type="submit" value="Account details" />
                 </form>    
             </div>    
         </div>
   
-        <div th:if="${allTrans != null}" class="divFelx topDiv">
+        <div th:if="${allTrans != null}" class="divFlex topDiv">
             <table>
                 <caption>My Details of Account</caption>
                 <thead>
@@ -66,7 +66,7 @@
                     <tr th:each="costsTrans: ${allTrans}">
                         <td><span th:text="${#dates.format(costsTrans.transactions.dateTrans, 'dd.MM.yyyy')}"> Date transaction </span></td>
                         <td><span th:text="${costsTrans.users.firstName}"> Connections </span></td>
-                        <td><span > </span></td>
+                        <td><span th:if="${costsTrans.descriptions != null}" th:text="${costsTrans.descriptions.description}"> Description  </span></td>
                         <td><span th:text="${costsTrans.typeTransactions.nomTypeTrans}"> Connections </span></td>
                         <td><span th:text="${costsTrans.nameTransactions.nameTrans}"> Connections </span></td>
                         <td><span th:text="${costsTrans.amount}"> Amount </span></td>
@@ -77,20 +77,20 @@
     
     </p>
 
-    <div class="divFelx">
-        <div class="divFelx">
+    <div class="divFlex">
+        <div class="divFlex">
             <form action="selectconnection">
                 <input type="submit" value="Send Money" />
             </form>    
         </div>
-        <div class="divFelx">
+        <div class="divFlex">
             <form action="addconnection">
                 <input type="submit" value="Add Connection" />
             </form>        
         </div>
     </div>
 
-    <div th:if="${addConn != null}" class="divFelx topDiv">
+    <div th:if="${addConn != null}" class="divFlex topDiv">
         <form action="#" method="post" th:action="@{/addedconnection}">
             <fieldset>
                <legend>Les coordonnées de votre amis</legend> 
@@ -107,17 +107,17 @@
           </form>    
     </div>
 
-    <div th:if="${selectConn != null}" class="divFelx topDiv">
+    <div th:if="${selectConn != null}" class="divFlex topDiv">
         <form action="#" method="post" th:action="@{/paid}">
-            <label for="trans">Voulez-vous faire un : </label>
+            <label for="trans">Voulez-vous ? </label>
     
             <select name="connections" id="connections">
     
-              <option value="">--</option>
+              <option th:value="${valueSelectedOption}" th:text="${selectedOption}"></option>
     
               <option th:each="listNameTrans: ${listNameTransactions}"
                                 th:value="${listNameTrans.idNameTrans}"
-                                th:text="|${listNameTrans.nameTrans} ?|"></option>
+                                th:text="|faire un ${listNameTrans.nameTrans} ?|"></option>
     
               <option value="">envoyer à :</option>
     
@@ -126,21 +126,27 @@
                                  th:text="|${listB.users.firstName} ?|"></option>
             </select>
     
-            <input type="number" name="amount" step="1" value="0" min="0">
-    
+            <label for="amount">Amount : </label>
+            <input type="number" name="amount" th:value="${valueOfAmount}" min="0">
+
+            <div th:if="${valueOfAmount} > 0">
+                <label for="description">Description : </label>
+                <input type="text" name="description">        
+            </div>
+
             <input type="submit" value="Pay" id="sendMoney" class="backgroundVert" />
       </form>
     
     </div>
 
-    <div class="divFelx topDiv">
+    <div class="divFlex topDiv">
         <span th:text="${addedConnection}"> </span>
         <span th:text="${selectConnection}"> </span>
     </div>
 
 
 
-    <div th:if="${getCostsTrans != null}" class="divFelx topDiv">
+    <div th:if="${getCostsTrans != null}" class="divFlex topDiv divBorder">
         <table>
             <caption>My Transactions</caption>
             <thead>
@@ -158,14 +164,14 @@
                 <tr th:each="costsTrans: ${getCostsTrans}">
                     <td><span th:text="${#dates.format(costsTrans.transactions.dateTrans, 'dd.MM.yyyy')}"> Date transaction </span></td>
                     <td><span th:text="${costsTrans.users.firstName}"> Connections </span></td>
-                    <td><span > </span></td>
+                    <td><span th:if="${costsTrans.descriptions != null}" th:text="${costsTrans.descriptions.description}"> Description  </span></td>
                     <td><span th:text="${costsTrans.amount}"> Amount </span></td>
                 </tr>
             </tbody>
         </table>    
     </div>
 
-    <div th:if="${addedConn != null}" class="divFelx topDiv">
+    <div th:if="${addedConn != null}" class="divFlex topDiv">
         <table>
             <caption>My Buddys</caption>
             <thead>
