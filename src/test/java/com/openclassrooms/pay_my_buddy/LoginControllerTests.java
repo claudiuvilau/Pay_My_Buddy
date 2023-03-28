@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -46,11 +46,13 @@ public class LoginControllerTests {
 
     @Test
     public void userLoginTest() throws Exception {
-        mockMvc.perform(formLogin("/login").user("user").password("password")).andExpect(authenticated());
+        mockMvc.perform(formLogin("/login").user("mireille.benoit@hotmail.com")
+                .password("2")).andExpect(authenticated());
     }
 
     @Test
     public void userLoginFailed() throws Exception {
-        mockMvc.perform(formLogin("/login").user("springuser").password("wrongpassword")).andExpect(unauthenticated());
+        mockMvc.perform(formLogin("/login").user("mireille.benoit@hotmail.com").password("wrongpassword"))
+                .andExpect(unauthenticated());
     }
 }

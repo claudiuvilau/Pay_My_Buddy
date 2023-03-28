@@ -54,9 +54,21 @@ public class CostsDetailsTransactions {
     @JoinColumn(name = "to_from_user")
     private Users users;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "description_id")
+    private Descriptions descriptions;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_trans")
     List<Transactions> transactionsList = new ArrayList<>();
+
+    public Descriptions getDescriptions() {
+        return this.descriptions;
+    }
+
+    public void setDescriptions(Descriptions descriptions) {
+        this.descriptions = descriptions;
+    }
 
     public TypeTransactions getTypeTransactions() {
         return this.typeTransactions;

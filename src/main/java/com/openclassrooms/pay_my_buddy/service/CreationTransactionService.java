@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.openclassrooms.pay_my_buddy.model.CostsDetailsTransactions;
+import com.openclassrooms.pay_my_buddy.model.Descriptions;
 import com.openclassrooms.pay_my_buddy.model.NameTransactions;
 import com.openclassrooms.pay_my_buddy.model.Transactions;
 import com.openclassrooms.pay_my_buddy.model.Users;
@@ -35,12 +36,21 @@ public class CreationTransactionService {
     private CostsDetailsTransactions costsDetailsTransactionFrais;
 
     @Autowired
-    private NameTransactionsService nameTransactionsService; // instance of object
+    private NameTransactionsService nameTransactionsService;
 
     @Autowired
     private UsersService usersService;
 
-    public void createTransaction(Users nameUser, String typeTransConnection, String amount) {
+    @Autowired
+    private CollectionMoneyService collectionMoneyService;
+
+    @Autowired
+    private DescriptionsService descriptionsService;
+
+    @Autowired
+    private Descriptions description;
+
+    public void createTransaction(Users nameUser, String typeTransConnection, String amount, String descriptionToAdd) {
 
         // date du jour de la transaction
         Date dateTransNow = new Date();
@@ -58,27 +68,36 @@ public class CreationTransactionService {
         }
 
         transaction = defineNewTransaction(nameUser, dateTransNow);
+        // si nom transaction = 3 envoi, add description
+        if (defineNameTrans == 3) {
+            description = defineNewDescription(descriptionToAdd);
+        }
         costsDetailsTransaction = defineNewCostsDetailsTransaction(transaction, nameUser, nameBuddy, defineNameTrans,
-                amount);
+                amount, description);
 
         // si nom transaction = 3 envoi
-
         if (defineNameTrans == 3) {
             // add buddy in transactions
             transactionEncaissement = defineNewTransactionEncaissement(nameBuddy, dateTransNow);
             // add encaissement in table = 4
             defineNameTrans = 4;
             costsDetailsTransactionEncaissement = defineNewDetailsCostsTransactionEncaissement(transactionEncaissement,
-                    nameUser, defineNameTrans, amount);
+                    nameUser, defineNameTrans, amount, description);
             // add frais
             defineNameTrans = 5; // interest in table is 5
             costsDetailsTransactionFrais = defineNewCostsDetailsFraisTransaction(transaction, nameUser,
-                    defineNameTrans);
+                    defineNameTrans, dateTransNow, amount);
         }
 
         serviceTransactionl.updateTableTransactionsAndCostsDetailsTransactions(transaction, costsDetailsTransaction,
-                costsDetailsTransactionFrais,
-                transactionEncaissement, costsDetailsTransactionEncaissement);
+                costsDetailsTransactionFrais, transactionEncaissement, costsDetailsTransactionEncaissement);
+    }
+
+    private Descriptions defineNewDescription(String descriptionToAdd) {
+
+        description = new Descriptions();
+        description.setDescription(descriptionToAdd);
+        return description;
     }
 
     private Transactions defineNewTransaction(Users nameUser, Date dateTransNow) {
@@ -102,13 +121,15 @@ public class CreationTransactionService {
     }
 
     private CostsDetailsTransactions defineNewCostsDetailsTransaction(Transactions transactionCreated, Users nameUser,
-            Users nameBuddy, int defineNameTrans, String amount) {
+            Users nameBuddy, int defineNameTrans, String amount, Descriptions description) {
 
         costsDetailsTransaction = new CostsDetailsTransactions();
         costsDetailsTransaction.setAmount(Double.parseDouble(amount));
         if (defineNameTrans == 3) {
             // make to_from_user the buddy
             costsDetailsTransaction.setUsers(nameBuddy);
+            // add description
+            costsDetailsTransaction.setDescriptions(description);
         } else {
             costsDetailsTransaction.setUsers(nameUser);
         }
@@ -131,10 +152,10 @@ public class CreationTransactionService {
 
     private CostsDetailsTransactions defineNewCostsDetailsFraisTransaction(Transactions transactionCreated,
             Users nameUser,
-            int defineNameTrans) {
+            int defineNameTrans, Date dateTransNow, String amount) {
 
         costsDetailsTransactionFrais = new CostsDetailsTransactions();
-        costsDetailsTransactionFrais.setAmount(Double.parseDouble("10"));
+        costsDetailsTransactionFrais.setAmount(findInterestCollectionMoney(dateTransNow) * Double.parseDouble(amount));
         costsDetailsTransactionFrais.setUsers(nameUser);
 
         // add costs in transaction
@@ -154,13 +175,21 @@ public class CreationTransactionService {
 
     }
 
+    private double findInterestCollectionMoney(Date dateTransNow) {
+        return collectionMoneyService.getCollectionMoneyToDate(dateTransNow);
+    }
+
     private CostsDetailsTransactions defineNewDetailsCostsTransactionEncaissement(Transactions transactionEncaissement,
-            Users nameUser, int defineNameTrans, String amount) {
+            Users nameUser, int defineNameTrans, String amount, Descriptions descriptionAdded) {
 
         costsDetailsTransactionEncaissement = new CostsDetailsTransactions();
         costsDetailsTransactionEncaissement.setAmount(Double.parseDouble(amount));
         costsDetailsTransactionEncaissement.setUsers(nameUser);
         costsDetailsTransactionEncaissement.setTransactions(transactionEncaissement);
+        if (defineNameTrans == 4) {
+            // add description
+            costsDetailsTransactionEncaissement.setDescriptions(descriptionAdded);
+        }
 
         Optional<NameTransactions> nameTransOpt = recupererNameTypeTransactions(defineNameTrans);
         if (nameTransOpt.isPresent()) {
