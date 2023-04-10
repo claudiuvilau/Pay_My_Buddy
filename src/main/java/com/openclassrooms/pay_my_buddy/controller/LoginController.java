@@ -73,9 +73,12 @@ public class LoginController {
     SpringSecurityConfig springSecurityConfig;
 
     private static final String PAGE_ACCUEIL = "accueil.html";
+    private static final String PRENOM = "prenom";
+    private static final String AMOUNT = "amount";
+    private static final String CONNECTIONS = "connections";
 
     @RolesAllowed("USER")
-    @RequestMapping("/*")
+    @GetMapping("/*")
     public ModelAndView afterLogin(Model model, Principal user, HttpServletRequest request,
             HttpServletResponse response) {
 
@@ -96,9 +99,7 @@ public class LoginController {
         listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, false);
 
         // sort DESC
-        Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> {
-            return Integer.compare(c2.getId(), c1.getId());
-        };
+        Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> Integer.compare(c2.getId(), c1.getId());
         Collections.sort(listCostsUserToBuddy, comparator);
 
         double debit;
@@ -116,7 +117,7 @@ public class LoginController {
     }
 
     @RolesAllowed("USER")
-    @RequestMapping("/addconnection")
+    @GetMapping("/addconnection")
     public ModelAndView addConnection(Model model, Principal user) {
         modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
@@ -158,7 +159,7 @@ public class LoginController {
                         friend.setUsers(idUserBuddy);
                         friendsService.addFriends(friend);
                         response.setStatus(201);
-                        msgResultat = "Vous venez d'ajouter : " + request.getParameter("prenom") + " (résultat : "
+                        msgResultat = "Vous venez d'ajouter : " + request.getParameter(PRENOM) + " (résultat : "
                                 + HttpStatus.valueOf(response.getStatus()) + ")";
                     } else {
                         msgResultat = "Les données saiseis sont erronées. Nous ne pouvons pas vous connecter avec la personne saisie.";
@@ -198,9 +199,7 @@ public class LoginController {
         listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, true);
 
         // sort DESC
-        Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> {
-            return Integer.compare(c2.getId(), c1.getId());
-        };
+        Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> Integer.compare(c2.getId(), c1.getId());
         Collections.sort(listCostsUserToBuddy, comparator);
 
         model.addAttribute("addDetailSolde", true);
@@ -219,7 +218,7 @@ public class LoginController {
         String dateB = dtformat.format(date);
         String dateN = request.getParameter("dateDeNaissance");
         if (dateB.equals(dateN)
-                && idUserBuddy.getFirstName().equalsIgnoreCase(request.getParameter("prenom"))
+                && idUserBuddy.getFirstName().equalsIgnoreCase(request.getParameter(PRENOM))
                 && idUserBuddy.getNameUser().equalsIgnoreCase(request.getParameter("nom"))) {
 
             ifFriendExist = true;
@@ -260,10 +259,10 @@ public class LoginController {
         double valueAmount = 0;
         String selectedOption = "--";
         String valueSelectedOption = "";
-        if (request.getParameter("amount") != null) {
-            valueAmount = Double.parseDouble(request.getParameter("amount"));
-            selectedOption = usersService.getUser(request.getParameter("connections")).getFirstName();
-            valueSelectedOption = request.getParameter("connections");
+        if (request.getParameter(AMOUNT) != null) {
+            valueAmount = Double.parseDouble(request.getParameter(AMOUNT));
+            selectedOption = usersService.getUser(request.getParameter(CONNECTIONS)).getFirstName();
+            valueSelectedOption = request.getParameter(CONNECTIONS);
         }
         model.addAttribute("selectedOption", selectedOption);
         model.addAttribute("valueSelectedOption", valueSelectedOption);
@@ -282,8 +281,8 @@ public class LoginController {
         modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
 
-        String typeTransConnection = request.getParameter("connections");
-        String amount = request.getParameter("amount");
+        String typeTransConnection = request.getParameter(CONNECTIONS);
+        String amount = request.getParameter(AMOUNT);
         String description = request.getParameter("description");
 
         RedirectView redirectView = new RedirectView();
@@ -330,7 +329,7 @@ public class LoginController {
         String newUserMail = request.getParameter("username").toLowerCase().trim();
         String newUserPassword = springSecurityConfig.bCryptPasswordEncoder()
                 .encode(request.getParameter("password").trim());
-        String newUserFirstName = request.getParameter("prenom").toLowerCase().trim();
+        String newUserFirstName = request.getParameter(PRENOM).toLowerCase().trim();
         newUserFirstName = makeUpperCaseFirstLetter(newUserFirstName);
         String newUserLastName = request.getParameter("nom").toUpperCase().trim();
 
@@ -387,9 +386,7 @@ public class LoginController {
         listCostsUser = transactionsService.detailTransForUser(nameUser, true);
 
         // sort DESC
-        Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> {
-            return Integer.compare(c2.getId(), c1.getId());
-        };
+        Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> Integer.compare(c2.getId(), c1.getId());
         Collections.sort(listCostsUser, comparator);
 
         model.addAttribute("getCostsTrans", listCostsUser);
@@ -422,5 +419,4 @@ public class LoginController {
         }
         return usernameInfo;
     }
-
 }
