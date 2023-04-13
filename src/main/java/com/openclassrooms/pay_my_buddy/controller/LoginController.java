@@ -33,6 +33,7 @@ import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.model.NameTransactions;
 import com.openclassrooms.pay_my_buddy.model.Roles;
 import com.openclassrooms.pay_my_buddy.model.Users;
+import com.openclassrooms.pay_my_buddy.repository.UsersServiceInterface;
 import com.openclassrooms.pay_my_buddy.service.CreationTransactionService;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
 import com.openclassrooms.pay_my_buddy.service.NameTransactionsService;
@@ -49,7 +50,7 @@ public class LoginController {
     ModelAndView modelAndView = new ModelAndView();
 
     @Autowired
-    private UsersService usersService; // instance of object
+    private UsersServiceInterface usersService; // instance of object
 
     @Autowired
     private FriendsService friendsService; // instance of object
@@ -81,6 +82,10 @@ public class LoginController {
     @GetMapping("/*")
     public ModelAndView afterLogin(Model model, Principal user, HttpServletRequest request,
             HttpServletResponse response) {
+
+        usersService = newUsersService();
+
+        String idUsers = usersService.getUser("testnonmok@testnonmok.com").getIdEmail();
 
         modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
@@ -114,6 +119,10 @@ public class LoginController {
         model.addAttribute("getCostsTrans", listCostsUserToBuddy);
 
         return modelAndView;
+    }
+
+    protected UsersServiceInterface newUsersService() {
+        return new UsersService();
     }
 
     @RolesAllowed("USER")

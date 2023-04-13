@@ -8,10 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.openclassrooms.pay_my_buddy.model.Users;
 import com.openclassrooms.pay_my_buddy.repository.UsersRepository;
+import com.openclassrooms.pay_my_buddy.repository.UsersServiceInterface;
 
 @Service
 @Component
-public class UsersService {
+public class UsersService implements UsersServiceInterface {
 
     @Autowired
     UsersRepository usersRepository;

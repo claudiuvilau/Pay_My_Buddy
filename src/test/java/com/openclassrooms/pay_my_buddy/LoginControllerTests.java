@@ -2,9 +2,14 @@ package com.openclassrooms.pay_my_buddy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
@@ -19,6 +24,7 @@ import com.openclassrooms.pay_my_buddy.model.CostsDetailsTransactions;
 import com.openclassrooms.pay_my_buddy.model.Transactions;
 import com.openclassrooms.pay_my_buddy.model.Users;
 import com.openclassrooms.pay_my_buddy.repository.UsersRepository;
+import com.openclassrooms.pay_my_buddy.repository.UsersServiceInterface;
 import com.openclassrooms.pay_my_buddy.service.CostsDetailsTransactionsService;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
 import com.openclassrooms.pay_my_buddy.service.UsersService;
@@ -39,6 +45,7 @@ import java.util.List;
 //@AutoConfigureMockMvc
 @SpringBootTest(classes = LoginControllerTests.class)
 @AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 public class LoginControllerTests {
 
     @Autowired
@@ -57,7 +64,7 @@ public class LoginControllerTests {
     }
 
     @Test
-    public void testAddConnection() throws Exception {
+    public void testAfterLogin() throws Exception {
 
         List<CostsDetailsTransactions> listCostsUserToBuddy = new ArrayList<>();
         CostsDetailsTransactions costsDetailsTransactions = new CostsDetailsTransactions();
