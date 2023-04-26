@@ -78,14 +78,100 @@ public class LoginController {
     private static final String AMOUNT = "amount";
     private static final String CONNECTIONS = "connections";
 
+    public LoginController() {
+    }
+
+    public LoginController(ModelAndView modelAndView, UsersServiceInterface usersService, FriendsService friendsService,
+            TransactionsService transactionsService, NameTransactionsService nameTransactionsService,
+            CreationTransactionService creationTransactionService, Users userNew, Roles roles,
+            SpringSecurityConfig springSecurityConfig) {
+        this.modelAndView = modelAndView;
+        this.usersService = usersService;
+        this.friendsService = friendsService;
+        this.transactionsService = transactionsService;
+        this.nameTransactionsService = nameTransactionsService;
+        this.creationTransactionService = creationTransactionService;
+        this.userNew = userNew;
+        this.roles = roles;
+        this.springSecurityConfig = springSecurityConfig;
+    }
+
+    public ModelAndView getModelAndView() {
+        return modelAndView;
+    }
+
+    public void setModelAndView(ModelAndView modelAndView) {
+        this.modelAndView = modelAndView;
+    }
+
+    public UsersServiceInterface getUsersService() {
+        return usersService;
+    }
+
+    public void setUsersService(UsersServiceInterface usersService) {
+        this.usersService = usersService;
+    }
+
+    public FriendsService getFriendsService() {
+        return friendsService;
+    }
+
+    public void setFriendsService(FriendsService friendsService) {
+        this.friendsService = friendsService;
+    }
+
+    public TransactionsService getTransactionsService() {
+        return transactionsService;
+    }
+
+    public void setTransactionsService(TransactionsService transactionsService) {
+        this.transactionsService = transactionsService;
+    }
+
+    public NameTransactionsService getNameTransactionsService() {
+        return nameTransactionsService;
+    }
+
+    public void setNameTransactionsService(NameTransactionsService nameTransactionsService) {
+        this.nameTransactionsService = nameTransactionsService;
+    }
+
+    public CreationTransactionService getCreationTransactionService() {
+        return creationTransactionService;
+    }
+
+    public void setCreationTransactionService(CreationTransactionService creationTransactionService) {
+        this.creationTransactionService = creationTransactionService;
+    }
+
+    public Users getUserNew() {
+        return userNew;
+    }
+
+    public void setUserNew(Users userNew) {
+        this.userNew = userNew;
+    }
+
+    public Roles getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Roles roles) {
+        this.roles = roles;
+    }
+
+    public SpringSecurityConfig getSpringSecurityConfig() {
+        return springSecurityConfig;
+    }
+
+    public void setSpringSecurityConfig(SpringSecurityConfig springSecurityConfig) {
+        this.springSecurityConfig = springSecurityConfig;
+    }
+
     @RolesAllowed("USER")
     @GetMapping("/*")
     public ModelAndView afterLogin(Model model, Principal user, HttpServletRequest request,
             HttpServletResponse response) {
-
-        usersService = newUsersService();
-
-        String idUsers = usersService.getUser("testnonmok@testnonmok.com").getIdEmail();
 
         modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
@@ -128,6 +214,7 @@ public class LoginController {
     @RolesAllowed("USER")
     @GetMapping("/addconnection")
     public ModelAndView addConnection(Model model, Principal user) {
+
         modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
 
@@ -403,7 +490,7 @@ public class LoginController {
         return modelAndView;
     }
 
-    private Users recupererNameUser(Principal user) {
+    public Users recupererNameUser(Principal user) {
         String idEmail = getUserInfo(user);
         return usersService.getUser(idEmail);
     }

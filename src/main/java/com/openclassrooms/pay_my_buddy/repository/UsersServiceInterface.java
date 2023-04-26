@@ -6,6 +6,10 @@ import com.openclassrooms.pay_my_buddy.model.Users;
 
 public interface UsersServiceInterface {
 
+    public UsersRepository getUsersRepository();
+
+    public void setUsersRepository(UsersRepository usersRepository);
+
     public Iterable<Users> getUsers();
 
     public Users getUser(String idMail);

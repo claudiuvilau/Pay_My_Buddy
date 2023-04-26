@@ -58,28 +58,21 @@ public class Users {
     @JoinColumn(name = "to_from_user")
     List<CostsDetailsTransactions> costsDetailsTransactions = new ArrayList<>();
 
-    public List<Transactions> getTransactionsList() {
-        return this.transactionsList;
+
+    public Users() {
     }
 
-    public void setTransactionsList(List<Transactions> transactionsList) {
-        this.transactionsList = transactionsList;
-    }
-
-    public Roles getRole() {
-        return this.role;
-    }
-
-    public void setRole(Roles role) {
-        this.role = role;
-    }
-
-    public List<Friends> getFriends() {
-        return this.friends;
-    }
-
-    public void setFriends(List<Friends> friends) {
+    public Users(int idUsers, String idEmail, String nameUser, String firstName, Date birthDate, String password, List<Friends> friends, Roles role, List<Transactions> transactionsList, List<CostsDetailsTransactions> costsDetailsTransactions) {
+        this.idUsers = idUsers;
+        this.idEmail = idEmail;
+        this.nameUser = nameUser;
+        this.firstName = firstName;
+        this.birthDate = birthDate;
+        this.password = password;
         this.friends = friends;
+        this.role = role;
+        this.transactionsList = transactionsList;
+        this.costsDetailsTransactions = costsDetailsTransactions;
     }
 
     public int getIdUsers() {
@@ -123,11 +116,42 @@ public class Users {
     }
 
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
+    public List<Friends> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(List<Friends> friends) {
+        this.friends = friends;
+    }
+
+    public Roles getRole() {
+        return role;
+    }
+
+    public void setRole(Roles role) {
+        this.role = role;
+    }
+
+    public List<Transactions> getTransactionsList() {
+        return transactionsList;
+    }
+
+    public void setTransactionsList(List<Transactions> transactionsList) {
+        this.transactionsList = transactionsList;
+    }
+
+    public List<CostsDetailsTransactions> getCostsDetailsTransactions() {
+        return costsDetailsTransactions;
+    }
+
+    public void setCostsDetailsTransactions(List<CostsDetailsTransactions> costsDetailsTransactions) {
+        this.costsDetailsTransactions = costsDetailsTransactions;
+    }
 }

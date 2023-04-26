@@ -15,7 +15,22 @@ import com.openclassrooms.pay_my_buddy.repository.UsersServiceInterface;
 public class UsersService implements UsersServiceInterface {
 
     @Autowired
-    UsersRepository usersRepository;
+    private UsersRepository usersRepository;
+
+    public UsersService() {
+    }
+
+    public UsersService(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
+    }
+
+    public UsersRepository getUsersRepository() {
+        return usersRepository;
+    }
+
+    public void setUsersRepository(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
+    }
 
     public Iterable<Users> getUsers() {
         return usersRepository.findAll();
