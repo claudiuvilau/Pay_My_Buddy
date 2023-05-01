@@ -50,6 +50,116 @@ public class CreationTransactionService {
     @Autowired
     private Descriptions description;
 
+    public CreationTransactionService() {
+    }
+
+    public CreationTransactionService(ServiceTransactionl serviceTransactionl, Transactions transaction,
+            Transactions transactionEncaissement, CostsDetailsTransactions costsDetailsTransaction,
+            CostsDetailsTransactions costsDetailsTransactionEncaissement,
+            CostsDetailsTransactions costsDetailsTransactionFrais, NameTransactionsService nameTransactionsService,
+            UsersService usersService, CollectionMoneyService collectionMoneyService,
+            DescriptionsService descriptionsService, Descriptions description) {
+        this.serviceTransactionl = serviceTransactionl;
+        this.transaction = transaction;
+        this.transactionEncaissement = transactionEncaissement;
+        this.costsDetailsTransaction = costsDetailsTransaction;
+        this.costsDetailsTransactionEncaissement = costsDetailsTransactionEncaissement;
+        this.costsDetailsTransactionFrais = costsDetailsTransactionFrais;
+        this.nameTransactionsService = nameTransactionsService;
+        this.usersService = usersService;
+        this.collectionMoneyService = collectionMoneyService;
+        this.descriptionsService = descriptionsService;
+        this.description = description;
+    }
+
+    public ServiceTransactionl getServiceTransactionl() {
+        return this.serviceTransactionl;
+    }
+
+    public void setServiceTransactionl(ServiceTransactionl serviceTransactionl) {
+        this.serviceTransactionl = serviceTransactionl;
+    }
+
+    public Transactions getTransaction() {
+        return this.transaction;
+    }
+
+    public void setTransaction(Transactions transaction) {
+        this.transaction = transaction;
+    }
+
+    public Transactions getTransactionEncaissement() {
+        return this.transactionEncaissement;
+    }
+
+    public void setTransactionEncaissement(Transactions transactionEncaissement) {
+        this.transactionEncaissement = transactionEncaissement;
+    }
+
+    public CostsDetailsTransactions getCostsDetailsTransaction() {
+        return this.costsDetailsTransaction;
+    }
+
+    public void setCostsDetailsTransaction(CostsDetailsTransactions costsDetailsTransaction) {
+        this.costsDetailsTransaction = costsDetailsTransaction;
+    }
+
+    public CostsDetailsTransactions getCostsDetailsTransactionEncaissement() {
+        return this.costsDetailsTransactionEncaissement;
+    }
+
+    public void setCostsDetailsTransactionEncaissement(CostsDetailsTransactions costsDetailsTransactionEncaissement) {
+        this.costsDetailsTransactionEncaissement = costsDetailsTransactionEncaissement;
+    }
+
+    public CostsDetailsTransactions getCostsDetailsTransactionFrais() {
+        return this.costsDetailsTransactionFrais;
+    }
+
+    public void setCostsDetailsTransactionFrais(CostsDetailsTransactions costsDetailsTransactionFrais) {
+        this.costsDetailsTransactionFrais = costsDetailsTransactionFrais;
+    }
+
+    public NameTransactionsService getNameTransactionsService() {
+        return this.nameTransactionsService;
+    }
+
+    public void setNameTransactionsService(NameTransactionsService nameTransactionsService) {
+        this.nameTransactionsService = nameTransactionsService;
+    }
+
+    public UsersService getUsersService() {
+        return this.usersService;
+    }
+
+    public void setUsersService(UsersService usersService) {
+        this.usersService = usersService;
+    }
+
+    public CollectionMoneyService getCollectionMoneyService() {
+        return this.collectionMoneyService;
+    }
+
+    public void setCollectionMoneyService(CollectionMoneyService collectionMoneyService) {
+        this.collectionMoneyService = collectionMoneyService;
+    }
+
+    public DescriptionsService getDescriptionsService() {
+        return this.descriptionsService;
+    }
+
+    public void setDescriptionsService(DescriptionsService descriptionsService) {
+        this.descriptionsService = descriptionsService;
+    }
+
+    public Descriptions getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(Descriptions description) {
+        this.description = description;
+    }
+
     public void createTransaction(Users nameUser, String typeTransConnection, String amount, String descriptionToAdd) {
 
         // date du jour de la transaction

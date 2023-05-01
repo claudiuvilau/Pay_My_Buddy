@@ -33,6 +33,7 @@ import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.model.NameTransactions;
 import com.openclassrooms.pay_my_buddy.model.Roles;
 import com.openclassrooms.pay_my_buddy.model.Users;
+import com.openclassrooms.pay_my_buddy.repository.UsersRepository;
 import com.openclassrooms.pay_my_buddy.repository.UsersServiceInterface;
 import com.openclassrooms.pay_my_buddy.service.CreationTransactionService;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
@@ -172,6 +173,8 @@ public class LoginController {
     @GetMapping("/*")
     public ModelAndView afterLogin(Model model, Principal user, HttpServletRequest request,
             HttpServletResponse response) {
+
+        usersService.getUser("AMOUNT@sdsds.com");
 
         modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
