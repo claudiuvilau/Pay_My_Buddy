@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.ui.Model;
@@ -33,13 +34,11 @@ import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.model.NameTransactions;
 import com.openclassrooms.pay_my_buddy.model.Roles;
 import com.openclassrooms.pay_my_buddy.model.Users;
-import com.openclassrooms.pay_my_buddy.repository.UsersRepository;
 import com.openclassrooms.pay_my_buddy.repository.UsersServiceInterface;
 import com.openclassrooms.pay_my_buddy.service.CreationTransactionService;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
 import com.openclassrooms.pay_my_buddy.service.NameTransactionsService;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
-import com.openclassrooms.pay_my_buddy.service.UsersService;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.HttpServletRequest;
@@ -174,56 +173,44 @@ public class LoginController {
     public ModelAndView afterLogin(Model model, Principal user, HttpServletRequest request,
             HttpServletResponse response) {
 
-        usersService.getUser("AMOUNT@sdsds.com");
-
         modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
 
-        return modelAndView;
-    }
-
-    private ModelAndView modelHome(Model model, Principal user) {
-
-        // récupérer ID email de la personne connectée et la personne connectée
-        Users nameUser = recupererNameUser(user);
-        model.addAttribute("getUser", nameUser.getFirstName() + " " + nameUser.getNameUser());
-
-        List<CostsDetailsTransactions> listCostsUserToBuddy;
-        // true = for all transactions without paied to buddy
-        listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, false);
-
-        // sort DESC
-        Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> Integer.compare(c2.getId(), c1.getId());
-        Collections.sort(listCostsUserToBuddy, comparator);
-
-        double debit;
-        debit = transactionsService.debit(nameUser);
-        double credit;
-        credit = transactionsService.credit(nameUser);
-
-        NumberFormat nf = NumberFormat.getInstance();
-        nf.setMaximumFractionDigits(2);
-
-        model.addAttribute("debitCredit", nf.format(credit - debit));
-        model.addAttribute("getCostsTrans", listCostsUserToBuddy);
+        int getStatusResponse = verifyHttpStatusModelAndView(modelAndView.getStatus());
+        response.setStatus(getStatusResponse);
+        modelAndView.setStatus(HttpStatusCode.valueOf(response.getStatus()));
 
         return modelAndView;
     }
 
-    protected UsersServiceInterface newUsersService() {
-        return new UsersService();
+    private int verifyHttpStatusModelAndView(HttpStatusCode status) {
+        // this for change the response status with response status of modelAndView
+        int statusCode = 200;
+        if (status == HttpStatus.NO_CONTENT) {
+            statusCode = 204;
+        }
+        if (status == HttpStatus.NOT_FOUND) {
+            statusCode = 404;
+        }
+        return statusCode;
     }
 
     @RolesAllowed("USER")
     @GetMapping("/addconnection")
-    public ModelAndView addConnection(Model model, Principal user) {
+    public ModelAndView addConnection(Model model, Principal user, HttpServletRequest request,
+            HttpServletResponse response) {
 
         modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
 
         model.addAttribute("addConn", true);
 
+        int getStatusResponse = verifyHttpStatusModelAndView(modelAndView.getStatus());
+        response.setStatus(getStatusResponse);
+        modelAndView.setStatus(HttpStatusCode.valueOf(response.getStatus()));
+
         return modelAndView;
+
     }
 
     @RolesAllowed("USER")
@@ -238,11 +225,11 @@ public class LoginController {
 
         String msgResultat = "";
 
-        // récupérer ID de l'ami saisi saisi
+        // récupérer ID de l'ami saisi
         Users idUserBuddy = usersService.getUser(request.getParameter("email"));
         if (idUserBuddy != null) {
             if (nameUser.getIdEmail().equalsIgnoreCase(idUserBuddy.getIdEmail())) {
-                msgResultat = "Vous avez siasi votre adresse email. Pour chercher l'un de vos amis il faut saisir son adresse email et ses données.";
+                msgResultat = "Vous avez saisi votre adresse email. Pour chercher l'un de vos amis il faut saisir son adresse email et ses données.";
             } else {
 
                 Friends friendOfNameUser = friendsService.getFriend(nameUser.getIdUsers(), idUserBuddy.getIdUsers());
@@ -292,16 +279,33 @@ public class LoginController {
         modelAndView.setViewName(PAGE_ACCUEIL);
         modelAndView = modelHome(model, user);
 
+        modelAndView = addAttibuteDetailTotalAmount(nameUser, model);
+
+        model.addAttribute("addDetailSolde", true);
+
+        int getStatusResponse = verifyHttpStatusModelAndView(modelAndView.getStatus());
+        response.setStatus(getStatusResponse);
+        modelAndView.setStatus(HttpStatusCode.valueOf(response.getStatus()));
+
+        return modelAndView;
+    }
+
+    private ModelAndView addAttibuteDetailTotalAmount(Users nameUser, Model model) {
         // details account
         List<CostsDetailsTransactions> listCostsUserToBuddy;
         // true = for all transactions without paied to buddy
         listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, true);
 
+        if (listCostsUserToBuddy == null) {
+            int setStatus = 204;
+            modelAndView = setStatusModelAndView(setStatus);
+            return modelAndView;
+        }
+
         // sort DESC
         Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> Integer.compare(c2.getId(), c1.getId());
         Collections.sort(listCostsUserToBuddy, comparator);
 
-        model.addAttribute("addDetailSolde", true);
         model.addAttribute("allTrans", listCostsUserToBuddy);
 
         return modelAndView;
@@ -337,8 +341,19 @@ public class LoginController {
 
         model.addAttribute("selectConn", true);
 
+        modelAndView = addAttributeSelectConnection(nameUser, model, request);
+
+        int getStatusResponse = verifyHttpStatusModelAndView(modelAndView.getStatus());
+        response.setStatus(getStatusResponse);
+        modelAndView.setStatus(HttpStatusCode.valueOf(response.getStatus()));
+
+        return modelAndView;
+    }
+
+    private ModelAndView addAttributeSelectConnection(Users nameUser, Model model, HttpServletRequest request) {
         List<Friends> listFriends = new ArrayList<>();
         listFriends.addAll(nameUser.getFriends());
+
         model.addAttribute("listBuddy", listFriends);
 
         List<NameTransactions> listNameTransactions = new ArrayList<>();
@@ -405,6 +420,10 @@ public class LoginController {
 
         modelAndView.setViewName("login.html");
 
+        int getStatusResponse = verifyHttpStatusModelAndView(modelAndView.getStatus());
+        response.setStatus(getStatusResponse);
+        modelAndView.setStatus(HttpStatusCode.valueOf(response.getStatus()));
+
         return modelAndView;
     }
 
@@ -469,14 +488,27 @@ public class LoginController {
     }
 
     @RolesAllowed({ "USER", "ADMIN" })
-    @RequestMapping("/admin")
-    public ModelAndView getAdmin(Model model, Principal user) {
+    @GetMapping("/admin")
+    public ModelAndView getAdmin(Model model, Principal user, HttpServletRequest request,
+            HttpServletResponse response) {
 
         modelAndView.setViewName("admin.html");
 
         // récupérer ID email de la personne connectée et la personne connectée
         String idEmail = getUserInfo(user);
         Users nameUser = usersService.getUser(idEmail);
+
+        modelAndView = addAttributeAdmin(nameUser, model);
+
+        int getStatusResponse = verifyHttpStatusModelAndView(modelAndView.getStatus());
+        response.setStatus(getStatusResponse);
+        modelAndView.setStatus(HttpStatusCode.valueOf(response.getStatus()));
+
+        return modelAndView;
+    }
+
+    private ModelAndView addAttributeAdmin(Users nameUser, Model model) {
+
         model.addAttribute("getUser", "Welcome Admin : " + nameUser.getFirstName() + " " + nameUser.getNameUser());
 
         // listes transactions
@@ -484,6 +516,11 @@ public class LoginController {
         // true = for all transactions without paied to buddy
         listCostsUser = transactionsService.detailTransForUser(nameUser, true);
 
+        if (listCostsUser == null) {
+            int setStatus = 204;
+            modelAndView = setStatusModelAndView(setStatus);
+            return modelAndView;
+        }
         // sort DESC
         Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> Integer.compare(c2.getId(), c1.getId());
         Collections.sort(listCostsUser, comparator);
@@ -493,7 +530,57 @@ public class LoginController {
         return modelAndView;
     }
 
-    public Users recupererNameUser(Principal user) {
+    private ModelAndView modelHome(Model model, Principal user) {
+
+        // récupérer ID email de la personne connectée et la personne connectée
+        Users nameUser = recupererNameUser(user);
+        if (nameUser == null) {
+            int setStatus = 204;
+            modelAndView = setStatusModelAndView(setStatus);
+            return modelAndView;
+        }
+        model.addAttribute("getUser", nameUser.getFirstName() + " " + nameUser.getNameUser());
+
+        List<CostsDetailsTransactions> listCostsUserToBuddy;
+        // true = for all transactions without paied to buddy
+        listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, false);
+        if (listCostsUserToBuddy == null) {
+            int setStatus = 204;
+            modelAndView = setStatusModelAndView(setStatus);
+            return modelAndView;
+        }
+
+        // sort DESC
+        Comparator<CostsDetailsTransactions> comparator = (c1, c2) -> Integer.compare(c2.getId(), c1.getId());
+        Collections.sort(listCostsUserToBuddy, comparator);
+
+        double debit;
+        debit = transactionsService.debit(nameUser);
+        double credit;
+        credit = transactionsService.credit(nameUser);
+
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(2);
+
+        model.addAttribute("debitCredit", nf.format(credit - debit));
+        model.addAttribute("getCostsTrans", listCostsUserToBuddy);
+
+        return modelAndView;
+    }
+
+    private ModelAndView setStatusModelAndView(int setStatus) {
+        // verify if the code 204, so NO_CONTENT is in verifyHttpStatusModelAndView, if
+        // not it must add it
+        int verifyCodeInMethode = verifyHttpStatusModelAndView(HttpStatus.NO_CONTENT);
+        if (verifyCodeInMethode == setStatus) {
+            modelAndView.setStatus(HttpStatusCode.valueOf(setStatus));
+        } else {
+            modelAndView.setStatus(HttpStatusCode.valueOf(404));
+        }
+        return modelAndView;
+    }
+
+    private Users recupererNameUser(Principal user) {
         String idEmail = getUserInfo(user);
         return usersService.getUser(idEmail);
     }
