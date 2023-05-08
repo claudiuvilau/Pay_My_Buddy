@@ -491,7 +491,8 @@ public class LoginController {
       selectConnection(model, user, request, response);
       return modelAndView;
     }
-
+    RedirectView redirectView = new RedirectView("/detailTotalAmount");
+    int setStatus;
     boolean addedTrans = false;
     addedTrans =
       creationTransactionService.createTransaction(
@@ -500,8 +501,6 @@ public class LoginController {
         amount,
         description
       );
-    RedirectView redirectView = new RedirectView("/detailTotalAmount");
-    int setStatus;
     if (addedTrans) {
       setStatus = 201;
     } else {

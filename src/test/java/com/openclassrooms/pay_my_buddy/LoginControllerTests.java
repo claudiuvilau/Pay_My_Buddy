@@ -354,6 +354,50 @@ public class LoginControllerTests {
 
   @Test
   @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  public void testSelectedConnectionNoTransaction() throws Exception {
+    when(usersService.getUser(userNameConnected)).thenReturn(usersName);
+
+    when(requestClass.requestParameter("connections")).thenReturn("envoi");
+    when(requestClass.requestParameter("amount")).thenReturn("10");
+    when(requestClass.requestParameter("description"))
+      .thenReturn("description");
+
+    when(
+      creationTransactionService.createTransaction(
+        usersName,
+        "envoi",
+        "10",
+        "description"
+      )
+    )
+      .thenReturn(false);
+    mockMvc.perform(post("/paid").with(csrf())).andExpect(status().is(202));
+  }
+
+  @Test
+  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  public void testSelectedConnectionNo() throws Exception {
+    when(usersService.getUser(userNameConnected)).thenReturn(usersName);
+
+    when(requestClass.requestParameter("connections")).thenReturn("envoi");
+    when(requestClass.requestParameter("amount")).thenReturn("10");
+    when(requestClass.requestParameter("description"))
+      .thenReturn("description");
+
+    when(
+      creationTransactionService.createTransaction(
+        usersName,
+        "envoi",
+        "10",
+        "description"
+      )
+    )
+      .thenReturn(false);
+    mockMvc.perform(post("/paid").with(csrf())).andExpect(status().is(202));
+  }
+
+  @Test
+  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
   public void testRegisterNewUserNoNewUser() throws Exception {
     when(requestClass.requestParameter("username"))
       .thenReturn("new_user_mail@paymybuddy.com");
