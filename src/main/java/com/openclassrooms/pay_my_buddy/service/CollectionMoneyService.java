@@ -1,5 +1,6 @@
 package com.openclassrooms.pay_my_buddy.service;
 
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,18 @@ public class CollectionMoneyService {
 
     public Optional<CollectionMoney> getCollectionMoneyById(Integer id) {
         return collectionMoneyRepository.findById(id);
+    }
+
+    public double getCollectionMoneyToDate(Date dateInterest) {
+        Iterable<CollectionMoney> iterableCollectionMoney = getCollectionMoney();
+        for (CollectionMoney collMoney : iterableCollectionMoney) {
+            if (collMoney.getStartDate().compareTo(dateInterest) <= 0
+                    && collMoney.getEndDate().compareTo(dateInterest) >= 0) {
+                return collMoney.getAmountPercentage();
+            }
+        }
+
+        return 0;
     }
 
     public CollectionMoney addCollectionMoney(CollectionMoney collectionMoney) {

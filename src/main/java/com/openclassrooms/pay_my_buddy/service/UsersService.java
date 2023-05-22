@@ -3,16 +3,34 @@ package com.openclassrooms.pay_my_buddy.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.openclassrooms.pay_my_buddy.model.Users;
 import com.openclassrooms.pay_my_buddy.repository.UsersRepository;
+import com.openclassrooms.pay_my_buddy.repository.UsersServiceInterface;
 
 @Service
-public class UsersService {
+@Component
+public class UsersService implements UsersServiceInterface {
 
     @Autowired
-    UsersRepository usersRepository;
+    private UsersRepository usersRepository;
+
+    public UsersService() {
+    }
+
+    public UsersService(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
+    }
+
+    public UsersRepository getUsersRepository() {
+        return usersRepository;
+    }
+
+    public void setUsersRepository(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
+    }
 
     public Iterable<Users> getUsers() {
         return usersRepository.findAll();

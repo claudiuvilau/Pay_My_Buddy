@@ -62,13 +62,13 @@ CREATE TABLE IF NOT EXISTS CollectionMoney (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	start_date DATE UNIQUE NOT NULL,
 	end_date DATE UNIQUE NOT NULL,
-	amount_percentage DECIMAL(4,2) NOT NULL,
+	amount_percentage DECIMAL(5,3) NOT NULL,
 	PRIMARY KEY (id)
 )
 ENGINE=INNODB;
 
 INSERT INTO CollectionMoney (start_date, end_date, amount_percentage) VALUES 
-	("2022-12-01", "2099-12-31", 0.5);
+	("2022-12-01", "2099-12-31", 0.005);
 
 CREATE TABLE IF NOT EXISTS Transactions (
 	id_trans INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -113,6 +113,12 @@ INSERT INTO NameTransactions (id_name_trans, name_trans, type_name_trans) VALUES
 	(5, "Frais", 2),
 	(6, "Intérêts", 2);
 
+CREATE TABLE IF NOT EXISTS Descriptions (
+	id_descriptions INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	description VARCHAR(40) NOT NULL,
+	PRIMARY KEY (id_descriptions)
+)
+ENGINE=INNODB;
 
 CREATE TABLE IF NOT EXISTS CostsDetailsTransactions (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -121,6 +127,7 @@ CREATE TABLE IF NOT EXISTS CostsDetailsTransactions (
 	type_trans INT UNSIGNED NOT NULL, 
 	name_trans INT UNSIGNED NOT NULL,
 	to_from_user INT UNSIGNED NOT NULL, 
+	description_id INT UNSIGNED, 
 	PRIMARY KEY (id),
 	CONSTRAINT fk_number_trans_id_trans 
 		FOREIGN KEY (trans_id_trans) 
@@ -133,7 +140,10 @@ CREATE TABLE IF NOT EXISTS CostsDetailsTransactions (
 		REFERENCES NameTransactions(id_name_trans),
 	CONSTRAINT fk_to_from_user 
 		FOREIGN KEY (to_from_user) 
-		REFERENCES Users(id_users)
+		REFERENCES Users(id_users),
+	CONSTRAINT fk_description_id 
+		FOREIGN KEY (description_id) 
+		REFERENCES Descriptions(id_descriptions)
 )
 ENGINE=INNODB;
 
@@ -149,13 +159,17 @@ INSERT INTO Transactions (id_trans, date_trans, user) VALUES
 	(4, "2023-2-05", 3);
 
 
-INSERT INTO CostsDetailsTransactions (trans_id_trans, amount, type_trans, name_trans, to_from_user) VALUES 
-	(1, 30, 1, 1, 1),
-	(1, 10, 2, 3, 3),
-	(1, 0.05, 2, 5, 1),
-	(2, 10, 1, 4, 1),
-	(3, 10, 2, 2, 2),
-	(4, 50, 1, 1, 3);
+INSERT INTO Descriptions (id_descriptions, description) VALUES 
+	(1, "remb. ciné");
+
+INSERT INTO CostsDetailsTransactions (id, trans_id_trans, amount, type_trans, name_trans, to_from_user, description_id) VALUES 
+	(1, 1, 30, 1, 1, 1, null),
+	(2, 1, 10, 2, 3, 3, 1),
+	(3, 1, 0.05, 2, 5, 1, null),
+	(4, 2, 10, 1, 4, 1, 1),
+	(5, 3, 10, 2, 2, 2, null),
+	(6, 4, 50, 1, 1, 3, null);
+
 
 CREATE TABLE IF NOT EXISTS Invoices (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,

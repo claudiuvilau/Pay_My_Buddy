@@ -1,381 +1,657 @@
 package com.openclassrooms.pay_my_buddy.controller;
 
-import java.security.Principal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
-
 import com.openclassrooms.pay_my_buddy.configuration.SpringSecurityConfig;
 import com.openclassrooms.pay_my_buddy.model.CostsDetailsTransactions;
 import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.model.NameTransactions;
+import com.openclassrooms.pay_my_buddy.model.RequestClass;
 import com.openclassrooms.pay_my_buddy.model.Roles;
 import com.openclassrooms.pay_my_buddy.model.Users;
-import com.openclassrooms.pay_my_buddy.service.CreationTransactionService;
+import com.openclassrooms.pay_my_buddy.repository.UsersServiceInterface;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
+import com.openclassrooms.pay_my_buddy.service.LoginControllerService;
 import com.openclassrooms.pay_my_buddy.service.NameTransactionsService;
+import com.openclassrooms.pay_my_buddy.service.SetGetStatusModelAndView;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
-import com.openclassrooms.pay_my_buddy.service.UsersService;
-
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.security.Principal;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 public class LoginController {
 
-    ModelAndView modelAndView = new ModelAndView();
+  ModelAndView modelAndView = new ModelAndView();
 
-    @Autowired
-    private UsersService usersService; // instance of object
+  @Autowired
+  private UsersServiceInterface usersService; // instance of object
 
-    @Autowired
-    private FriendsService friendsService; // instance of object
+  @Autowired
+  private FriendsService friendsService; // instance of object
 
-    @Autowired
-    private TransactionsService transactionsService; // instance of object
+  @Autowired
+  private TransactionsService transactionsService; // instance of object
 
-    @Autowired
-    private NameTransactionsService nameTransactionsService; // instance of object
+  @Autowired
+  private NameTransactionsService nameTransactionsService; // instance of object
 
-    @Autowired
-    private CreationTransactionService creationTransactionService;
+  @Autowired
+  Users userNew;
 
-    @Autowired
-    Users userNew;
+  @Autowired
+  Roles roles;
 
-    @Autowired
-    Roles roles;
+  @Autowired
+  SpringSecurityConfig springSecurityConfig;
 
-    @Autowired
-    SpringSecurityConfig springSecurityConfig;
+  @Autowired
+  private RequestClass requestClass;
 
-    private static final String PAGE_ACCUEIL = "accueil.html";
+  @Autowired
+  private LoginControllerService loginControllerService;
 
-    @RolesAllowed("USER")
-    @RequestMapping("/*")
-    public ModelAndView afterLogin(Model model, Principal user, HttpServletRequest request,
-            HttpServletResponse response) {
+  @Autowired
+  private SetGetStatusModelAndView setGetStatusModelAndView;
 
-        modelAndView.setViewName(PAGE_ACCUEIL);
-        modelAndView = modelHome(model, user);
+  private static final String PAGE_ACCUEIL = "accueil.html";
+  private static final String PRENOM = "prenom";
+  private static final String AMOUNT = "amount";
+  private static final String CONNECTIONS = "connections";
 
-        return modelAndView;
+  public LoginController() {}
+
+  public LoginController(
+    ModelAndView modelAndView,
+    UsersServiceInterface usersService,
+    FriendsService friendsService,
+    TransactionsService transactionsService,
+    NameTransactionsService nameTransactionsService,
+    Users userNew,
+    Roles roles,
+    SpringSecurityConfig springSecurityConfig
+  ) {
+    this.modelAndView = modelAndView;
+    this.usersService = usersService;
+    this.friendsService = friendsService;
+    this.transactionsService = transactionsService;
+    this.nameTransactionsService = nameTransactionsService;
+    this.userNew = userNew;
+    this.roles = roles;
+    this.springSecurityConfig = springSecurityConfig;
+  }
+
+  public ModelAndView getModelAndView() {
+    return modelAndView;
+  }
+
+  public void setModelAndView(ModelAndView modelAndView) {
+    this.modelAndView = modelAndView;
+  }
+
+  public UsersServiceInterface getUsersService() {
+    return usersService;
+  }
+
+  public void setUsersService(UsersServiceInterface usersService) {
+    this.usersService = usersService;
+  }
+
+  public FriendsService getFriendsService() {
+    return friendsService;
+  }
+
+  public void setFriendsService(FriendsService friendsService) {
+    this.friendsService = friendsService;
+  }
+
+  public TransactionsService getTransactionsService() {
+    return transactionsService;
+  }
+
+  public void setTransactionsService(TransactionsService transactionsService) {
+    this.transactionsService = transactionsService;
+  }
+
+  public NameTransactionsService getNameTransactionsService() {
+    return nameTransactionsService;
+  }
+
+  public void setNameTransactionsService(
+    NameTransactionsService nameTransactionsService
+  ) {
+    this.nameTransactionsService = nameTransactionsService;
+  }
+
+  public Users getUserNew() {
+    return userNew;
+  }
+
+  public void setUserNew(Users userNew) {
+    this.userNew = userNew;
+  }
+
+  public Roles getRoles() {
+    return roles;
+  }
+
+  public void setRoles(Roles roles) {
+    this.roles = roles;
+  }
+
+  public SpringSecurityConfig getSpringSecurityConfig() {
+    return springSecurityConfig;
+  }
+
+  public void setSpringSecurityConfig(
+    SpringSecurityConfig springSecurityConfig
+  ) {
+    this.springSecurityConfig = springSecurityConfig;
+  }
+
+  @RolesAllowed("USER")
+  @GetMapping("/*")
+  public ModelAndView afterLogin(
+    Model model,
+    Principal user,
+    HttpServletRequest request,
+    HttpServletResponse response
+  ) {
+    modelAndView.setViewName(PAGE_ACCUEIL);
+    modelAndView = modelHome(model, user);
+
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
+    return modelAndView;
+  }
+
+  @RolesAllowed("USER")
+  @GetMapping("/addconnection")
+  public ModelAndView addConnection(
+    Model model,
+    Principal user,
+    HttpServletRequest request,
+    HttpServletResponse response
+  ) {
+    modelAndView.setViewName(PAGE_ACCUEIL);
+    modelAndView = modelHome(model, user);
+
+    model.addAttribute("addConn", true);
+
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
+    return modelAndView;
+  }
+
+  @RolesAllowed("USER")
+  @PostMapping("/addedconnection")
+  public ModelAndView addedConnection(
+    Model model,
+    Principal user,
+    HttpServletRequest request,
+    HttpServletResponse response
+  ) {
+    requestClass.setRequest(request);
+
+    // récupérer ID email de la personne connectée et la personne connectée
+    Users nameUser = recupererNameUser(user);
+
+    modelAndView.setViewName(PAGE_ACCUEIL);
+
+    // récupérer ID de l'ami saisi
+    String idUserBuddy = requestClass.requestParameter("email");
+
+    String dateN = requestClass.requestParameter("dateDeNaissance");
+
+    String firstName = requestClass.requestParameter(PRENOM);
+
+    String lastName = requestClass.requestParameter("nom");
+
+    int statusAddedConnection = loginControllerService.addedconnection(
+      idUserBuddy,
+      nameUser,
+      dateN,
+      firstName,
+      lastName
+    );
+
+    setGetStatusModelAndView.setSetStatus(statusAddedConnection);
+    setGetStatusModelAndView.setHttpStatus(
+      HttpStatus.valueOf(statusAddedConnection)
+    );
+
+    String msgResultat;
+
+    if (statusAddedConnection == 201) {
+      msgResultat =
+        "Vous venez d'ajouter : " +
+        requestClass.requestParameter(PRENOM) +
+        " (résultat : " +
+        setGetStatusModelAndView.getSetStatus() +
+        ")";
+    } else if (statusAddedConnection == 206) {
+      msgResultat =
+        "Les données saisies sont erronées. Nous ne pouvons pas vous connecter avec la personne saisie.";
+    } else if (statusAddedConnection == 304) {
+      msgResultat =
+        "Vous êtes déjà connecté avec la personne dont l'adresse e-mail vous avez siasi : " +
+        idUserBuddy;
+    } else if (statusAddedConnection == 404) {
+      msgResultat = "Il n'y a aucun utilisateur avec l'adresse email saisie.";
+    } else if (statusAddedConnection == 406) {
+      msgResultat =
+        "Vous avez saisi votre adresse email. Pour chercher l'un de vos amis il faut saisir son adresse email et ses données.";
+    } else {
+      msgResultat =
+        "Error " +
+        setGetStatusModelAndView.getSetStatus() +
+        " - " +
+        setGetStatusModelAndView.getHttpStatus();
     }
 
-    private ModelAndView modelHome(Model model, Principal user) {
+    model.addAttribute("addedConnection", msgResultat);
+    List<Friends> friends = new ArrayList<>();
 
-        // récupérer ID email de la personne connectée et la personne connectée
-        Users nameUser = recupererNameUser(user);
-        model.addAttribute("getUser", nameUser.getFirstName() + " " + nameUser.getNameUser());
+    friends.addAll(nameUser.getFriends());
 
-        List<CostsDetailsTransactions> listCostsUserToBuddy;
-        // true = for all transactions without paied to buddy
-        listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, false);
+    model.addAttribute("listBuddy", friends);
 
-        double debit;
-        debit = transactionsService.debit(nameUser);
-        double credit;
-        credit = transactionsService.credit(nameUser);
+    model.addAttribute("addedConn", friends);
 
-        model.addAttribute("debitCredit", credit - debit);
-        model.addAttribute("getCostsTrans", listCostsUserToBuddy);
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
+    return modelAndView;
+  }
 
-        return modelAndView;
+  @RolesAllowed("USER")
+  @RequestMapping("/detailTotalAmount")
+  public ModelAndView detailTotalAmount(
+    @ModelAttribute("setStatus") String setStatus,
+    Model model,
+    Principal user,
+    HttpServletRequest request,
+    HttpServletResponse response
+  ) {
+    // récupérer ID email de la personne connectée et la personne connectée
+    Users nameUser = recupererNameUser(user);
+
+    modelAndView.setViewName(PAGE_ACCUEIL);
+    modelAndView = modelHome(model, user);
+
+    modelAndView = addAttibuteDetailTotalAmount(nameUser, model);
+
+    model.addAttribute("addDetailSolde", true);
+
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
+    return modelAndView;
+  }
+
+  private ModelAndView addAttibuteDetailTotalAmount(
+    Users nameUser,
+    Model model
+  ) {
+    // details account
+    List<CostsDetailsTransactions> listCostsUserToBuddy;
+    // true = for all transactions without paied to buddy
+    listCostsUserToBuddy =
+      transactionsService.detailTransForUser(nameUser, true);
+
+    if (listCostsUserToBuddy == null) {
+      int setStatus = 204;
+      setGetStatusModelAndView.setSetStatus(setStatus);
+      setGetStatusModelAndView.setHttpStatus(HttpStatus.NO_CONTENT);
+      return modelAndView;
     }
 
-    @RolesAllowed("USER")
-    @RequestMapping("/addconnection")
-    public ModelAndView addConnection(Model model, Principal user) {
-        modelAndView.setViewName(PAGE_ACCUEIL);
-        modelAndView = modelHome(model, user);
+    // sort DESC
+    Comparator<CostsDetailsTransactions> comparator = (c1, c2) ->
+      Integer.compare(c2.getId(), c1.getId());
+    Collections.sort(listCostsUserToBuddy, comparator);
 
-        model.addAttribute("addConn", true);
+    model.addAttribute("allTrans", listCostsUserToBuddy);
 
-        return modelAndView;
+    return modelAndView;
+  }
+
+  @RolesAllowed("USER")
+  @GetMapping("/selectconnection")
+  public ModelAndView selectConnection(
+    Model model,
+    Principal user,
+    HttpServletRequest request,
+    HttpServletResponse response
+  ) {
+    // récupérer ID email de la personne connectée et la personne connectée
+    Users nameUser = recupererNameUser(user);
+    modelAndView.setViewName(PAGE_ACCUEIL);
+    modelAndView = modelHome(model, user);
+
+    model.addAttribute("selectConn", true);
+
+    modelAndView = addAttributeSelectConnection(nameUser, model, request);
+
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
+    return modelAndView;
+  }
+
+  private ModelAndView addAttributeSelectConnection(
+    Users nameUser,
+    Model model,
+    HttpServletRequest request
+  ) {
+    requestClass.setRequest(request);
+
+    List<Friends> listFriends = new ArrayList<>();
+    listFriends.addAll(nameUser.getFriends());
+
+    model.addAttribute("listBuddy", listFriends);
+
+    List<NameTransactions> listNameTransactions = new ArrayList<>();
+
+    // récupérer seuelemnt les ID 1 et 2 name transaction : Verser (sur son compte
+    // api) et Transférer (sur le compte bancaire)
+
+    for (int i = 1; i < 3; i++) {
+      Optional<NameTransactions> nameTransactionsOpt = nameTransactionsService.getNameTransactionById(
+        i
+      );
+      if (nameTransactionsOpt.isPresent()) {
+        NameTransactions nameTrans = nameTransactionsOpt.get();
+        listNameTransactions.add(nameTrans);
+      }
+    }
+    model.addAttribute("listNameTransactions", listNameTransactions);
+
+    double valueAmount = 0;
+    String selectedOption = "--";
+    String valueSelectedOption = "";
+    if (requestClass.requestParameter(AMOUNT) != null) {
+      valueAmount = Double.parseDouble(requestClass.requestParameter(AMOUNT));
+      selectedOption =
+        usersService
+          .getUser(requestClass.requestParameter(CONNECTIONS))
+          .getFirstName();
+      valueSelectedOption = requestClass.requestParameter(CONNECTIONS);
+    }
+    model.addAttribute("selectedOption", selectedOption);
+    model.addAttribute("valueSelectedOption", valueSelectedOption);
+    model.addAttribute("valueOfAmount", valueAmount);
+
+    return modelAndView;
+  }
+
+  @RolesAllowed("USER")
+  @PostMapping("/paid")
+  public ModelAndView selectedConnection(
+    Model model,
+    Principal user,
+    HttpServletRequest request,
+    HttpServletResponse response,
+    RedirectAttributes redirectAttributes
+  ) {
+    // récupérer ID email de la personne connectée et la personne connectée
+    Users nameUser = recupererNameUser(user);
+    modelAndView.setViewName(PAGE_ACCUEIL);
+    modelAndView = modelHome(model, user);
+
+    requestClass.setRequest(request);
+    String typeTransConnection = requestClass.requestParameter(CONNECTIONS);
+    String amount = requestClass.requestParameter(AMOUNT);
+    String description = requestClass.requestParameter("description");
+
+    if (typeTransConnection.contains("@") && description == null) {
+      selectConnection(model, user, request, response);
+      return modelAndView;
     }
 
-    @RolesAllowed("USER")
-    @PostMapping("/addedconnection")
-    public ModelAndView addedConnection(Model model, Principal user, HttpServletRequest request,
-            HttpServletResponse response) {
+    int status = loginControllerService.selectedConnection(
+      nameUser,
+      typeTransConnection,
+      amount,
+      description
+    );
 
-        // récupérer ID email de la personne connectée et la personne connectée
-        Users nameUser = recupererNameUser(user);
+    setGetStatusModelAndView.setSetStatus(status);
+    setGetStatusModelAndView.setHttpStatus(HttpStatus.valueOf(status));
 
-        modelAndView.setViewName(PAGE_ACCUEIL);
-
-        String msgResultat = "";
-
-        // récupérer ID de l'ami saisi saisi
-        Users idUserBuddy = usersService.getUser(request.getParameter("email"));
-        if (idUserBuddy != null) {
-            if (nameUser.getIdEmail().equalsIgnoreCase(idUserBuddy.getIdEmail())) {
-                msgResultat = "Vous avez siasi votre adresse email. Pour chercher l'un de vos amis il faut saisir son adresse email et ses données.";
-            } else {
-
-                Friends friendOfNameUser = friendsService.getFriend(nameUser.getIdUsers(), idUserBuddy.getIdUsers());
-                if (friendOfNameUser != null) {
-                    msgResultat = "Vous êtes déjà connecté avec " + idUserBuddy.getFirstName() + " "
-                            + idUserBuddy.getNameUser();
-                } else {
-                    boolean idFriend = false;
-                    idFriend = verifierIdEmail(idUserBuddy, request);
-                    if (idFriend) {
-                        Friends friend = new Friends();
-                        friend.setUsersIdUsers(nameUser.getIdUsers());
-                        friend.setUsers(idUserBuddy);
-                        friendsService.addFriends(friend);
-                        response.setStatus(201);
-                        msgResultat = "Vous venez d'ajouter : " + request.getParameter("prenom") + " (résultat : "
-                                + HttpStatus.valueOf(response.getStatus()) + ")";
-                    } else {
-                        msgResultat = "Les données saiseis sont erronées. Nous ne pouvons pas vous connecter avec la personne saisie.";
-                    }
-                }
-            }
-        } else {
-            msgResultat = "Il n'y a aucun utilisateur avec l'adresse email saisie.";
-        }
-
-        model.addAttribute("addedConnection", msgResultat);
-        List<Friends> friends = new ArrayList<>();
-
-        friends.addAll(nameUser.getFriends());
-
-        model.addAttribute("listBuddy", friends);
-
-        model.addAttribute("addedConn", friends);
-
-        return modelAndView;
+    if (status == 201) {
+      RedirectView redirectView = new RedirectView();
+      int statusRedirect = 302;
+      redirectView.setStatusCode(HttpStatusCode.valueOf(statusRedirect));
+      redirectAttributes.addFlashAttribute("setStatus", String.valueOf(201));
+      redirectView.setUrl("/detailTotalAmount");
+      return new ModelAndView(redirectView);
+    }
+    if (status == 404) {
+      model.addAttribute(
+        "addedConnection",
+        "Votre transaction n'a pas abouti !"
+      );
     }
 
-    @RolesAllowed("USER")
-    @RequestMapping("/detailTotalAmount")
-    public ModelAndView detailTotalAmount(Model model, Principal user, HttpServletRequest request,
-            HttpServletResponse response) {
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
+    return modelAndView;
+  }
 
-        // récupérer ID email de la personne connectée et la personne connectée
-        Users nameUser = recupererNameUser(user);
+  @RolesAllowed("USER")
+  @GetMapping("/login")
+  public ModelAndView login(
+    Model model,
+    Principal user,
+    HttpServletRequest request,
+    HttpServletResponse response
+  ) {
+    modelAndView.setViewName("login.html");
 
-        modelAndView.setViewName(PAGE_ACCUEIL);
-        modelAndView = modelHome(model, user);
+    setGetStatusModelAndView.setSetStatus(response.getStatus());
+    setGetStatusModelAndView.setHttpStatus(
+      HttpStatus.valueOf(setGetStatusModelAndView.getSetStatus())
+    );
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
+    return modelAndView;
+  }
 
-        // details account
-        List<CostsDetailsTransactions> listCostsUserToBuddy;
-        // true = for all transactions without paied to buddy
-        listCostsUserToBuddy = transactionsService.detailTransForUser(nameUser, true);
-        model.addAttribute("addDetailSolde", true);
-        model.addAttribute("allTrans", listCostsUserToBuddy);
+  @RolesAllowed("USER")
+  @PostMapping("/register")
+  public ModelAndView registerNewUser(
+    Model model,
+    Principal user,
+    HttpServletRequest request,
+    HttpServletResponse response
+  ) throws ParseException {
+    requestClass.setRequest(request);
 
-        return modelAndView;
+    // récupérer ID email
+    String newUserMail = requestClass.requestParameter("username");
+    // récupérer le password
+    String newUserPassword = requestClass.requestParameter("password");
+    // récupérer le prénom
+    String newUserFirstName = requestClass.requestParameter(PRENOM);
+    newUserFirstName = makeUpperCaseFirstLetter(newUserFirstName);
+    // récuperer le nom
+    String newUserLastName = requestClass.requestParameter("nom");
+    // récuperer la date de naissance
+    String newUserBirthDay = requestClass.requestParameter("dateDeNaissance");
+
+    int status = loginControllerService.addNewUser(
+      newUserMail,
+      newUserPassword,
+      newUserFirstName,
+      newUserLastName,
+      newUserBirthDay
+    );
+
+    setGetStatusModelAndView.setSetStatus(status);
+    setGetStatusModelAndView.setHttpStatus(HttpStatus.valueOf(status));
+
+    String msg;
+    if (status == 201) {
+      msg =
+        userNew.getFirstName() +
+        ", vous vous êtes bien enregistré avec l'adresse email (username) : " +
+        userNew.getIdEmail() +
+        " (" +
+        setGetStatusModelAndView.getSetStatus() +
+        ")";
+    } else {
+      msg = "err !";
     }
 
-    private boolean verifierIdEmail(Users idUserBuddy, HttpServletRequest request) {
+    modelAndView.setViewName("login.html");
+    model.addAttribute("newUser", msg);
 
-        boolean ifFriendExist = false;
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
+    return modelAndView;
+  }
 
-        // format date yyyy-MM-dd car ce format dans le formulaire dateN
-        LocalDate date = idUserBuddy.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        DateTimeFormatter dtformat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dateB = dtformat.format(date);
-        String dateN = request.getParameter("dateDeNaissance");
-        if (dateB.equals(dateN)
-                && idUserBuddy.getFirstName().equalsIgnoreCase(request.getParameter("prenom"))
-                && idUserBuddy.getNameUser().equalsIgnoreCase(request.getParameter("nom"))) {
+  private String makeUpperCaseFirstLetter(String newUserFirstName) {
+    newUserFirstName =
+      newUserFirstName.substring(0, 1).toUpperCase() +
+      newUserFirstName.substring(1);
+    return newUserFirstName;
+  }
 
-            ifFriendExist = true;
-        }
-        return ifFriendExist;
+  @RolesAllowed({ "USER", "ADMIN" })
+  @GetMapping("/admin")
+  public ModelAndView getAdmin(
+    Model model,
+    Principal user,
+    HttpServletRequest request,
+    HttpServletResponse response
+  ) {
+    // récupérer ID email de la personne connectée et la personne connectée
+    String idEmail = getUserInfo(user);
+    Users nameUser = usersService.getUser(idEmail);
+
+    modelAndView = addAttributeAdmin(nameUser, model);
+
+    modelAndView.setViewName("admin.html");
+
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
+    return modelAndView;
+  }
+
+  private ModelAndView addAttributeAdmin(Users nameUser, Model model) {
+    model.addAttribute(
+      "getUser",
+      "Welcome Admin : " +
+      nameUser.getFirstName() +
+      " " +
+      nameUser.getNameUser()
+    );
+
+    //get the users
+    Iterable<Users> users = usersService.getUsers();
+    List<Users> listUsers = new ArrayList<>();
+    users.forEach(listUsers::add);
+
+    model.addAttribute("valueSelectedOption", listUsers);
+
+    return modelAndView;
+  }
+
+  private ModelAndView modelHome(Model model, Principal user) {
+    // récupérer ID email de la personne connectée et la personne connectée
+    Users nameUser = recupererNameUser(user);
+    if (nameUser == null) {
+      int setStatus = 204;
+      setGetStatusModelAndView.setSetStatus(setStatus);
+      setGetStatusModelAndView.setHttpStatus(HttpStatus.NO_CONTENT);
+      return modelAndView;
+    } else {
+      int setStatus = 200;
+      setGetStatusModelAndView.setSetStatus(setStatus);
+      setGetStatusModelAndView.setHttpStatus(HttpStatus.OK);
+    }
+    model.addAttribute(
+      "getUser",
+      nameUser.getFirstName() + " " + nameUser.getNameUser()
+    );
+
+    List<CostsDetailsTransactions> listCostsUserToBuddy;
+    // true = for all transactions without paied to buddy
+    listCostsUserToBuddy =
+      transactionsService.detailTransForUser(nameUser, false);
+    if (listCostsUserToBuddy == null) {
+      int setStatus = 204;
+      setGetStatusModelAndView.setSetStatus(setStatus);
+      setGetStatusModelAndView.setHttpStatus(HttpStatus.NO_CONTENT);
+      return modelAndView;
+    } else {
+      int setStatus = 200;
+      setGetStatusModelAndView.setSetStatus(setStatus);
+      setGetStatusModelAndView.setHttpStatus(HttpStatus.OK);
     }
 
-    @RolesAllowed("USER")
-    @GetMapping("/selectconnection")
-    public ModelAndView selectConnection(Model model, Principal user, HttpServletRequest request,
-            HttpServletResponse response) {
+    // sort DESC
+    Comparator<CostsDetailsTransactions> comparator = (c1, c2) ->
+      Integer.compare(c2.getId(), c1.getId());
+    Collections.sort(listCostsUserToBuddy, comparator);
 
-        // récupérer ID email de la personne connectée et la personne connectée
-        Users nameUser = recupererNameUser(user);
-        modelAndView.setViewName(PAGE_ACCUEIL);
-        modelAndView = modelHome(model, user);
+    double debit;
+    debit = transactionsService.debit(nameUser);
+    double credit;
+    credit = transactionsService.credit(nameUser);
 
-        model.addAttribute("selectConn", true);
+    NumberFormat nf = NumberFormat.getInstance();
+    nf.setMaximumFractionDigits(2);
 
-        List<Friends> listFriends = new ArrayList<>();
-        listFriends.addAll(nameUser.getFriends());
-        model.addAttribute("listBuddy", listFriends);
+    model.addAttribute("debitCredit", nf.format(credit - debit));
+    model.addAttribute("getCostsTrans", listCostsUserToBuddy);
 
-        List<NameTransactions> listNameTransactions = new ArrayList<>();
+    return modelAndView;
+  }
 
-        // récupérer seuelemnt les ID 1 et 2 name transaction : Verser (sur son compte
-        // api) et Transférer (sur le compte bancaire)
+  private Users recupererNameUser(Principal user) {
+    String idEmail = getUserInfo(user);
+    return usersService.getUser(idEmail);
+  }
 
-        for (int i = 1; i < 3; i++) {
-            Optional<NameTransactions> nameTransactionsOpt = nameTransactionsService.getNameTransactionById(i);
-            if (nameTransactionsOpt.isPresent()) {
-                NameTransactions nameTrans = nameTransactionsOpt.get();
-                listNameTransactions.add(nameTrans);
-            }
-        }
-        model.addAttribute("listNameTransactions", listNameTransactions);
-
-        return modelAndView;
+  public String getUserInfo(Principal user) {
+    StringBuilder userInfo = new StringBuilder();
+    if (user instanceof UsernamePasswordAuthenticationToken) {
+      userInfo.append(getUsernamePasswordLoginInfo(user));
     }
+    return userInfo.toString();
+  }
 
-    @RolesAllowed("USER")
-    @PostMapping("/paid")
-    public ModelAndView selectedConnection(Model model, Principal user, HttpServletRequest request,
-            HttpServletResponse response) {
+  private StringBuffer getUsernamePasswordLoginInfo(Principal user) {
+    StringBuffer usernameInfo = new StringBuffer();
 
-        // récupérer ID email de la personne connectée et la personne connectée
-        Users nameUser = recupererNameUser(user);
-        modelAndView.setViewName(PAGE_ACCUEIL);
-        modelAndView = modelHome(model, user);
-
-        String typeTransConnection = request.getParameter("connections");
-        String amount = request.getParameter("amount");
-
-        creationTransactionService.createTransaction(nameUser, typeTransConnection, amount);
-
-        RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("/detailTotalAmount");
-
-        return new ModelAndView(redirectView);
+    UsernamePasswordAuthenticationToken token =
+      ((UsernamePasswordAuthenticationToken) user);
+    if (token.isAuthenticated()) {
+      User u = (User) token.getPrincipal();
+      usernameInfo.append(u.getUsername());
+    } else {
+      usernameInfo.append("NA");
     }
-
-    @RolesAllowed("USER")
-    @GetMapping("/login")
-    public ModelAndView login(Model model, Principal user, HttpServletRequest request,
-            HttpServletResponse response) {
-
-        modelAndView.setViewName("login.html");
-
-        return modelAndView;
-    }
-
-    @RolesAllowed("USER")
-    @PostMapping("/login")
-    public ModelAndView loginPost(Model model, Principal user, HttpServletRequest request,
-            HttpServletResponse response) {
-
-        RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("/*");
-
-        return new ModelAndView(redirectView);
-    }
-
-    @RolesAllowed("USER")
-    @PostMapping("/register")
-    public ModelAndView registerNewUser(Model model, Principal user, HttpServletRequest request,
-            HttpServletResponse response) throws ParseException {
-
-        // récupérer ID email
-        String newUserMail = request.getParameter("username").toLowerCase().trim();
-        String newUserPassword = springSecurityConfig.bCryptPasswordEncoder()
-                .encode(request.getParameter("password").trim());
-        String newUserFirstName = request.getParameter("prenom").toLowerCase().trim();
-        newUserFirstName = makeUpperCaseFirstLetter(newUserFirstName);
-        String newUserLastName = request.getParameter("nom").toUpperCase().trim();
-
-        String newUserBirthDay = request.getParameter("dateDeNaissance");
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-        Date newUserDateBirthDay = formatter.parse(newUserBirthDay);
-
-        int roleId = 1; // 1 = user
-        roles = new Roles();
-        roles.setIdRoles(roleId);
-        userNew = new Users();
-        userNew.setIdEmail(newUserMail);
-        userNew.setPassword(newUserPassword);
-        userNew.setFirstName(newUserFirstName);
-        userNew.setNameUser(newUserLastName);
-        userNew.setBirthDate(newUserDateBirthDay);
-        userNew.setRole(roles);
-
-        usersService.addUser(userNew);
-
-        // verify if register is ok
-        String msg = "err !";
-        if (usersService.getUser(newUserMail) != null) {
-            msg = userNew.getFirstName() + ", vous vous êtes bien enregistré avec l'adresse email (username) : "
-                    + userNew.getIdEmail() + " (" + HttpStatus.valueOf(response.getStatus()) + ")";
-        }
-
-        modelAndView.setViewName("login.html");
-        model.addAttribute("newUser", msg);
-
-        return modelAndView;
-    }
-
-    private String makeUpperCaseFirstLetter(String newUserFirstName) {
-        newUserFirstName = newUserFirstName.substring(0, 1).toUpperCase() + newUserFirstName.substring(1);
-        return newUserFirstName;
-    }
-
-    @RolesAllowed({ "USER", "ADMIN" })
-    @RequestMapping("/admin")
-    public ModelAndView getAdmin(Model model, Principal user) {
-
-        modelAndView.setViewName("admin.html");
-
-        // récupérer ID email de la personne connectée et la personne connectée
-        String idEmail = getUserInfo(user);
-        Users nameUser = usersService.getUser(idEmail);
-        model.addAttribute("getUser", "Welcome Admin : " + nameUser.getFirstName() + " " + nameUser.getNameUser());
-
-        // listes transactions
-        List<CostsDetailsTransactions> listCostsUser;
-        // true = for all transactions without paied to buddy
-        listCostsUser = transactionsService.detailTransForUser(nameUser, true);
-        model.addAttribute("getCostsTrans", listCostsUser);
-
-        return modelAndView;
-    }
-
-    private Users recupererNameUser(Principal user) {
-        String idEmail = getUserInfo(user);
-        return usersService.getUser(idEmail);
-    }
-
-    public String getUserInfo(Principal user) {
-        StringBuilder userInfo = new StringBuilder();
-        if (user instanceof UsernamePasswordAuthenticationToken) {
-            userInfo.append(getUsernamePasswordLoginInfo(user));
-        }
-        return userInfo.toString();
-    }
-
-    private StringBuffer getUsernamePasswordLoginInfo(Principal user) {
-        StringBuffer usernameInfo = new StringBuffer();
-
-        UsernamePasswordAuthenticationToken token = ((UsernamePasswordAuthenticationToken) user);
-        if (token.isAuthenticated()) {
-            User u = (User) token.getPrincipal();
-            usernameInfo.append(u.getUsername());
-        } else {
-            usernameInfo.append("NA");
-        }
-        return usernameInfo;
-    }
-
+    return usernameInfo;
+  }
 }
