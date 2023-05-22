@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class ServiceTransactionl {
+public class ServiceTransactional {
 
   @Autowired
   private TransactionsService transactionsService; // instance of object

@@ -8,9 +8,10 @@ import com.openclassrooms.pay_my_buddy.model.RequestClass;
 import com.openclassrooms.pay_my_buddy.model.Roles;
 import com.openclassrooms.pay_my_buddy.model.Users;
 import com.openclassrooms.pay_my_buddy.repository.UsersServiceInterface;
-import com.openclassrooms.pay_my_buddy.service.CreationTransactionService;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
+import com.openclassrooms.pay_my_buddy.service.LoginControllerService;
 import com.openclassrooms.pay_my_buddy.service.NameTransactionsService;
+import com.openclassrooms.pay_my_buddy.service.SetGetStatusModelAndView;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,16 +19,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,10 +31,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.User;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
@@ -60,9 +57,6 @@ public class LoginController {
   private NameTransactionsService nameTransactionsService; // instance of object
 
   @Autowired
-  private CreationTransactionService creationTransactionService;
-
-  @Autowired
   Users userNew;
 
   @Autowired
@@ -73,6 +67,12 @@ public class LoginController {
 
   @Autowired
   private RequestClass requestClass;
+
+  @Autowired
+  private LoginControllerService loginControllerService;
+
+  @Autowired
+  private SetGetStatusModelAndView setGetStatusModelAndView;
 
   private static final String PAGE_ACCUEIL = "accueil.html";
   private static final String PRENOM = "prenom";
@@ -87,7 +87,6 @@ public class LoginController {
     FriendsService friendsService,
     TransactionsService transactionsService,
     NameTransactionsService nameTransactionsService,
-    CreationTransactionService creationTransactionService,
     Users userNew,
     Roles roles,
     SpringSecurityConfig springSecurityConfig
@@ -97,7 +96,6 @@ public class LoginController {
     this.friendsService = friendsService;
     this.transactionsService = transactionsService;
     this.nameTransactionsService = nameTransactionsService;
-    this.creationTransactionService = creationTransactionService;
     this.userNew = userNew;
     this.roles = roles;
     this.springSecurityConfig = springSecurityConfig;
@@ -145,16 +143,6 @@ public class LoginController {
     this.nameTransactionsService = nameTransactionsService;
   }
 
-  public CreationTransactionService getCreationTransactionService() {
-    return creationTransactionService;
-  }
-
-  public void setCreationTransactionService(
-    CreationTransactionService creationTransactionService
-  ) {
-    this.creationTransactionService = creationTransactionService;
-  }
-
   public Users getUserNew() {
     return userNew;
   }
@@ -192,29 +180,9 @@ public class LoginController {
     modelAndView.setViewName(PAGE_ACCUEIL);
     modelAndView = modelHome(model, user);
 
-    int getStatusResponse = verifyHttpStatusModelAndView(
-      modelAndView.getStatus()
-    );
-    response.setStatus(getStatusResponse);
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
     return modelAndView;
-  }
-
-  private int verifyHttpStatusModelAndView(HttpStatusCode status) {
-    // this for change the response status with response status of modelAndView
-    int statusCode = 200;
-    if (status == HttpStatus.CREATED) {
-      statusCode = 201;
-    }
-    if (status == HttpStatus.ACCEPTED) {
-      statusCode = 202;
-    }
-    if (status == HttpStatus.NO_CONTENT) {
-      statusCode = 204;
-    }
-    if (status == HttpStatus.NOT_FOUND) {
-      statusCode = 404;
-    }
-    return statusCode;
   }
 
   @RolesAllowed("USER")
@@ -230,10 +198,8 @@ public class LoginController {
 
     model.addAttribute("addConn", true);
 
-    int getStatusResponse = verifyHttpStatusModelAndView(
-      modelAndView.getStatus()
-    );
-    response.setStatus(getStatusResponse);
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
     return modelAndView;
   }
 
@@ -245,8 +211,6 @@ public class LoginController {
     HttpServletRequest request,
     HttpServletResponse response
   ) {
-    // update status model at 200 OK
-    modelAndView.setStatus(HttpStatus.OK);
     requestClass.setRequest(request);
 
     // récupérer ID email de la personne connectée et la personne connectée
@@ -254,50 +218,55 @@ public class LoginController {
 
     modelAndView.setViewName(PAGE_ACCUEIL);
 
-    String msgResultat = "";
-
     // récupérer ID de l'ami saisi
-    Users idUserBuddy = usersService.getUser(
-      requestClass.requestParameter("email")
+    String idUserBuddy = requestClass.requestParameter("email");
+
+    String dateN = requestClass.requestParameter("dateDeNaissance");
+
+    String firstName = requestClass.requestParameter(PRENOM);
+
+    String lastName = requestClass.requestParameter("nom");
+
+    int statusAddedConnection = loginControllerService.addedconnection(
+      idUserBuddy,
+      nameUser,
+      dateN,
+      firstName,
+      lastName
     );
-    if (idUserBuddy != null) {
-      if (nameUser.getIdEmail().equalsIgnoreCase(idUserBuddy.getIdEmail())) {
-        msgResultat =
-          "Vous avez saisi votre adresse email. Pour chercher l'un de vos amis il faut saisir son adresse email et ses données.";
-      } else {
-        Friends friendOfNameUser = friendsService.getFriend(
-          nameUser.getIdUsers(),
-          idUserBuddy.getIdUsers()
-        );
-        if (friendOfNameUser != null) {
-          msgResultat =
-            "Vous êtes déjà connecté avec " +
-            idUserBuddy.getFirstName() +
-            " " +
-            idUserBuddy.getNameUser();
-        } else {
-          boolean idFriend = false;
-          idFriend = verifierIdEmail(idUserBuddy, request);
-          if (idFriend) {
-            Friends friend = new Friends();
-            friend.setUsersIdUsers(nameUser.getIdUsers());
-            friend.setUsers(idUserBuddy);
-            friendsService.addFriends(friend);
-            modelAndView.setStatus(HttpStatusCode.valueOf(201));
-            msgResultat =
-              "Vous venez d'ajouter : " +
-              requestClass.requestParameter(PRENOM) +
-              " (résultat : " +
-              HttpStatus.valueOf(response.getStatus()) +
-              ")";
-          } else {
-            msgResultat =
-              "Les données saiseis sont erronées. Nous ne pouvons pas vous connecter avec la personne saisie.";
-          }
-        }
-      }
-    } else {
+
+    setGetStatusModelAndView.setSetStatus(statusAddedConnection);
+    setGetStatusModelAndView.setHttpStatus(
+      HttpStatus.valueOf(statusAddedConnection)
+    );
+
+    String msgResultat;
+
+    if (statusAddedConnection == 201) {
+      msgResultat =
+        "Vous venez d'ajouter : " +
+        requestClass.requestParameter(PRENOM) +
+        " (résultat : " +
+        setGetStatusModelAndView.getSetStatus() +
+        ")";
+    } else if (statusAddedConnection == 206) {
+      msgResultat =
+        "Les données saisies sont erronées. Nous ne pouvons pas vous connecter avec la personne saisie.";
+    } else if (statusAddedConnection == 304) {
+      msgResultat =
+        "Vous êtes déjà connecté avec la personne dont l'adresse e-mail vous avez siasi : " +
+        idUserBuddy;
+    } else if (statusAddedConnection == 404) {
       msgResultat = "Il n'y a aucun utilisateur avec l'adresse email saisie.";
+    } else if (statusAddedConnection == 406) {
+      msgResultat =
+        "Vous avez saisi votre adresse email. Pour chercher l'un de vos amis il faut saisir son adresse email et ses données.";
+    } else {
+      msgResultat =
+        "Error " +
+        setGetStatusModelAndView.getSetStatus() +
+        " - " +
+        setGetStatusModelAndView.getHttpStatus();
     }
 
     model.addAttribute("addedConnection", msgResultat);
@@ -309,16 +278,15 @@ public class LoginController {
 
     model.addAttribute("addedConn", friends);
 
-    int getStatusResponse = verifyHttpStatusModelAndView(
-      modelAndView.getStatus()
-    );
-    response.setStatus(getStatusResponse);
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
     return modelAndView;
   }
 
   @RolesAllowed("USER")
   @RequestMapping("/detailTotalAmount")
   public ModelAndView detailTotalAmount(
+    @ModelAttribute("setStatus") String setStatus,
     Model model,
     Principal user,
     HttpServletRequest request,
@@ -334,10 +302,8 @@ public class LoginController {
 
     model.addAttribute("addDetailSolde", true);
 
-    int getStatusResponse = verifyHttpStatusModelAndView(
-      modelAndView.getStatus()
-    );
-    response.setStatus(getStatusResponse);
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
     return modelAndView;
   }
 
@@ -353,7 +319,8 @@ public class LoginController {
 
     if (listCostsUserToBuddy == null) {
       int setStatus = 204;
-      modelAndView = setStatusModelAndView(setStatus);
+      setGetStatusModelAndView.setSetStatus(setStatus);
+      setGetStatusModelAndView.setHttpStatus(HttpStatus.NO_CONTENT);
       return modelAndView;
     }
 
@@ -365,38 +332,6 @@ public class LoginController {
     model.addAttribute("allTrans", listCostsUserToBuddy);
 
     return modelAndView;
-  }
-
-  private boolean verifierIdEmail(
-    Users idUserBuddy,
-    HttpServletRequest request
-  ) {
-    boolean ifFriendExist = false;
-
-    // format date yyyy-MM-dd car ce format dans le formulaire dateN
-    LocalDate date = idUserBuddy
-      .getBirthDate()
-      .toInstant()
-      .atZone(ZoneId.systemDefault())
-      .toLocalDate();
-    DateTimeFormatter dtformat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    String dateB = dtformat.format(date);
-
-    requestClass.setRequest(request);
-    String parameterHtml = "dateDeNaissance";
-    String dateN = requestClass.requestParameter(parameterHtml);
-    if (
-      dateB.equals(dateN) &&
-      idUserBuddy
-        .getFirstName()
-        .equalsIgnoreCase(requestClass.requestParameter(PRENOM)) &&
-      idUserBuddy
-        .getNameUser()
-        .equalsIgnoreCase(requestClass.requestParameter("nom"))
-    ) {
-      ifFriendExist = true;
-    }
-    return ifFriendExist;
   }
 
   @RolesAllowed("USER")
@@ -416,10 +351,8 @@ public class LoginController {
 
     modelAndView = addAttributeSelectConnection(nameUser, model, request);
 
-    int getStatusResponse = verifyHttpStatusModelAndView(
-      modelAndView.getStatus()
-    );
-    response.setStatus(getStatusResponse);
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
     return modelAndView;
   }
 
@@ -475,7 +408,8 @@ public class LoginController {
     Model model,
     Principal user,
     HttpServletRequest request,
-    HttpServletResponse response
+    HttpServletResponse response,
+    RedirectAttributes redirectAttributes
   ) {
     // récupérer ID email de la personne connectée et la personne connectée
     Users nameUser = recupererNameUser(user);
@@ -491,26 +425,35 @@ public class LoginController {
       selectConnection(model, user, request, response);
       return modelAndView;
     }
-    RedirectView redirectView = new RedirectView("/detailTotalAmount");
-    int setStatus;
-    boolean addedTrans = false;
-    addedTrans =
-      creationTransactionService.createTransaction(
-        nameUser,
-        typeTransConnection,
-        amount,
-        description
+
+    int status = loginControllerService.selectedConnection(
+      nameUser,
+      typeTransConnection,
+      amount,
+      description
+    );
+
+    setGetStatusModelAndView.setSetStatus(status);
+    setGetStatusModelAndView.setHttpStatus(HttpStatus.valueOf(status));
+
+    if (status == 201) {
+      RedirectView redirectView = new RedirectView();
+      int statusRedirect = 302;
+      redirectView.setStatusCode(HttpStatusCode.valueOf(statusRedirect));
+      redirectAttributes.addFlashAttribute("setStatus", String.valueOf(201));
+      redirectView.setUrl("/detailTotalAmount");
+      return new ModelAndView(redirectView);
+    }
+    if (status == 404) {
+      model.addAttribute(
+        "addedConnection",
+        "Votre transaction n'a pas abouti !"
       );
-    if (addedTrans) {
-      setStatus = 201;
-    } else {
-      setStatus = 202;
     }
 
-    response.setStatus(setStatus);
-    modelAndView.setStatus(HttpStatusCode.valueOf(setStatus));
-    redirectView.setStatusCode(HttpStatusCode.valueOf(setStatus));
-    return new ModelAndView(redirectView);
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
+    return modelAndView;
   }
 
   @RolesAllowed("USER")
@@ -521,14 +464,14 @@ public class LoginController {
     HttpServletRequest request,
     HttpServletResponse response
   ) {
-    // update status model at 200 OK
-    modelAndView.setStatus(HttpStatus.OK);
     modelAndView.setViewName("login.html");
 
-    int getStatusResponse = verifyHttpStatusModelAndView(
-      modelAndView.getStatus()
+    setGetStatusModelAndView.setSetStatus(response.getStatus());
+    setGetStatusModelAndView.setHttpStatus(
+      HttpStatus.valueOf(setGetStatusModelAndView.getSetStatus())
     );
-    response.setStatus(getStatusResponse);
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
     return modelAndView;
   }
 
@@ -540,69 +483,49 @@ public class LoginController {
     HttpServletRequest request,
     HttpServletResponse response
   ) throws ParseException {
-    // update status model at 200 OK
-    modelAndView.setStatus(HttpStatus.OK);
     requestClass.setRequest(request);
 
     // récupérer ID email
-    String newUserMail = requestClass
-      .requestParameter("username")
-      .toLowerCase()
-      .trim();
-    String newUserPassword = springSecurityConfig
-      .bCryptPasswordEncoder()
-      .encode(requestClass.requestParameter("password").trim());
-    String newUserFirstName = requestClass
-      .requestParameter(PRENOM)
-      .toLowerCase()
-      .trim();
+    String newUserMail = requestClass.requestParameter("username");
+    // récupérer le password
+    String newUserPassword = requestClass.requestParameter("password");
+    // récupérer le prénom
+    String newUserFirstName = requestClass.requestParameter(PRENOM);
     newUserFirstName = makeUpperCaseFirstLetter(newUserFirstName);
-    String newUserLastName = requestClass
-      .requestParameter("nom")
-      .toUpperCase()
-      .trim();
-
+    // récuperer le nom
+    String newUserLastName = requestClass.requestParameter("nom");
+    // récuperer la date de naissance
     String newUserBirthDay = requestClass.requestParameter("dateDeNaissance");
 
-    SimpleDateFormat formatter = new SimpleDateFormat(
-      "yyyy-MM-dd",
-      Locale.ENGLISH
+    int status = loginControllerService.addNewUser(
+      newUserMail,
+      newUserPassword,
+      newUserFirstName,
+      newUserLastName,
+      newUserBirthDay
     );
-    Date newUserDateBirthDay = formatter.parse(newUserBirthDay);
 
-    int roleId = 1; // 1 = user
-    roles = new Roles();
-    roles.setIdRoles(roleId);
-    userNew = new Users();
-    userNew.setIdEmail(newUserMail);
-    userNew.setPassword(newUserPassword);
-    userNew.setFirstName(newUserFirstName);
-    userNew.setNameUser(newUserLastName);
-    userNew.setBirthDate(newUserDateBirthDay);
-    userNew.setRole(roles);
+    setGetStatusModelAndView.setSetStatus(status);
+    setGetStatusModelAndView.setHttpStatus(HttpStatus.valueOf(status));
 
-    usersService.addUser(userNew);
-
-    // verify if register is ok
-    String msg = "err !";
-    if (usersService.getUser(newUserMail) != null) {
-      modelAndView = setStatusModelAndView(201);
+    String msg;
+    if (status == 201) {
       msg =
         userNew.getFirstName() +
         ", vous vous êtes bien enregistré avec l'adresse email (username) : " +
         userNew.getIdEmail() +
         " (" +
-        verifyHttpStatusModelAndView(modelAndView.getStatus()) +
+        setGetStatusModelAndView.getSetStatus() +
         ")";
+    } else {
+      msg = "err !";
     }
 
     modelAndView.setViewName("login.html");
     model.addAttribute("newUser", msg);
 
-    int getStatusResponse = verifyHttpStatusModelAndView(
-      modelAndView.getStatus()
-    );
-    response.setStatus(getStatusResponse);
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
     return modelAndView;
   }
 
@@ -621,8 +544,6 @@ public class LoginController {
     HttpServletRequest request,
     HttpServletResponse response
   ) {
-    // update status model at 200 OK
-    modelAndView.setStatus(HttpStatus.OK);
     // récupérer ID email de la personne connectée et la personne connectée
     String idEmail = getUserInfo(user);
     Users nameUser = usersService.getUser(idEmail);
@@ -631,10 +552,8 @@ public class LoginController {
 
     modelAndView.setViewName("admin.html");
 
-    int getStatusResponse = verifyHttpStatusModelAndView(
-      modelAndView.getStatus()
-    );
-    response.setStatus(getStatusResponse);
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
     return modelAndView;
   }
 
@@ -647,35 +566,28 @@ public class LoginController {
       nameUser.getNameUser()
     );
 
-    // listes transactions
-    List<CostsDetailsTransactions> listCostsUser;
-    // true = for all transactions without paied to buddy
-    listCostsUser = transactionsService.detailTransForUser(nameUser, true);
+    //get the users
+    Iterable<Users> users = usersService.getUsers();
+    List<Users> listUsers = new ArrayList<>();
+    users.forEach(listUsers::add);
 
-    if (listCostsUser == null) {
-      int setStatus = 204;
-      modelAndView = setStatusModelAndView(setStatus);
-      return modelAndView;
-    }
-    // sort DESC
-    Comparator<CostsDetailsTransactions> comparator = (c1, c2) ->
-      Integer.compare(c2.getId(), c1.getId());
-    Collections.sort(listCostsUser, comparator);
-
-    model.addAttribute("getCostsTrans", listCostsUser);
+    model.addAttribute("valueSelectedOption", listUsers);
 
     return modelAndView;
   }
 
   private ModelAndView modelHome(Model model, Principal user) {
-    // update status model at 200 OK
-    modelAndView.setStatus(HttpStatus.OK);
     // récupérer ID email de la personne connectée et la personne connectée
     Users nameUser = recupererNameUser(user);
     if (nameUser == null) {
       int setStatus = 204;
-      modelAndView = setStatusModelAndView(setStatus);
+      setGetStatusModelAndView.setSetStatus(setStatus);
+      setGetStatusModelAndView.setHttpStatus(HttpStatus.NO_CONTENT);
       return modelAndView;
+    } else {
+      int setStatus = 200;
+      setGetStatusModelAndView.setSetStatus(setStatus);
+      setGetStatusModelAndView.setHttpStatus(HttpStatus.OK);
     }
     model.addAttribute(
       "getUser",
@@ -688,8 +600,13 @@ public class LoginController {
       transactionsService.detailTransForUser(nameUser, false);
     if (listCostsUserToBuddy == null) {
       int setStatus = 204;
-      modelAndView = setStatusModelAndView(setStatus);
+      setGetStatusModelAndView.setSetStatus(setStatus);
+      setGetStatusModelAndView.setHttpStatus(HttpStatus.NO_CONTENT);
       return modelAndView;
+    } else {
+      int setStatus = 200;
+      setGetStatusModelAndView.setSetStatus(setStatus);
+      setGetStatusModelAndView.setHttpStatus(HttpStatus.OK);
     }
 
     // sort DESC
@@ -708,11 +625,6 @@ public class LoginController {
     model.addAttribute("debitCredit", nf.format(credit - debit));
     model.addAttribute("getCostsTrans", listCostsUserToBuddy);
 
-    return modelAndView;
-  }
-
-  private ModelAndView setStatusModelAndView(int setStatus) {
-    modelAndView.setStatus(HttpStatusCode.valueOf(setStatus));
     return modelAndView;
   }
 

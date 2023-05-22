@@ -10,9 +10,79 @@
         .divFlexSpaceBetween{justify-content: space-between;}
         .marginDiv{margin: 5px;}
         .topDiv{margin-top:  10px;}
-    </style>
+
+        body {
+            margin: 0;
+            font-size: 1.3em;
+            background-color: rgb(243, 236, 215);
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-content: center; 
+            flex-wrap: wrap;
+            width: auto;
+        }
+        .section {
+            padding-top: 10px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: center;
+            margin-bottom: 10px;
+            width: auto;
+        }
+        .div_near {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            padding-left: 10px;
+            padding-right: 10px;
+            margin-bottom: 15px;
+            width: auto;
+        }
+        .div_display_data {
+            height: 30em;
+            overflow: auto;
+        }
+        .div_data {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            width: auto;
+            font-size: 0.7em;
+        }
+
+            @media (max-width: 767px){
+                body {
+                    font-size: 1.2em;
+                }
+                .div_data {
+                    font-size: 0.9em;
+                }
+                .div_near {
+                    width: 100%;
+                }
+
+            }
+            @media (max-width: 991px) {
+                .div_near {
+                    width: auto;
+                }
+            }
+
+</style>
 </head>
 <body>
+    <div class="container">
     <div class="divFlex divFlexSpaceBetween"> 
         <div class="divFlex">
             <p class="backgroundVert">Pay My Buddy</p>
@@ -46,35 +116,40 @@
             </div>    
         </div>
   
-        <div th:if="${allTrans != null}" class="divFlex topDiv">
-            <table>
-                <caption>My Details of Account</caption>
-                <thead>
-                    <tr class="backgroundVert">
-                        <th>Date transaction</th>
-                        <th>Connections</th>
-                        <th>Description</th>
-                        <th>Type Transaction</th>
-                        <th>Nom Transaction</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:if="${allTrans.empty}">
-                        <td colspan="3">Aucune transaction en base de données</td>
-                    </tr>
-                    <tr th:each="costsTrans: ${allTrans}">
-                        <td><span th:text="${#dates.format(costsTrans.transactions.dateTrans, 'dd.MM.yyyy')}"> Date transaction </span></td>
-                        <td><span th:text="${costsTrans.users.firstName}"> Connections </span></td>
-                        <td><span th:if="${costsTrans.descriptions != null}" th:text="${costsTrans.descriptions.description}"> Description  </span></td>
-                        <td><span th:text="${costsTrans.typeTransactions.nomTypeTrans}"> Connections </span></td>
-                        <td><span th:text="${costsTrans.nameTransactions.nameTrans}"> Connections </span></td>
-                        <td><span th:text="${costsTrans.amount}"> Amount </span></td>
-                    </tr>
-                </tbody>
-            </table>    
+        <div th:if="${allTrans != null}" class="container">
+            <div class="section">
+                <div class="div_near">
+                    <div class="div_data div_display_data">
+                        <table>
+                            <caption>My Details of Account</caption>
+                            <thead>
+                                <tr class="backgroundVert">
+                                    <th>Date transaction</th>
+                                    <th>Connections</th>
+                                    <th>Description</th>
+                                    <th>Type Transaction</th>
+                                    <th>Nom Transaction</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${allTrans.empty}">
+                                    <td colspan="3">Aucune transaction en base de données</td>
+                                </tr>
+                                <tr th:each="costsTrans: ${allTrans}">
+                                    <td><span th:text="${#dates.format(costsTrans.transactions.dateTrans, 'dd.MM.yyyy')}"> Date transaction </span></td>
+                                    <td><span th:text="${costsTrans.users.firstName}"> Connections </span></td>
+                                    <td><span th:if="${costsTrans.descriptions != null}" th:text="${costsTrans.descriptions.description}"> Description  </span></td>
+                                    <td><span th:text="${costsTrans.typeTransactions.nomTypeTrans}"> Connections </span></td>
+                                    <td><span th:text="${costsTrans.nameTransactions.nameTrans}"> Connections </span></td>
+                                    <td><span th:text="${costsTrans.amount}"> Amount </span></td>
+                                </tr>
+                            </tbody>
+                        </table>    
+                    </div>
+                </div>
+            </div>
         </div>
-    
     </p>
 
     <div class="divFlex">
@@ -189,6 +264,7 @@
                 </tr>
             </tbody>
         </table>
+    </div>
     </div>
 </body>
 </html>

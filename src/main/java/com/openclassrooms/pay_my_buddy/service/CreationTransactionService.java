@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class CreationTransactionService {
 
   @Autowired
-  private ServiceTransactionl serviceTransactionl; // instance of object
+  private ServiceTransactional serviceTransactional; // instance of object
 
   @Autowired
   private Transactions transaction;
@@ -51,7 +51,7 @@ public class CreationTransactionService {
   public CreationTransactionService() {}
 
   public CreationTransactionService(
-    ServiceTransactionl serviceTransactionl,
+    ServiceTransactional serviceTransactional,
     Transactions transaction,
     Transactions transactionEncaissement,
     CostsDetailsTransactions costsDetailsTransaction,
@@ -63,7 +63,7 @@ public class CreationTransactionService {
     DescriptionsService descriptionsService,
     Descriptions description
   ) {
-    this.serviceTransactionl = serviceTransactionl;
+    this.serviceTransactional = serviceTransactional;
     this.transaction = transaction;
     this.transactionEncaissement = transactionEncaissement;
     this.costsDetailsTransaction = costsDetailsTransaction;
@@ -77,12 +77,14 @@ public class CreationTransactionService {
     this.description = description;
   }
 
-  public ServiceTransactionl getServiceTransactionl() {
-    return this.serviceTransactionl;
+  public ServiceTransactional getServiceTransactional() {
+    return this.serviceTransactional;
   }
 
-  public void setServiceTransactionl(ServiceTransactionl serviceTransactionl) {
-    this.serviceTransactionl = serviceTransactionl;
+  public void setServiceTransactionl(
+    ServiceTransactional serviceTransactional
+  ) {
+    this.serviceTransactional = serviceTransactional;
   }
 
   public Transactions getTransaction() {
@@ -241,7 +243,7 @@ public class CreationTransactionService {
 
     boolean addedTrans = false;
     addedTrans =
-      serviceTransactionl.updateTableTransactionsAndCostsDetailsTransactions(
+      serviceTransactional.updateTableTransactionsAndCostsDetailsTransactions(
         transaction,
         costsDetailsTransaction,
         costsDetailsTransactionFrais,
@@ -252,13 +254,13 @@ public class CreationTransactionService {
   }
 
   private Descriptions defineNewDescription(String descriptionToAdd) {
-    description = new Descriptions();
+    //description = new Descriptions();
     description.setDescription(descriptionToAdd);
     return description;
   }
 
   private Transactions defineNewTransaction(Users nameUser, Date dateTransNow) {
-    transaction = new Transactions();
+    //transaction = new Transactions();
     transaction.setDateTrans(dateTransNow);
     transaction.setInvoiced(false);
     transaction.setUser(nameUser.getIdUsers());
@@ -270,7 +272,7 @@ public class CreationTransactionService {
     Users nameBuddy,
     Date dateTransNow
   ) {
-    transactionEncaissement = new Transactions();
+    //transactionEncaissement = new Transactions();
     transactionEncaissement.setDateTrans(dateTransNow);
     transactionEncaissement.setInvoiced(false);
     transactionEncaissement.setUser(nameBuddy.getIdUsers());
@@ -286,7 +288,7 @@ public class CreationTransactionService {
     String amount,
     Descriptions description
   ) {
-    costsDetailsTransaction = new CostsDetailsTransactions();
+    //costsDetailsTransaction = new CostsDetailsTransactions();
     costsDetailsTransaction.setAmount(Double.parseDouble(amount));
     if (defineNameTrans == 3) {
       // make to_from_user the buddy
@@ -326,7 +328,7 @@ public class CreationTransactionService {
     Date dateTransNow,
     String amount
   ) {
-    costsDetailsTransactionFrais = new CostsDetailsTransactions();
+    //costsDetailsTransactionFrais = new CostsDetailsTransactions();
     costsDetailsTransactionFrais.setAmount(
       findInterestCollectionMoney(dateTransNow) * Double.parseDouble(amount)
     );
@@ -365,7 +367,7 @@ public class CreationTransactionService {
     String amount,
     Descriptions descriptionAdded
   ) {
-    costsDetailsTransactionEncaissement = new CostsDetailsTransactions();
+    //costsDetailsTransactionEncaissement = new CostsDetailsTransactions();
     costsDetailsTransactionEncaissement.setAmount(Double.parseDouble(amount));
     costsDetailsTransactionEncaissement.setUsers(nameUser);
     costsDetailsTransactionEncaissement.setTransactions(

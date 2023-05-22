@@ -12,27 +12,35 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SpringSecurityConfig {
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http
+      .authorizeHttpRequests(authorize ->
+        authorize
+          .requestMatchers("/user")
+          .hasAuthority("USER")
+          .requestMatchers("/admin")
+          .hasAuthority("ADMIN")
+          .requestMatchers("/register")
+          .permitAll()
+          .anyRequest()
+          .authenticated()
+      )
+      .formLogin()
+      .loginPage("/login")
+      .permitAll()
+      .and()
+      .logout()
+      .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+      .logoutSuccessUrl("/login")
+      .deleteCookies("JSESSIONID")
+      .invalidateHttpSession(true);
 
-        http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/user").hasAuthority("USER")
-                .requestMatchers("/admin").hasAuthority("ADMIN")
-                .requestMatchers("/register").permitAll()
-                .anyRequest().authenticated())
-                .formLogin().loginPage("/login").permitAll()
-                .and()
-                .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login").deleteCookies("JSESSIONID")
-                .invalidateHttpSession(true);
+    return http.build();
+  }
 
-        return http.build();
-
-    }
-
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
+  @Bean
+  public BCryptPasswordEncoder bCryptPasswordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }
