@@ -120,8 +120,8 @@
             <div class="section">
                 <div class="div_near">
                     <div class="div_data div_display_data">
-                        <table>
-                            <caption>My Details of Account</caption>
+                        <table border="1">
+                            <caption th:text="${myDetailOrOtherUserDetail}"></caption>
                             <thead>
                                 <tr class="backgroundVert">
                                     <th>Date transaction</th>
@@ -222,7 +222,7 @@
 
 
     <div th:if="${getCostsTrans != null}" class="divFlex topDiv divBorder">
-        <table>
+        <table border="1">
             <caption>My Transactions</caption>
             <thead>
                 <tr class="backgroundVert">
@@ -247,7 +247,7 @@
     </div>
 
     <div th:if="${addedConn != null}" class="divFlex topDiv">
-        <table>
+        <table border="1">
             <caption>My Buddys</caption>
             <thead>
                 <tr class="backgroundVert">

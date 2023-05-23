@@ -293,9 +293,6 @@ public class LoginControllerTests {
     roleAdmin.setNameRole("ADMIN");
     usersName.setRole(roleAdmin);
 
-    List<CostsDetailsTransactions> listDetailTransForUser = new ArrayList<>();
-    when(transactionsService.detailTransForUser(usersName, true))
-      .thenReturn(listDetailTransForUser);
     when(usersService.getUser(userNameConnected)).thenReturn(usersName);
     when(users.getFirstName()).thenReturn(firstName);
     when(users.getNameUser()).thenReturn(lastName);
@@ -309,21 +306,18 @@ public class LoginControllerTests {
     password = "2",
     authorities = "ADMIN"
   )
-  public void testGetAdminListCostsNull() throws Exception {
+  public void testUsersAccounts() throws Exception {
     // config role admin of user
     Roles roleAdmin = new Roles();
     roleAdmin.setIdRoles(1); // role admin
     roleAdmin.setNameRole("ADMIN");
     usersName.setRole(roleAdmin);
 
-    //List<CostsDetailsTransactions> listDetailTransForUser = new ArrayList<>();
-    when(transactionsService.detailTransForUser(usersName, true))
-      .thenReturn(null);
     when(usersService.getUser(userNameConnected)).thenReturn(usersName);
     when(users.getFirstName()).thenReturn(firstName);
     when(users.getNameUser()).thenReturn(lastName);
 
-    mockMvc.perform(get("/admin")).andExpect(status().is(204));
+    mockMvc.perform(post("/admin").with(csrf())).andExpect(status().is(302));
   }
 
   @Test

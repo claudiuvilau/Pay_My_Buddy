@@ -286,14 +286,29 @@ public class LoginController {
   @RolesAllowed("USER")
   @RequestMapping("/detailTotalAmount")
   public ModelAndView detailTotalAmount(
-    @ModelAttribute("setStatus") String setStatus,
+    @ModelAttribute("data") String data,
+    @ModelAttribute("dataIdMail") String dataIdMail,
     Model model,
     Principal user,
     HttpServletRequest request,
     HttpServletResponse response
   ) {
-    // récupérer ID email de la personne connectée et la personne connectée
-    Users nameUser = recupererNameUser(user);
+    String myDetailOrOtherUserDetail;
+    Users nameUser;
+    // data 9999 = ADMIN
+    if (!data.equals("") && Integer.parseInt(data) == 9999) {
+      // recupérer User
+      nameUser = usersService.getUser(dataIdMail);
+      myDetailOrOtherUserDetail =
+        "Account details of " +
+        nameUser.getNameUser() +
+        " " +
+        nameUser.getFirstName();
+    } else {
+      // récupérer ID email de la personne connectée et la personne connectée
+      nameUser = recupererNameUser(user);
+      myDetailOrOtherUserDetail = "My Details of Account";
+    }
 
     modelAndView.setViewName(PAGE_ACCUEIL);
     modelAndView = modelHome(model, user);
@@ -301,6 +316,7 @@ public class LoginController {
     modelAndView = addAttibuteDetailTotalAmount(nameUser, model);
 
     model.addAttribute("addDetailSolde", true);
+    model.addAttribute("myDetailOrOtherUserDetail", myDetailOrOtherUserDetail);
 
     modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
     response.setStatus(setGetStatusModelAndView.getSetStatus());
@@ -408,8 +424,8 @@ public class LoginController {
     Model model,
     Principal user,
     HttpServletRequest request,
-    HttpServletResponse response,
-    RedirectAttributes redirectAttributes
+    HttpServletResponse response
+    //RedirectAttributes redirectAttributes
   ) {
     // récupérer ID email de la personne connectée et la personne connectée
     Users nameUser = recupererNameUser(user);
@@ -440,7 +456,7 @@ public class LoginController {
       RedirectView redirectView = new RedirectView();
       int statusRedirect = 302;
       redirectView.setStatusCode(HttpStatusCode.valueOf(statusRedirect));
-      redirectAttributes.addFlashAttribute("setStatus", String.valueOf(201));
+      //redirectAttributes.addFlashAttribute("setStatus", String.valueOf(201));
       redirectView.setUrl("/detailTotalAmount");
       return new ModelAndView(redirectView);
     }
@@ -544,6 +560,7 @@ public class LoginController {
     HttpServletRequest request,
     HttpServletResponse response
   ) {
+    requestClass.setRequest(request);
     // récupérer ID email de la personne connectée et la personne connectée
     String idEmail = getUserInfo(user);
     Users nameUser = usersService.getUser(idEmail);
@@ -557,6 +574,35 @@ public class LoginController {
     return modelAndView;
   }
 
+  @RolesAllowed({ "USER", "ADMIN" })
+  @PostMapping("/admin")
+  public ModelAndView usersAccounts(
+    Model model,
+    Principal user,
+    HttpServletRequest request,
+    HttpServletResponse response,
+    RedirectAttributes redirectAttributes
+  ) {
+    requestClass.setRequest(request);
+    // récupérer ID email de la personne connectée et la personne connectée
+    String idEmail = requestClass.requestParameter("usersaccounts");
+    Users nameUser = usersService.getUser(idEmail);
+
+    addAttibuteDetailTotalAmount(nameUser, model);
+
+    modelAndView.setStatus(setGetStatusModelAndView.getHttpStatus());
+    response.setStatus(setGetStatusModelAndView.getSetStatus());
+
+    RedirectView redirectView = new RedirectView();
+    int statusRedirect = 302;
+    redirectView.setStatusCode(HttpStatusCode.valueOf(statusRedirect));
+    redirectAttributes.addFlashAttribute("dataIdMail", idEmail);
+    // data 9999 => ADMIN
+    redirectAttributes.addFlashAttribute("data", 9999);
+    redirectView.setUrl("/detailTotalAmount");
+    return new ModelAndView(redirectView);
+  }
+
   private ModelAndView addAttributeAdmin(Users nameUser, Model model) {
     model.addAttribute(
       "getUser",
@@ -566,12 +612,16 @@ public class LoginController {
       nameUser.getNameUser()
     );
 
-    //get the users
-    Iterable<Users> users = usersService.getUsers();
     List<Users> listUsers = new ArrayList<>();
-    users.forEach(listUsers::add);
+    listUsers = loginControllerService.getAllUsers(listUsers);
+    //sort ASC
+    listUsers.sort(Comparator.comparing(Users::getNameUser));
 
-    model.addAttribute("valueSelectedOption", listUsers);
+    model.addAttribute("listSelecteOption", listUsers);
+
+    int setStatus = 200;
+    setGetStatusModelAndView.setSetStatus(setStatus);
+    setGetStatusModelAndView.setHttpStatus(HttpStatus.OK);
 
     return modelAndView;
   }

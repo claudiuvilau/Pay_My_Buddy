@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -230,5 +231,12 @@ public class LoginControllerService {
    */
   public void setUsersService(UsersService usersService) {
     this.usersService = usersService;
+  }
+
+  public List<Users> getAllUsers(List<Users> listUsers) {
+    //get the users
+    Iterable<Users> users = usersService.getUsers();
+    users.forEach(listUsers::add);
+    return listUsers;
   }
 }

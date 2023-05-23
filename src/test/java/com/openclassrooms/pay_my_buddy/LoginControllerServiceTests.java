@@ -12,7 +12,9 @@ import com.openclassrooms.pay_my_buddy.service.LoginControllerService;
 import com.openclassrooms.pay_my_buddy.service.UsersService;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
-public class PayMyBuddyApplicationServiceTests {
+public class LoginControllerServiceTests {
 
   private Date date;
   private String newUserIdEmail = "newusermail@paymybuddy.com";

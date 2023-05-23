@@ -108,17 +108,16 @@
     <p>  
         <span th:text="${getUser}"> </span>
     </p>
-    <p>  
-        <form action="#" method="post" th:action="@{/accounts}">
-            <select name="connections" id="connections">
-    
-                <option th:each="listUsers: ${valueSelectedOption}"
+    <p>List of users :  
+        <form action="#" method="post" th:action="@{/admin}">
+            <select name="usersaccounts" id="idUsersaccounts">
+                <option th:each="listUsers: ${listSelecteOption}"
                                  th:value="${listUsers.idEmail}"
                                  th:text="|${listUsers.nameUser} ${listUsers.firstName} ${#dates.format(listUsers.birthDate, 'dd.MM.yyyy')} ${listUsers.idEmail}|">
                 </option>
             </select>
     
-            <input type="submit" value="Select" id="vueSolde" class="backgroundVert" />
+            <input type="submit" value="Select to see his account details" id="vueSolde" class="backgroundVert" />
       </form>
         
     </p>
