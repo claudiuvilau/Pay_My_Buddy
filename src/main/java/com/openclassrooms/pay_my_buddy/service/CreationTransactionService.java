@@ -4,10 +4,9 @@ import com.openclassrooms.pay_my_buddy.model.CostsDetailsTransactions;
 import com.openclassrooms.pay_my_buddy.model.Descriptions;
 import com.openclassrooms.pay_my_buddy.model.NameTransactions;
 import com.openclassrooms.pay_my_buddy.model.Transactions;
+import com.openclassrooms.pay_my_buddy.model.TypeTransactions;
 import com.openclassrooms.pay_my_buddy.model.Users;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +36,15 @@ public class CreationTransactionService {
   private NameTransactionsService nameTransactionsService;
 
   @Autowired
+  private NameTransactions nameTransactions;
+
+  @Autowired
+  private TypeTransactions typeTransactions;
+
+  @Autowired
+  private TypeTransactionsService typeTransactionsService;
+
+  @Autowired
   private UsersService usersService;
 
   @Autowired
@@ -48,6 +56,9 @@ public class CreationTransactionService {
   @Autowired
   private Descriptions description;
 
+  @Autowired
+  private Descriptions descriptionFrais;
+
   public CreationTransactionService() {}
 
   public CreationTransactionService(
@@ -58,10 +69,14 @@ public class CreationTransactionService {
     CostsDetailsTransactions costsDetailsTransactionEncaissement,
     CostsDetailsTransactions costsDetailsTransactionFrais,
     NameTransactionsService nameTransactionsService,
+    NameTransactions nameTransactions,
+    TypeTransactions typeTransactions,
+    TypeTransactionsService typeTransactionsService,
     UsersService usersService,
     CollectionMoneyService collectionMoneyService,
     DescriptionsService descriptionsService,
-    Descriptions description
+    Descriptions description,
+    Descriptions descriptionFrais
   ) {
     this.serviceTransactional = serviceTransactional;
     this.transaction = transaction;
@@ -71,10 +86,14 @@ public class CreationTransactionService {
       costsDetailsTransactionEncaissement;
     this.costsDetailsTransactionFrais = costsDetailsTransactionFrais;
     this.nameTransactionsService = nameTransactionsService;
+    this.nameTransactions = nameTransactions;
+    this.typeTransactions = typeTransactions;
+    this.typeTransactionsService = typeTransactionsService;
     this.usersService = usersService;
     this.collectionMoneyService = collectionMoneyService;
     this.descriptionsService = descriptionsService;
     this.description = description;
+    this.descriptionFrais = descriptionFrais;
   }
 
   public ServiceTransactional getServiceTransactional() {
@@ -178,6 +197,46 @@ public class CreationTransactionService {
     this.description = description;
   }
 
+  public Descriptions getDescriptionFrais() {
+    return this.descriptionFrais;
+  }
+
+  public void setDescriptionFrais(Descriptions descriptionFrais) {
+    this.descriptionFrais = descriptionFrais;
+  }
+
+  public void setServiceTransactional(
+    ServiceTransactional serviceTransactional
+  ) {
+    this.serviceTransactional = serviceTransactional;
+  }
+
+  public NameTransactions getNameTransactions() {
+    return this.nameTransactions;
+  }
+
+  public void setNameTransactions(NameTransactions nameTransactions) {
+    this.nameTransactions = nameTransactions;
+  }
+
+  public TypeTransactions getTypeTransactions() {
+    return this.typeTransactions;
+  }
+
+  public void setTypeTransactions(TypeTransactions typeTransactions) {
+    this.typeTransactions = typeTransactions;
+  }
+
+  public TypeTransactionsService getTypeTransactionsService() {
+    return this.typeTransactionsService;
+  }
+
+  public void setTypeTransactionsService(
+    TypeTransactionsService typeTransactionsService
+  ) {
+    this.typeTransactionsService = typeTransactionsService;
+  }
+
   public boolean createTransaction(
     Users nameUser,
     String typeTransConnection,
@@ -199,202 +258,279 @@ public class CreationTransactionService {
       defineNameTrans = Integer.parseInt(typeTransConnection);
     }
 
-    transaction = defineNewTransaction(nameUser, dateTransNow);
-    // si nom transaction = 3 envoi, add description
-    if (defineNameTrans == 3) {
-      description = defineNewDescription(descriptionToAdd);
-    }
-    costsDetailsTransaction =
-      defineNewCostsDetailsTransaction(
-        transaction,
-        nameUser,
-        nameBuddy,
-        defineNameTrans,
-        amount,
-        description
-      );
+    defineNewTransactionsAndCosts(
+      defineNameTrans,
+      nameUser,
+      nameBuddy,
+      dateTransNow,
+      amount,
+      descriptionToAdd
+    );
 
-    // si nom transaction = 3 envoi
-    if (defineNameTrans == 3) {
-      // add buddy in transactions
-      transactionEncaissement =
-        defineNewTransactionEncaissement(nameBuddy, dateTransNow);
-      // add encaissement in table = 4
-      defineNameTrans = 4;
-      costsDetailsTransactionEncaissement =
-        defineNewDetailsCostsTransactionEncaissement(
-          transactionEncaissement,
-          nameUser,
-          defineNameTrans,
-          amount,
-          description
-        );
-      // add frais
-      defineNameTrans = 5; // interest in table is 5
-      costsDetailsTransactionFrais =
-        defineNewCostsDetailsFraisTransaction(
-          transaction,
-          nameUser,
-          defineNameTrans,
-          dateTransNow,
-          amount
-        );
-    }
-
-    boolean addedTrans = false;
-    addedTrans =
-      serviceTransactional.updateTableTransactionsAndCostsDetailsTransactions(
-        transaction,
-        costsDetailsTransaction,
-        costsDetailsTransactionFrais,
-        transactionEncaissement,
-        costsDetailsTransactionEncaissement
-      );
-    return addedTrans;
+    serviceTransactional.updateTableTransactionsAndCostsDetailsTransactions(
+      transaction,
+      costsDetailsTransaction,
+      costsDetailsTransactionFrais,
+      transactionEncaissement,
+      costsDetailsTransactionEncaissement
+    );
+    return serviceTransactional.getTransactionOk();
   }
 
-  private Descriptions defineNewDescription(String descriptionToAdd) {
-    //description = new Descriptions();
-    description.setDescription(descriptionToAdd);
-    return description;
-  }
-
-  private Transactions defineNewTransaction(Users nameUser, Date dateTransNow) {
-    //transaction = new Transactions();
-    transaction.setDateTrans(dateTransNow);
-    transaction.setInvoiced(false);
-    transaction.setUser(nameUser.getIdUsers());
-
-    return transaction;
-  }
-
-  private Transactions defineNewTransactionEncaissement(
-    Users nameBuddy,
-    Date dateTransNow
-  ) {
-    //transactionEncaissement = new Transactions();
-    transactionEncaissement.setDateTrans(dateTransNow);
-    transactionEncaissement.setInvoiced(false);
-    transactionEncaissement.setUser(nameBuddy.getIdUsers());
-
-    return transactionEncaissement;
-  }
-
-  private CostsDetailsTransactions defineNewCostsDetailsTransaction(
-    Transactions transactionCreated,
+  private void defineNewTransactionsAndCosts(
+    int defineNameTrans,
     Users nameUser,
     Users nameBuddy,
-    int defineNameTrans,
-    String amount,
-    Descriptions description
-  ) {
-    //costsDetailsTransaction = new CostsDetailsTransactions();
-    costsDetailsTransaction.setAmount(Double.parseDouble(amount));
-    if (defineNameTrans == 3) {
-      // make to_from_user the buddy
-      costsDetailsTransaction.setUsers(nameBuddy);
-      // add description
-      costsDetailsTransaction.setDescriptions(description);
-    } else {
-      costsDetailsTransaction.setUsers(nameUser);
-    }
-
-    // add costs in transaction
-    List<CostsDetailsTransactions> lCostsDetailsTransactions = new ArrayList<>();
-    lCostsDetailsTransactions.add(costsDetailsTransaction);
-    transactionCreated.setCostsDetailsTransactionsList(
-      lCostsDetailsTransactions
-    );
-    costsDetailsTransaction.setTransactions(transactionCreated);
-
-    Optional<NameTransactions> nameTransOpt = recupererNameTypeTransactions(
-      defineNameTrans
-    );
-    if (nameTransOpt.isPresent()) {
-      NameTransactions nameTrans = nameTransOpt.get();
-      costsDetailsTransaction.setTypeTransactions(
-        nameTrans.getTypeTransactions()
-      );
-      costsDetailsTransaction.setNameTransactions(nameTrans);
-    }
-
-    return costsDetailsTransaction;
-  }
-
-  private CostsDetailsTransactions defineNewCostsDetailsFraisTransaction(
-    Transactions transactionCreated,
-    Users nameUser,
-    int defineNameTrans,
     Date dateTransNow,
-    String amount
+    String amount,
+    String descriptionToAdd
   ) {
-    //costsDetailsTransactionFrais = new CostsDetailsTransactions();
+    int defineTypeTrans;
+
+    transaction = defineNewTransactions();
+    transaction.setDateTrans(dateTransNow);
+    transaction.setUser(nameUser.getIdUsers());
+    transaction.setInvoiced(false);
+
+    //List<CostsDetailsTransactions> listCostsDetailsTransactions = new ArrayList<>();
+
+    // if send to buddy
+    if (defineNameTrans == 3) {
+      defineTypeTrans = 2; // debit
+      defineTransactionDetail(
+        nameBuddy,
+        transaction,
+        amount,
+        descriptionToAdd,
+        defineNameTrans,
+        defineTypeTrans
+      );
+
+      //listCostsDetailsTransactions.add(costsDetailsTransaction);
+
+      defineNameTrans = 5; // frais
+      defineTypeTrans = 2; // debit
+      descriptionFrais = defineNewDescription();
+      costsDetailsTransactionFrais = defineNewCostsDetailsTransactions();
+      defineTransactionFrais(
+        nameUser,
+        transaction,
+        dateTransNow,
+        amount,
+        defineNameTrans,
+        defineTypeTrans
+      );
+
+      //listCostsDetailsTransactions.add(costsDetailsTransactionFrais);
+
+      //transaction.setCostsDetailsTransactionsList(listCostsDetailsTransactions);
+
+      transactionEncaissement = defineNewTransactions();
+      transactionEncaissement.setDateTrans(dateTransNow);
+      transactionEncaissement.setUser(nameBuddy.getIdUsers());
+      transactionEncaissement.setInvoiced(false);
+
+      defineNameTrans = 4; // encaissement
+      defineTypeTrans = 1; // credit
+      costsDetailsTransactionEncaissement = defineNewCostsDetailsTransactions();
+      defineTransactionDetailEncaissement(
+        nameUser,
+        transactionEncaissement,
+        amount,
+        descriptionToAdd,
+        defineNameTrans,
+        defineTypeTrans
+      );
+      //listCostsDetailsTransactions = new ArrayList<>();
+      //listCostsDetailsTransactions.add(costsDetailsTransactionEncaissement);
+      //transactionEncaissement.setCostsDetailsTransactionsList(
+      //listCostsDetailsTransactions
+      //);
+    } else if (defineNameTrans == 1 || defineNameTrans == 4) {
+      defineTypeTrans = 1; // credit
+      defineTransactionDetail(
+        nameUser,
+        transaction,
+        amount,
+        descriptionToAdd,
+        defineNameTrans,
+        defineTypeTrans
+      );
+      //listCostsDetailsTransactions.add(costsDetailsTransaction);
+      //transaction.setCostsDetailsTransactionsList(listCostsDetailsTransactions);
+    } else if (defineNameTrans == 2) {
+      defineTypeTrans = 2; // debit
+      defineTransactionDetail(
+        nameUser,
+        transaction,
+        amount,
+        descriptionToAdd,
+        defineNameTrans,
+        defineTypeTrans
+      );
+      //listCostsDetailsTransactions.add(costsDetailsTransaction);
+      //transaction.setCostsDetailsTransactionsList(listCostsDetailsTransactions);
+    }
+  }
+
+  private void defineTransactionDetail(
+    Users nameUserOrnameBuddy,
+    Transactions transaction,
+    String amount,
+    String descriptionToAdd,
+    int defineNameTrans,
+    int defineTypeTrans
+  ) {
+    //List<Transactions> transactionsList = new ArrayList<>();
+    //transactionsList.add(transaction);
+    //costsDetailsTransaction.setTransactionsList(transactionsList);
+
+    costsDetailsTransaction = defineNewCostsDetailsTransactions();
+    costsDetailsTransaction.setTransactions(transaction);
+    costsDetailsTransaction.setAmount(Double.parseDouble(amount));
+    // définir name transaction
+    recupererNameTransactions(defineNameTrans);
+    costsDetailsTransaction.setNameTransactions(nameTransactions);
+    // définir type transaction
+    recupererTypeTransactions(defineTypeTrans);
+    costsDetailsTransaction.setTypeTransactions(typeTransactions);
+
+    costsDetailsTransaction.setUsers(nameUserOrnameBuddy);
+    if (defineNameTrans != 3) {
+      descriptionToAdd = nameTransactions.getNameTrans().toLowerCase();
+    }
+    // verify if the description exist in the table description
+    Descriptions descriptionFinded = descriptionsService.getDescription(
+      descriptionToAdd
+    );
+    description = defineNewDescription();
+    if (descriptionFinded != null) {
+      costsDetailsTransaction.setDescriptions(descriptionFinded);
+    } else {
+      description.setDescription(descriptionToAdd);
+      costsDetailsTransaction.setDescriptions(description);
+    }
+  }
+
+  private void defineTransactionFrais(
+    Users nameUser,
+    Transactions transaction,
+    Date dateTransNow,
+    String amount,
+    int defineNameTrans,
+    int defineTypeTrans
+  ) {
+    //List<Transactions> transactionsList = new ArrayList<>();
+    //transactionsList.add(transaction);
+    //costsDetailsTransactionFrais.setTransactionsList(transactionsList);
+
+    costsDetailsTransactionFrais = defineNewCostsDetailsTransactions();
+    costsDetailsTransactionFrais.setTransactions(transaction);
     costsDetailsTransactionFrais.setAmount(
       findInterestCollectionMoney(dateTransNow) * Double.parseDouble(amount)
     );
+    // définir name transaction : 5 = frais
+    recupererNameTransactions(defineNameTrans);
+    costsDetailsTransactionFrais.setNameTransactions(nameTransactions);
+    // définir type transaction : 2 = debit
+    recupererTypeTransactions(defineTypeTrans);
+    costsDetailsTransactionFrais.setTypeTransactions(typeTransactions);
+
     costsDetailsTransactionFrais.setUsers(nameUser);
-
-    // add costs in transaction
-    List<CostsDetailsTransactions> lCostsDetailsTransactions = new ArrayList<>();
-    lCostsDetailsTransactions.add(costsDetailsTransactionFrais);
-    transactionCreated.setCostsDetailsTransactionsList(
-      lCostsDetailsTransactions
+    // description - the same like name transaction to lower case
+    String descriptionToAdd = nameTransactions.getNameTrans().toLowerCase();
+    // verify if the description exist in the table description
+    Descriptions descriptionFinded = descriptionsService.getDescription(
+      descriptionToAdd
     );
-    costsDetailsTransactionFrais.setTransactions(transactionCreated);
+    descriptionFrais = defineNewDescription();
+    if (descriptionFinded != null) {
+      costsDetailsTransactionFrais.setDescriptions(descriptionFinded);
+    } else {
+      descriptionFrais.setDescription(descriptionToAdd);
+      costsDetailsTransactionFrais.setDescriptions(descriptionFrais);
+    }
+  }
 
-    Optional<NameTransactions> nameTransOpt = recupererNameTypeTransactions(
-      defineNameTrans
+  private void defineTransactionDetailEncaissement(
+    Users nameBuddy,
+    Transactions transactionEncaissement,
+    String amount,
+    String descriptionToAdd,
+    int defineNameTrans,
+    int defineTypeTrans
+  ) {
+    //List<Transactions> transactionsList = new ArrayList<>();
+    //transactionsList.add(transaction);
+    //costsDetailsTransactionEncaissement.setTransactionsList(transactionsList);
+
+    costsDetailsTransactionEncaissement.setTransactions(
+      transactionEncaissement
+    );
+    costsDetailsTransactionEncaissement.setAmount(Double.parseDouble(amount));
+    // définir name transaction
+    recupererNameTransactions(defineNameTrans);
+    costsDetailsTransactionEncaissement.setNameTransactions(nameTransactions);
+    // définir type transaction : 1 = credit
+    recupererTypeTransactions(defineTypeTrans);
+    costsDetailsTransactionEncaissement.setTypeTransactions(typeTransactions);
+
+    costsDetailsTransactionEncaissement.setUsers(nameBuddy);
+
+    // verify if the description exist in the table description
+    Descriptions descriptionFinded = descriptionsService.getDescription(
+      descriptionToAdd
+    );
+    if (descriptionFinded != null) {
+      //description.setDescription(descriptionFinded.getDescription());
+      costsDetailsTransactionEncaissement.setDescriptions(descriptionFinded);
+    } else {
+      description.setDescription(descriptionToAdd);
+      costsDetailsTransactionEncaissement.setDescriptions(description);
+    }
+  }
+
+  private void recupererNameTransactions(int defineTypeTrans) {
+    Optional<NameTransactions> nameTransOpt = nameTransactionsService.getNameTransactionById(
+      defineTypeTrans
     );
     if (nameTransOpt.isPresent()) {
-      NameTransactions nameTrans = nameTransOpt.get();
-      costsDetailsTransactionFrais.setTypeTransactions(
-        nameTrans.getTypeTransactions()
-      );
-      costsDetailsTransactionFrais.setNameTransactions(nameTrans);
+      nameTransactions = defineNewNameTransactions();
+      nameTransactions = nameTransOpt.get();
     }
+  }
 
-    return costsDetailsTransactionFrais;
+  private void recupererTypeTransactions(int defineTypeTrans) {
+    Optional<TypeTransactions> typeTransOpt = typeTransactionsService.getTypeTransactionById(
+      defineTypeTrans
+    );
+    if (typeTransOpt.isPresent()) {
+      typeTransactions = defineNewTypeTransactions();
+      typeTransactions = typeTransOpt.get();
+    }
   }
 
   private double findInterestCollectionMoney(Date dateTransNow) {
     return collectionMoneyService.getCollectionMoneyToDate(dateTransNow);
   }
 
-  private CostsDetailsTransactions defineNewDetailsCostsTransactionEncaissement(
-    Transactions transactionEncaissement,
-    Users nameUser,
-    int defineNameTrans,
-    String amount,
-    Descriptions descriptionAdded
-  ) {
-    //costsDetailsTransactionEncaissement = new CostsDetailsTransactions();
-    costsDetailsTransactionEncaissement.setAmount(Double.parseDouble(amount));
-    costsDetailsTransactionEncaissement.setUsers(nameUser);
-    costsDetailsTransactionEncaissement.setTransactions(
-      transactionEncaissement
-    );
-    if (defineNameTrans == 4) {
-      // add description
-      costsDetailsTransactionEncaissement.setDescriptions(descriptionAdded);
-    }
-
-    Optional<NameTransactions> nameTransOpt = recupererNameTypeTransactions(
-      defineNameTrans
-    );
-    if (nameTransOpt.isPresent()) {
-      NameTransactions nameTrans = nameTransOpt.get();
-      costsDetailsTransactionEncaissement.setTypeTransactions(
-        nameTrans.getTypeTransactions()
-      );
-      costsDetailsTransactionEncaissement.setNameTransactions(nameTrans);
-    }
-
-    return costsDetailsTransactionEncaissement;
+  private Descriptions defineNewDescription() {
+    return new Descriptions();
   }
 
-  private Optional<NameTransactions> recupererNameTypeTransactions(
-    int defineTypeTrans
-  ) {
-    return nameTransactionsService.getNameTransactionById(defineTypeTrans);
+  private Transactions defineNewTransactions() {
+    return new Transactions();
+  }
+
+  private CostsDetailsTransactions defineNewCostsDetailsTransactions() {
+    return new CostsDetailsTransactions();
+  }
+
+  private NameTransactions defineNewNameTransactions() {
+    return new NameTransactions();
+  }
+
+  private TypeTransactions defineNewTypeTransactions() {
+    return new TypeTransactions();
   }
 }

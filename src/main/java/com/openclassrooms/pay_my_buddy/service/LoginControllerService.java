@@ -60,34 +60,35 @@ public class LoginControllerService {
     String newUserBirthDay
   ) throws ParseException {
     newUserMail = newUserMail.toLowerCase().trim();
-    newUserPassword =
-      springSecurityConfig
-        .bCryptPasswordEncoder()
-        .encode(newUserPassword.trim());
-    newUserFirstName = newUserFirstName.toLowerCase().trim();
-    newUserLastName = newUserLastName.toLowerCase().toLowerCase().trim();
-    SimpleDateFormat formatter = new SimpleDateFormat(
-      "yyyy-MM-dd",
-      Locale.ENGLISH
-    );
-    Date newUserDateBirthDay = formatter.parse(newUserBirthDay);
-
-    int roleId = 1; // 1 = user
-    Roles roles = new Roles();
-    roles.setIdRoles(roleId);
-    Users userNew = new Users();
-    userNew.setIdEmail(newUserMail);
-    userNew.setPassword(newUserPassword);
-    userNew.setFirstName(newUserFirstName);
-    userNew.setNameUser(newUserLastName);
-    userNew.setBirthDate(newUserDateBirthDay);
-    userNew.setRole(roles);
-
-    usersService.addUser(userNew);
 
     // verify if register is ok
     int status;
-    if (usersService.getUser(newUserMail) != null) {
+    if (usersService.getUser(newUserMail) == null) {
+      newUserPassword =
+        springSecurityConfig
+          .bCryptPasswordEncoder()
+          .encode(newUserPassword.trim());
+      newUserFirstName = newUserFirstName.toLowerCase().trim();
+      newUserLastName = newUserLastName.toLowerCase().toLowerCase().trim();
+      SimpleDateFormat formatter = new SimpleDateFormat(
+        "yyyy-MM-dd",
+        Locale.ENGLISH
+      );
+      Date newUserDateBirthDay = formatter.parse(newUserBirthDay);
+
+      int roleId = 1; // 1 = user
+      Roles roles = new Roles();
+      roles.setIdRoles(roleId);
+      Users userNew = new Users();
+      userNew.setIdEmail(newUserMail);
+      userNew.setPassword(newUserPassword);
+      userNew.setFirstName(newUserFirstName);
+      userNew.setNameUser(newUserLastName);
+      userNew.setBirthDate(newUserDateBirthDay);
+      userNew.setRole(roles);
+
+      usersService.addUser(userNew);
+
       status = 201;
     } else {
       status = 404;

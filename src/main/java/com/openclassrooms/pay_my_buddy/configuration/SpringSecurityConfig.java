@@ -1,7 +1,10 @@
 package com.openclassrooms.pay_my_buddy.configuration;
 
+import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,5 +45,18 @@ public class SpringSecurityConfig {
   @Bean
   public BCryptPasswordEncoder bCryptPasswordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  @Profile("test")
+  public DataSource dataSource() {
+    DriverManagerDataSource ds = new DriverManagerDataSource();
+
+    ds.setDriverClassName("org.hibernate.dialect.MySQLDialect");
+    ds.setUrl("jdbc:mysql://localhost:3306/paymybuddytest?serverTimezone=UTC");
+    ds.setUsername("root");
+    ds.setPassword("Parolamea1234*");
+
+    return ds;
   }
 }

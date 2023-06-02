@@ -10,20 +10,63 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ServiceTransactional {
 
+  private boolean transactionOk;
+
   @Autowired
   private TransactionsService transactionsService; // instance of object
 
   @Autowired
   private CostsDetailsTransactionsService costsDetailsTransactionsService; // instance of object
 
-  public boolean updateTableTransactionsAndCostsDetailsTransactions(
+  public ServiceTransactional() {}
+
+  public ServiceTransactional(
+    boolean transactionOk,
+    TransactionsService transactionsService,
+    CostsDetailsTransactionsService costsDetailsTransactionsService
+  ) {
+    this.transactionOk = transactionOk;
+    this.transactionsService = transactionsService;
+    this.costsDetailsTransactionsService = costsDetailsTransactionsService;
+  }
+
+  public boolean isTransactionOk() {
+    return this.transactionOk;
+  }
+
+  public boolean getTransactionOk() {
+    return this.transactionOk;
+  }
+
+  public void setTransactionOk(boolean transactionOk) {
+    this.transactionOk = transactionOk;
+  }
+
+  public TransactionsService getTransactionsService() {
+    return this.transactionsService;
+  }
+
+  public void setTransactionsService(TransactionsService transactionsService) {
+    this.transactionsService = transactionsService;
+  }
+
+  public CostsDetailsTransactionsService getCostsDetailsTransactionsService() {
+    return this.costsDetailsTransactionsService;
+  }
+
+  public void setCostsDetailsTransactionsService(
+    CostsDetailsTransactionsService costsDetailsTransactionsService
+  ) {
+    this.costsDetailsTransactionsService = costsDetailsTransactionsService;
+  }
+
+  public void updateTableTransactionsAndCostsDetailsTransactions(
     Transactions transaction,
     CostsDetailsTransactions costsDetailsTransaction,
     CostsDetailsTransactions costsDetailsTransactionFrais,
     Transactions transactionEncaissement,
     CostsDetailsTransactions costsDetailsTransactionEncaissement
   ) {
-    boolean addedTrans = false;
     transactionsService.addTransaction(transaction);
     costsDetailsTransactionsService.addCostDetailTrans(costsDetailsTransaction);
 
@@ -36,7 +79,6 @@ public class ServiceTransactional {
         costsDetailsTransactionEncaissement
       );
     }
-    addedTrans = true;
-    return addedTrans;
+    transactionOk = true;
   }
 }
