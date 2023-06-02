@@ -12,9 +12,7 @@ import com.openclassrooms.pay_my_buddy.service.LoginControllerService;
 import com.openclassrooms.pay_my_buddy.service.UsersService;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -106,20 +104,20 @@ public class LoginControllerServiceTests {
   }
 
   @Test
-  public void testRegisterNewUserNoAddedUser() throws Exception {
+  public void testRegisterNewUser() throws Exception {
     when((usersService.getUser(newUserIdEmail))).thenReturn(null);
     int codeReturn = loginControllerService.addNewUser(
-      "null",
-      "null",
-      "null",
-      "null",
+      newUserIdEmail,
+      newUserPassword,
+      newUserFirstName,
+      newUserNameUser,
       newUserBirthDate
     );
-    assertEquals(404, codeReturn);
+    assertEquals(201, codeReturn);
   }
 
   @Test
-  public void testRegisterNewUser() throws Exception {
+  public void testRegisterNewUserNoAddedUser() throws Exception {
     when((usersService.getUser(newUserIdEmail))).thenReturn(newUser);
 
     int codeReturn = loginControllerService.addNewUser(
@@ -129,7 +127,7 @@ public class LoginControllerServiceTests {
       newUserNameUser,
       newUserBirthDate
     );
-    assertEquals(201, codeReturn);
+    assertEquals(404, codeReturn);
   }
 
   @Test

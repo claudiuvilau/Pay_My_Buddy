@@ -16,7 +16,6 @@ import com.openclassrooms.pay_my_buddy.model.Users;
 import com.openclassrooms.pay_my_buddy.service.CreationTransactionService;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
 import com.openclassrooms.pay_my_buddy.service.LoginControllerService;
-import com.openclassrooms.pay_my_buddy.service.SetGetStatusModelAndView;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
 import com.openclassrooms.pay_my_buddy.service.UsersService;
 import java.text.DateFormat;

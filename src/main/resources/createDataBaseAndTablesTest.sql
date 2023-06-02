@@ -1,8 +1,8 @@
 SET NAMES utf8mb4;
 
-CREATE DATABASE IF NOT EXISTS payMyBuddy CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS payMyBuddytest CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE payMyBuddy;
+USE payMyBuddytest;
 
 CREATE TABLE IF NOT EXISTS Roles (
     id_roles INT UNSIGNED NOT NULL AUTO_INCREMENT,

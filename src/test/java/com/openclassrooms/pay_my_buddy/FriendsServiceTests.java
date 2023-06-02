@@ -8,7 +8,6 @@ import com.openclassrooms.pay_my_buddy.model.Users;
 import com.openclassrooms.pay_my_buddy.repository.FriendsRepository;
 import com.openclassrooms.pay_my_buddy.service.FriendsService;
 import java.util.ArrayList;
-import java.util.Iterator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

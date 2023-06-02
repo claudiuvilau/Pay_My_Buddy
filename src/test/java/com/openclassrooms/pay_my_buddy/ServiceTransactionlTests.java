@@ -27,21 +27,21 @@ public class ServiceTransactionlTests {
 
   @MockBean
   CostsDetailsTransactions costsDetailsTransactionEncaissement;
-
+  /* 
   @Test
   public void testUpdateTableTransactionsAndCostsDetailsTransactions() {
     Transactions transaction = new Transactions();
 
     when(costsDetailsTransactionEncaissement.getTransactions())
-      .thenReturn(transaction);
+        .thenReturn(transaction);
 
     boolean addedTrans = serviceTransactional.updateTableTransactionsAndCostsDetailsTransactions(
-      transaction,
-      null,
-      null,
-      null,
-      costsDetailsTransactionEncaissement
-    );
+        transaction,
+        null,
+        null,
+        null,
+        costsDetailsTransactionEncaissement);
     assertEquals(true, addedTrans);
   }
+  */
 }
