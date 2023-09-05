@@ -27,6 +27,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.ui.Model;
@@ -169,7 +170,7 @@ public class LoginController {
     this.springSecurityConfig = springSecurityConfig;
   }
 
-  @RolesAllowed("USER")
+  @Secured("USER")
   @GetMapping("/*")
   public ModelAndView afterLogin(
     Model model,
@@ -185,7 +186,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @RolesAllowed("USER")
+  @Secured("USER")
   @GetMapping("/addconnection")
   public ModelAndView addConnection(
     Model model,
@@ -203,7 +204,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @RolesAllowed("USER")
+  @Secured("USER")
   @PostMapping("/addedconnection")
   public ModelAndView addedConnection(
     Model model,
@@ -283,7 +284,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @RolesAllowed("USER")
+  @Secured("USER")
   @RequestMapping("/detailTotalAmount")
   public ModelAndView detailTotalAmount(
     @ModelAttribute("data") String data,
@@ -350,7 +351,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @RolesAllowed("USER")
+  @Secured("USER")
   @GetMapping("/selectconnection")
   public ModelAndView selectConnection(
     Model model,
@@ -418,7 +419,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @RolesAllowed("USER")
+  @Secured("USER")
   @PostMapping("/paid")
   public ModelAndView selectedConnection(
     Model model,
@@ -472,7 +473,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @RolesAllowed("USER")
+  @Secured("USER")
   @GetMapping("/login")
   public ModelAndView login(
     Model model,
@@ -491,7 +492,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @RolesAllowed("USER")
+  @Secured("USER")
   @PostMapping("/register")
   public ModelAndView registerNewUser(
     Model model,
@@ -552,7 +553,7 @@ public class LoginController {
     return newUserFirstName;
   }
 
-  @RolesAllowed({ "USER", "ADMIN" })
+  @Secured({ "USER", "ADMIN" })
   @GetMapping("/admin")
   public ModelAndView getAdmin(
     Model model,
@@ -574,7 +575,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @RolesAllowed({ "USER", "ADMIN" })
+  @Secured({ "USER", "ADMIN" })
   @PostMapping("/admin")
   public ModelAndView usersAccounts(
     Model model,
