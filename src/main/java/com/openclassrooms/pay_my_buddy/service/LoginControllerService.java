@@ -76,7 +76,7 @@ public class LoginControllerService {
       );
       Date newUserDateBirthDay = formatter.parse(newUserBirthDay);
 
-      int roleId = 1; // 1 = user
+      int roleId = 2; // 1 = admin; 2 = user
       Roles roles = new Roles();
       roles.setIdRoles(roleId);
       Users userNew = new Users();

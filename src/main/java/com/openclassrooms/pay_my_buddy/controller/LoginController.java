@@ -13,7 +13,6 @@ import com.openclassrooms.pay_my_buddy.service.LoginControllerService;
 import com.openclassrooms.pay_my_buddy.service.NameTransactionsService;
 import com.openclassrooms.pay_my_buddy.service.SetGetStatusModelAndView;
 import com.openclassrooms.pay_my_buddy.service.TransactionsService;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.security.Principal;
@@ -170,7 +169,7 @@ public class LoginController {
     this.springSecurityConfig = springSecurityConfig;
   }
 
-  @Secured("USER")
+  @Secured({ "USER", "ADMIN" })
   @GetMapping("/*")
   public ModelAndView afterLogin(
     Model model,
@@ -186,7 +185,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @Secured("USER")
+  @Secured({ "USER", "ADMIN" })
   @GetMapping("/addconnection")
   public ModelAndView addConnection(
     Model model,
@@ -204,7 +203,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @Secured("USER")
+  @Secured({ "USER", "ADMIN" })
   @PostMapping("/addedconnection")
   public ModelAndView addedConnection(
     Model model,
@@ -284,7 +283,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @Secured("USER")
+  @Secured({ "USER", "ADMIN" })
   @RequestMapping("/detailTotalAmount")
   public ModelAndView detailTotalAmount(
     @ModelAttribute("data") String data,
@@ -351,7 +350,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @Secured("USER")
+  @Secured({ "USER", "ADMIN" })
   @GetMapping("/selectconnection")
   public ModelAndView selectConnection(
     Model model,
@@ -419,7 +418,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @Secured("USER")
+  @Secured({ "USER", "ADMIN" })
   @PostMapping("/paid")
   public ModelAndView selectedConnection(
     Model model,
@@ -473,7 +472,6 @@ public class LoginController {
     return modelAndView;
   }
 
-  @Secured("USER")
   @GetMapping("/login")
   public ModelAndView login(
     Model model,
@@ -492,7 +490,6 @@ public class LoginController {
     return modelAndView;
   }
 
-  @Secured("USER")
   @PostMapping("/register")
   public ModelAndView registerNewUser(
     Model model,
@@ -528,9 +525,9 @@ public class LoginController {
     String msg;
     if (status == 201) {
       msg =
-        userNew.getFirstName() +
+        newUserFirstName +
         ", vous vous êtes bien enregistré avec l'adresse email (username) : " +
-        userNew.getIdEmail() +
+        usersService.getUser(newUserMail).getIdEmail() +
         " (" +
         setGetStatusModelAndView.getSetStatus() +
         ")";
@@ -547,13 +544,16 @@ public class LoginController {
   }
 
   private String makeUpperCaseFirstLetter(String newUserFirstName) {
-    newUserFirstName =
-      newUserFirstName.substring(0, 1).toUpperCase() +
-      newUserFirstName.substring(1);
+    if (newUserFirstName.length() > 0) {
+      newUserFirstName =
+        newUserFirstName.substring(0, 1).toUpperCase() +
+        newUserFirstName.substring(1);
+    }
+
     return newUserFirstName;
   }
 
-  @Secured({ "USER", "ADMIN" })
+  @Secured("ADMIN")
   @GetMapping("/admin")
   public ModelAndView getAdmin(
     Model model,
@@ -575,7 +575,7 @@ public class LoginController {
     return modelAndView;
   }
 
-  @Secured({ "USER", "ADMIN" })
+  @Secured("ADMIN")
   @PostMapping("/admin")
   public ModelAndView usersAccounts(
     Model model,

@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DescriptionsService {
 
   @Autowired
-  DescriptionsRepository descriptionsRepository;
+  private DescriptionsRepository descriptionsRepository;
 
   public Iterable<Descriptions> getDescriptions() {
     return descriptionsRepository.findAll();

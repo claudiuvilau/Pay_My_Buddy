@@ -8,14 +8,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.openclassrooms.pay_my_buddy.controller.LoginController;
 import com.openclassrooms.pay_my_buddy.model.Friends;
 import com.openclassrooms.pay_my_buddy.model.RequestClass;
 import com.openclassrooms.pay_my_buddy.model.Roles;
 import com.openclassrooms.pay_my_buddy.model.Users;
 import com.openclassrooms.pay_my_buddy.repository.FriendsRepository;
 import com.openclassrooms.pay_my_buddy.repository.UsersRepository;
-import jakarta.inject.Inject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,9 +43,6 @@ public class PayMyBuddyTestsIT {
   private Users userBuddy;
   private String firstName = "newUserFirstName";
   private String lastName = "newUserLastName";
-
-  @Inject
-  private LoginController loginController;
 
   @Autowired
   private MockMvc mockMvc;
@@ -114,19 +109,31 @@ public class PayMyBuddyTestsIT {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAddConnection() throws Exception {
     mockMvc.perform(get("/addconnection")).andExpect(status().is(200));
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testDetailTotalAmount() throws Exception {
     mockMvc.perform(get("/detailTotalAmount")).andExpect(status().is(200));
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testSelectConnection() throws Exception {
     mockMvc.perform(get("/selectconnection")).andExpect(status().is(200));
   }
@@ -154,7 +161,11 @@ public class PayMyBuddyTestsIT {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAddedConnectionBuddyNull() throws Exception {
     mockMvc
       .perform(post("/addedconnection").with(csrf()))
@@ -162,7 +173,11 @@ public class PayMyBuddyTestsIT {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAddedConnectionBuddyEqualsUser() throws Exception {
     when(requestClass.requestParameter("email"))
       .thenReturn("mireille.benoit@hotmail.com");
@@ -172,7 +187,11 @@ public class PayMyBuddyTestsIT {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAddedConnectionBuddyAlreadyConnected() throws Exception {
     when(requestClass.requestParameter("email"))
       .thenReturn("jack.dupont@yahoo.fr");
@@ -204,7 +223,11 @@ public class PayMyBuddyTestsIT {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAddedConnectionErrorDataBuddy() throws Exception {
     when(requestClass.requestParameter("email"))
       .thenReturn("sebastien.martin@hotmail.fr"); // id = 3
@@ -235,7 +258,11 @@ public class PayMyBuddyTestsIT {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   @Query(value = "")
   public void testAddedConnection() throws Exception {
     int idUser = 2;
@@ -271,7 +298,11 @@ public class PayMyBuddyTestsIT {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testSelectedConnection() throws Exception {
     when(requestClass.requestParameter("connections"))
       .thenReturn("jack.dupont@yahoo.fr");

@@ -2,9 +2,9 @@ package com.openclassrooms.pay_my_buddy.service;
 
 import com.openclassrooms.pay_my_buddy.model.CostsDetailsTransactions;
 import com.openclassrooms.pay_my_buddy.model.Transactions;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -67,18 +67,24 @@ public class ServiceTransactional {
     Transactions transactionEncaissement,
     CostsDetailsTransactions costsDetailsTransactionEncaissement
   ) {
-    transactionsService.addTransaction(transaction);
-    costsDetailsTransactionsService.addCostDetailTrans(costsDetailsTransaction);
+    try {
+      transactionsService.addTransaction(transaction);
+      costsDetailsTransactionsService.addCostDetailTrans(
+        costsDetailsTransaction
+      );
 
-    if (costsDetailsTransactionEncaissement.getTransactions() != null) {
-      costsDetailsTransactionsService.addCostDetailTrans(
-        costsDetailsTransactionFrais
-      );
-      transactionsService.addTransaction(transactionEncaissement);
-      costsDetailsTransactionsService.addCostDetailTrans(
-        costsDetailsTransactionEncaissement
-      );
+      if (costsDetailsTransactionEncaissement.getTransactions() != null) {
+        costsDetailsTransactionsService.addCostDetailTrans(
+          costsDetailsTransactionFrais
+        );
+        transactionsService.addTransaction(transactionEncaissement);
+        costsDetailsTransactionsService.addCostDetailTrans(
+          costsDetailsTransactionEncaissement
+        );
+      }
+      transactionOk = true;
+    } catch (Exception e) {
+      transactionOk = false;
     }
-    transactionOk = true;
   }
 }

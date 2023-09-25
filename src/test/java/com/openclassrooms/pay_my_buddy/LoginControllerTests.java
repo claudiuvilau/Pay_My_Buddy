@@ -122,7 +122,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAfterLogin() throws Exception {
     List<CostsDetailsTransactions> listCostsUserToBuddy = new ArrayList<>();
     CostsDetailsTransactions costsDetailsTransactions = new CostsDetailsTransactions();
@@ -153,7 +157,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAfterLoginTranNull() throws Exception {
     List<CostsDetailsTransactions> listCostsUserToBuddy = new ArrayList<>();
     CostsDetailsTransactions costsDetailsTransactions = new CostsDetailsTransactions();
@@ -184,7 +192,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAfterLoginUserConnectNull() throws Exception {
     when(usersService.getUser(userNameConnected)).thenReturn(null);
 
@@ -192,7 +204,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAddConnection() throws Exception {
     List<CostsDetailsTransactions> listCostsUserToBuddy = new ArrayList<>();
     CostsDetailsTransactions costsDetailsTransactions = new CostsDetailsTransactions();
@@ -223,7 +239,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testDetailTotalAmount() throws Exception {
     List<Users> list = new ArrayList<>();
     list.add(usersName);
@@ -241,7 +261,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testDetailTotalAmountTransNull() throws Exception {
     List<Users> list = new ArrayList<>();
     list.add(usersName);
@@ -258,7 +282,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testSelectConnection() throws Exception {
     List<Friends> listFriends = new ArrayList<>();
     when(users.getFriends()).thenReturn(listFriends);
@@ -320,7 +348,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAddedConnectionBuddyNull() throws Exception {
     when(usersService.getUser(userNameConnected)).thenReturn(usersName);
 
@@ -346,7 +378,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAddedConnectionBuddyEqualsUser() throws Exception {
     when(usersService.getUser(userNameConnected)).thenReturn(usersName);
     when(requestClass.requestParameter("email")).thenReturn(userBuddyIdEmail);
@@ -371,7 +407,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAddedConnectionBuddyAlreadyConnected() throws Exception {
     when(usersService.getUser(userNameConnected)).thenReturn(usersName);
     when(requestClass.requestParameter("email")).thenReturn(userBuddyIdEmail);
@@ -396,7 +436,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAddedConnectionErrorDataBuddy() throws Exception {
     when(usersService.getUser(userNameConnected)).thenReturn(usersName);
     when(requestClass.requestParameter("email")).thenReturn(userBuddyIdEmail);
@@ -421,7 +465,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAddedConnection() throws Exception {
     when(usersService.getUser(userNameConnected)).thenReturn(usersName);
     when(requestClass.requestParameter("email")).thenReturn(userBuddyIdEmail);
@@ -446,7 +494,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testAddedConnectionAnotherResponsCode() throws Exception {
     when(usersService.getUser(userNameConnected)).thenReturn(usersName);
     when(requestClass.requestParameter("email")).thenReturn(userBuddyIdEmail);
@@ -471,7 +523,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testSelectedConnection() throws Exception {
     when(usersService.getUser(userNameConnected)).thenReturn(usersName);
 
@@ -493,7 +549,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testSelectedConnectionAddedTrans() throws Exception {
     when(usersService.getUser(userNameConnected)).thenReturn(usersName);
 
@@ -515,7 +575,11 @@ public class LoginControllerTests {
   }
 
   @Test
-  @WithMockUser(username = "mireille.benoit@hotmail.com", password = "2")
+  @WithMockUser(
+    username = "mireille.benoit@hotmail.com",
+    password = "2",
+    authorities = "USER"
+  )
   public void testSelectedConnectionNoTransaction() throws Exception {
     when(usersService.getUser(userNameConnected)).thenReturn(usersName);
 
