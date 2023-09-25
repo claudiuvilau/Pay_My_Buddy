@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
@@ -20,11 +19,6 @@ public class SpringSecurityConfigTests {
   SpringSecurityConfig securityConfig;
 
   @Test
-  @WithMockUser(
-    username = "mireille.benoit@hotmail.com",
-    password = "2",
-    authorities = "USER"
-  )
   public void testDataSourceProfileTest() {
     DriverManagerDataSource ds = (DriverManagerDataSource) securityConfig.dataSource();
 
